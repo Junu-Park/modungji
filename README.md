@@ -6,6 +6,17 @@
 ## 프로젝트 기간
 2025년 5월 9일 금요일 ~
 
+## 프로젝트 폴더링
+Feature(기능) 단위 폴더링
+
+Project
+- App
+- Common
+- Core
+- Feature
+- Resource
+
+
 ## 프로젝트 기기 최소 타겟 버전 설정
 **iOS 16.0 +**
 
