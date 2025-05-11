@@ -39,3 +39,10 @@ Project
 프로젝트 타겟 OS가 iOS이고 iOS는 2배율과 3배율을 사용한다는 점을 고려
 
 \* [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
+
+## 프로젝트 네트워크 BaseURL 및 APIKey 설정
+**SPM을 통한 Local Package(+ .gitignore)로 관리**
+
+`.swift 파일 + .gitignore 방식`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
+
+`.plist/.xcconfig 파일 + .gitignore 방식`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
