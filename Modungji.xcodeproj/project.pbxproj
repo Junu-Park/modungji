@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5101A8B82DD09E4F008CF16B /* Alamofire */; };
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			);
 			name = Modungji;
 			packageProductDependencies = (
+				5101A8B82DD09E4F008CF16B /* Alamofire */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -113,6 +116,9 @@
 			);
 			mainGroup = 517AED412DCDEF36005646A1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
 			projectDirPath = "";
@@ -354,6 +360,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5101A8B82DD09E4F008CF16B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 517AED422DCDEF36005646A1 /* Project object */;
 }
