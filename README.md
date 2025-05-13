@@ -46,3 +46,15 @@ Project
 `.swift 파일 + .gitignore 방식`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
 
 `.plist/.xcconfig 파일 + .gitignore 방식`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
+
+## HTTP 통신 허용을 위한 ATS(App Transport Security) 설정
+**특정 도메인 예외 처리 방식 적용**
+
+ATS에 대한 허용 처리는 Information Property List에서 가능한데,
+
+BaseURL을 Local Package에서 관리하고 있었기 때문에
+
+패키지의 소스 코드 파일에 있는 BaseURL 값을 읽어서 Information Property List에 적용 시키기 위해
+
+Run Script를 통해 소스 코드를 읽어 이미 생성된 Information Property List에 예외 처리하는 방법 적용
+
