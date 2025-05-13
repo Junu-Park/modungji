@@ -78,6 +78,7 @@
 				517AED462DCDEF36005646A1 /* Sources */,
 				517AED472DCDEF36005646A1 /* Frameworks */,
 				517AED482DCDEF36005646A1 /* Resources */,
+				519BFE762DD24C2900CDDF38 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -143,6 +144,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		519BFE762DD24C2900CDDF38 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "FILE_PATH=\"${SRCROOT}/EstateAPI/Sources/EstateAPI/EstateAPI.swift\"\nINFO_PLIST=\"${SRCROOT}/Modungji/Info.plist\"\n\n# baseURL 파일이 존재하는지 확인\nif [ -f \"$FILE_PATH\" ]; then\n    # baseURL 추출\n    FULL_URL=$(grep \"baseURL\" \"$FILE_PATH\" | grep -o '\"[^\"]*\"' | sed 's/\"//g')\n    \n    # baseURL에서 도메인만 추출\n    DOMAIN=$(echo \"$FULL_URL\" | sed -E 's|^https?://([^:/]+).*|\\1|')\n    \n    echo \"추출된 도메인: $DOMAIN\"\n    \n    # Info.plist 파일이 존재하는지 확인\n    if [ -f \"$INFO_PLIST\" ]; then\n        echo \"Info.plist를 찾았습니다: $INFO_PLIST\"\n        \n        # NSAppTransportSecurity 딕셔너리가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"NSAppTransportSecurity 딕셔너리를 생성합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity dict\" \"$INFO_PLIST\"\n        fi\n        \n        # NSExceptionDomains 딕셔너리가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"NSExceptionDomains 딕셔너리를 생성합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains dict\" \"$INFO_PLIST\"\n        fi\n        \n        # 도메인에 대한 예외가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"$DOMAIN에 대한 예외를 추가합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN dict\" \"$INFO_PLIST\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN:NSExceptionAllowsInsecureHTTPLoads bool true\" \"$INFO_PLIST\"\n            \n            echo \"$DOMAIN에 대한 HTTP 예외가 Info.plist에 추가되었습니다.\"\n        else\n            echo \"$DOMAIN에 대한 예외가 이미 존재합니다.\"\n        fi\n    else\n        echo \"Info.plist 파일을 찾을 수 없습니다: $INFO_PLIST\"\n    fi\nelse\n    echo \"EstateAPI.swift 파일을 찾을 수 없습니다: $FILE_PATH\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		517AED462DCDEF36005646A1 /* Sources */ = {
