@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5101A8B82DD09E4F008CF16B /* Alamofire */; };
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
+		519BFC912DD1054B00CDDF38 /* EstateAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 519BFC902DD1054B00CDDF38 /* EstateAPI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */,
+				519BFC912DD1054B00CDDF38 /* EstateAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +78,7 @@
 				517AED462DCDEF36005646A1 /* Sources */,
 				517AED472DCDEF36005646A1 /* Frameworks */,
 				517AED482DCDEF36005646A1 /* Resources */,
+				519BFE762DD24C2900CDDF38 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -84,6 +89,8 @@
 			);
 			name = Modungji;
 			packageProductDependencies = (
+				5101A8B82DD09E4F008CF16B /* Alamofire */,
+				519BFC902DD1054B00CDDF38 /* EstateAPI */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -113,6 +120,10 @@
 			);
 			mainGroup = 517AED412DCDEF36005646A1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */,
+				519BFC8F2DD1054B00CDDF38 /* XCLocalSwiftPackageReference "EstateAPI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
 			projectDirPath = "";
@@ -133,6 +144,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		519BFE762DD24C2900CDDF38 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "FILE_PATH=\"${SRCROOT}/EstateAPI/Sources/EstateAPI/EstateAPI.swift\"\nINFO_PLIST=\"${SRCROOT}/Modungji/Info.plist\"\n\n# baseURL 파일이 존재하는지 확인\nif [ -f \"$FILE_PATH\" ]; then\n    # baseURL 추출\n    FULL_URL=$(grep \"baseURL\" \"$FILE_PATH\" | grep -o '\"[^\"]*\"' | sed 's/\"//g')\n    \n    # baseURL에서 도메인만 추출\n    DOMAIN=$(echo \"$FULL_URL\" | sed -E 's|^https?://([^:/]+).*|\\1|')\n    \n    echo \"추출된 도메인: $DOMAIN\"\n    \n    # Info.plist 파일이 존재하는지 확인\n    if [ -f \"$INFO_PLIST\" ]; then\n        echo \"Info.plist를 찾았습니다: $INFO_PLIST\"\n        \n        # NSAppTransportSecurity 딕셔너리가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"NSAppTransportSecurity 딕셔너리를 생성합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity dict\" \"$INFO_PLIST\"\n        fi\n        \n        # NSExceptionDomains 딕셔너리가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"NSExceptionDomains 딕셔너리를 생성합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains dict\" \"$INFO_PLIST\"\n        fi\n        \n        # 도메인에 대한 예외가 존재하는지 확인\n        if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN\" \"$INFO_PLIST\" &>/dev/null; then\n            echo \"$DOMAIN에 대한 예외를 추가합니다.\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN dict\" \"$INFO_PLIST\"\n            /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN:NSExceptionAllowsInsecureHTTPLoads bool true\" \"$INFO_PLIST\"\n            \n            echo \"$DOMAIN에 대한 HTTP 예외가 Info.plist에 추가되었습니다.\"\n        else\n            echo \"$DOMAIN에 대한 예외가 이미 존재합니다.\"\n        fi\n    else\n        echo \"Info.plist 파일을 찾을 수 없습니다: $INFO_PLIST\"\n    fi\nelse\n    echo \"EstateAPI.swift 파일을 찾을 수 없습니다: $FILE_PATH\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		517AED462DCDEF36005646A1 /* Sources */ = {
@@ -274,6 +306,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Modungji/Preview Content\"";
 				DEVELOPMENT_TEAM = 6UR3X5MRY6;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Modungji/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -308,6 +341,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Modungji/Preview Content\"";
 				DEVELOPMENT_TEAM = 6UR3X5MRY6;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Modungji/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -354,6 +388,36 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		519BFC8F2DD1054B00CDDF38 /* XCLocalSwiftPackageReference "EstateAPI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = EstateAPI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5101A8B82DD09E4F008CF16B /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		519BFC902DD1054B00CDDF38 /* EstateAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = EstateAPI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 517AED422DCDEF36005646A1 /* Project object */;
 }
