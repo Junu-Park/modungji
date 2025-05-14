@@ -12,30 +12,28 @@ import Alamofire
 final class NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
-    static func requestEstate<T: Decodable>(requestURL: URLRequestConvertible, successDecodingType: T.Type) async -> Result<T, EstateErrorResponseDTO> {
+    /// 서버에러 -> Result<Failure>, 그 외 코드 에러  -> throw
+    static func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
         
-        return await withCheckedContinuation { continuation in
-            AF.request(requestURL)
-                .responseData { response in
-                    if let statusCode = response.response?.statusCode, let data = response.data {
-                        do {
-                            if (200...299).contains(statusCode) {
-                                let successResponse = try JSONDecoder().decode(T.self, from: data)
-                                continuation.resume(returning: .success(successResponse))
-                            } else {
-                                var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: data)
-                                errorResponse.statusCode = statusCode
-                                continuation.resume(returning: .failure(errorResponse))
-                            }
-                        } catch {
-                            let errorResponse = EstateErrorResponseDTO(message: "DecodingError")
-                            continuation.resume(returning: .failure(errorResponse))
-                        }
-                    } else {
-                        let errorResponse = EstateErrorResponseDTO(message: "UnknownError")
-                        continuation.resume(returning: .failure(errorResponse))
-                    }
-                }
+        let response = await AF.request(requestURL)
+            .serializingData()
+            .response
+        
+        guard let statusCode = response.response?.statusCode else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            if (200...299).contains(statusCode) {
+                let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                return .success(successResponse)
+            } else {
+                var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
+                errorResponse.statusCode = statusCode
+                return .failure(errorResponse)
+            }
+        } catch {
+            throw NetworkError.decodingError
         }
     }
 }
