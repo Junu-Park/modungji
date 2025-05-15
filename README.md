@@ -58,3 +58,7 @@ BaseURL을 Local Package에서 관리하고 있었기 때문에
 
 Run Script를 통해 소스 코드를 읽어 이미 생성된 Information Property List에 예외 처리하는 방법 적용
 
+이 과정에서 추가된 ATS 설정에는 리터럴한 BaseURL 값이 추가되기 때문에 해당 Information Property List 파일을 Git Ingnore 처리
+
+(🚨 이 과정에서 프로젝트를 새로 Clone 받을 경우, Information Property List 파일이 존재하지 않아서 해당 파일을 생성시켜주는 스크립트도 추가해야했는데,
+이렇게 추가된 파일이 경우 Target 설정이 되어 Copy Bundle Resources에 자동 추가되어 오류를 발생시키기 때문에 제거 해주는 작업이 필요)
