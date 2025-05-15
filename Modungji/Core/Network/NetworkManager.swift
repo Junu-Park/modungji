@@ -36,5 +36,32 @@ final class NetworkManager {
             throw NetworkError.decodingError
         }
     }
+    
+    static func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+        
+        let multipartFormData = MultipartFormData()
+        multipartFormData.append(imageData, withName: "profileImage.png")
+        
+        let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL)
+            .serializingData()
+            .response
+        
+        guard let statusCode = response.response?.statusCode else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            if (200...299).contains(statusCode) {
+                let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                return .success(successResponse)
+            } else {
+                var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
+                errorResponse.statusCode = statusCode
+                return .failure(errorResponse)
+            }
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
 }
 
