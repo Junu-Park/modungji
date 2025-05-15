@@ -10,20 +10,20 @@ import Security
 
 final class KeychainManager {
     
-    enum TokenType {
+    enum TokenType: String {
         case accessToken
         case refreshToken
         
         var query: NSMutableDictionary {
             return [
                 kSecClass: kSecClassKey,
-                kSecAttrAccount: self
+                kSecAttrAccount: self.rawValue
             ]
         }
     }
     
     static func saveToken(tokenType: TokenType, token: String) throws {
-        var query = tokenType.query
+        let query = tokenType.query
         
         guard let encodedToken = token.data(using: .utf8) else {
             throw KeychainError.tokenEncodingFailed
@@ -40,7 +40,7 @@ final class KeychainManager {
     }
     
     static func getToken(tokenType: TokenType) throws -> String {
-        var query = tokenType.query
+        let query = tokenType.query
         query[kSecMatchLimit] = kSecMatchLimitOne
         query[kSecReturnData] = kCFBooleanTrue
         
@@ -63,7 +63,7 @@ final class KeychainManager {
     }
     
     static func deleteToken(tokenType: TokenType) throws {
-        var query = tokenType.query
+        let query = tokenType.query
         let status = SecItemDelete(query)
         
         if status != errSecSuccess {
