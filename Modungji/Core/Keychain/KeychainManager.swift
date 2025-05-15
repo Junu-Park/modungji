@@ -17,7 +17,7 @@ final class KeychainManager {
         var query: NSMutableDictionary {
             return [
                 kSecClass: kSecClassKey,
-                kSecAttrAccount: self.rawValue
+                kSecAttrLabel: self.rawValue
             ]
         }
     }
