@@ -22,7 +22,7 @@ final class KeychainManager {
         }
     }
     
-    static func saveToken(tokenType: TokenType, token: String) throws {
+    static func saveToken(tokenType: TokenType, token: String) throws(KeychainError) {
         let query = tokenType.query
         
         guard let encodedToken = token.data(using: .utf8) else {
@@ -39,7 +39,7 @@ final class KeychainManager {
         }
     }
     
-    static func getToken(tokenType: TokenType) throws -> String {
+    static func getToken(tokenType: TokenType) throws(KeychainError) -> String {
         let query = tokenType.query
         query[kSecMatchLimit] = kSecMatchLimitOne
         query[kSecReturnData] = kCFBooleanTrue
@@ -62,7 +62,7 @@ final class KeychainManager {
         return token
     }
     
-    static func deleteToken(tokenType: TokenType) throws {
+    static func deleteToken(tokenType: TokenType) throws(KeychainError) {
         let query = tokenType.query
         let status = SecItemDelete(query)
         
