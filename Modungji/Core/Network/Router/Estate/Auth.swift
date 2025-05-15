@@ -52,7 +52,16 @@ extension EstateRouter {
             
             switch self {
             case .renewToken:
-                headers.add(name: "RefreshToken", value: "")
+                do {
+                    let accessToken = try KeychainManager.getToken(tokenType: .accessToken)
+                    headers.add(name: "Authorization", value: accessToken)
+                    
+                    let refreshToken = try KeychainManager.getToken(tokenType: .refreshToken)
+                    headers.add(name: "RefreshToken", value: refreshToken)
+                } catch {
+                    // TODO: KeychainError 에러처리
+                    print(error)
+                }
             }
             
             return headers
