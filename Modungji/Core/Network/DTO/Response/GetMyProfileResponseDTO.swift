@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// 내 프로필 조회, 내 프로필 수정에서 공통으로 사용하는 DTO
 struct GetMyProfileResponseDTO: Decodable {
     let user_id: String
     let email: String?
