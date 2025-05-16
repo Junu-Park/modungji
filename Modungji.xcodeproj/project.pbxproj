@@ -17,22 +17,9 @@
 		517AED762DCDF0DA005646A1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		5101A8252DD08FD5008CF16B /* Exceptions for "Modungji" folder in "Modungji" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 517AED492DCDEF36005646A1 /* Modungji */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		517AED4C2DCDEF36005646A1 /* Modungji */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				5101A8252DD08FD5008CF16B /* Exceptions for "Modungji" folder in "Modungji" target */,
-			);
 			path = Modungji;
 			sourceTree = "<group>";
 		};
@@ -78,7 +65,6 @@
 				517AED462DCDEF36005646A1 /* Sources */,
 				517AED472DCDEF36005646A1 /* Frameworks */,
 				517AED482DCDEF36005646A1 /* Resources */,
-				519BFE762DD24C2900CDDF38 /* Info.plist ATS Setting Script */,
 			);
 			buildRules = (
 			);
@@ -144,30 +130,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		519BFE762DD24C2900CDDF38 /* Info.plist ATS Setting Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/EstateAPI/Sources/EstateAPI/EstateAPI.swift",
-			);
-			name = "Info.plist ATS Setting Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${SRCROOT}/Modungji/Info.plist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\nFILE_PATH=\"${SRCROOT}/EstateAPI/Sources/EstateAPI/EstateAPI.swift\"\nINFO_PLIST=\"${SRCROOT}/Modungji/Info.plist\"\n\n# Info.plist 파일이 존재하는지 확인\nif [ ! -f \"$INFO_PLIST\" ]; then\n    cat > \"${INFO_PLIST}\" << EOL\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n</dict>\n</plist>\nEOL\nfi\n\n# baseURL 파일이 존재하는지 확인\nif [ -f \"$FILE_PATH\" ]; then\n\n    # baseURL 추출\n    FULL_URL=$(grep \"baseURL\" \"$FILE_PATH\" | grep -o '\"[^\"]*\"' | sed 's/\"//g')\n    \n    # baseURL에서 도메인만 추출\n    DOMAIN=$(echo \"$FULL_URL\" | sed -E 's|^https?://([^:/]+).*|\\1|')\n    \n    # NSAppTransportSecurity 딕셔너리가 없다면, 추가\n    if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity\" \"$INFO_PLIST\" &>/dev/null; then\n        echo \"NSAppTransportSecurity 딕셔너리를 추가\"\n        /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity dict\" \"$INFO_PLIST\"\n    fi\n    \n    # NSExceptionDomains 딕셔너리가 없다면, 추가\n    if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains\" \"$INFO_PLIST\" &>/dev/null; then\n        echo \"NSExceptionDomains 딕셔너리를 추가\"\n        /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains dict\" \"$INFO_PLIST\"\n    fi\n    \n    # 도메인에 대한 예외 딕셔너리가 없다면, 추가\n    if ! /usr/libexec/PlistBuddy -c \"Print :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN\" \"$INFO_PLIST\" &>/dev/null; then\n        echo \"$DOMAIN에 대한 예외를 추가합니다.\"\n        /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN dict\" \"$INFO_PLIST\"\n        /usr/libexec/PlistBuddy -c \"Add :NSAppTransportSecurity:NSExceptionDomains:$DOMAIN:NSExceptionAllowsInsecureHTTPLoads bool true\" \"$INFO_PLIST\"\n    fi\nelse\n    echo \"error: $FILE_PATH 파일이 존재하지 않습니다.\"\n    exit 1    \nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		517AED462DCDEF36005646A1 /* Sources */ = {
