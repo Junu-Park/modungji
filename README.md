@@ -67,3 +67,10 @@ Run Script를 통해 소스 코드를 읽어서 Info.plist에 예외 처리 속�
 ⬇
 
 **전체 도메인 허용 방식**
+
+## 카카오 SDK App Key 관리
+**Local Package 기반 Configuration 파일로 관리**
+
+기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합 관리
+
+Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Configuration 생성해서 관리
