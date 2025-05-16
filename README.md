@@ -48,17 +48,22 @@ Project
 `.plist/.xcconfig 파일 + .gitignore 방식`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
 
 ## HTTP 통신 허용을 위한 ATS(App Transport Security) 설정
-**특정 도메인 예외 처리 방식 적용**
+~~**특정 도메인에 대해서만 허용 방식**~~
 
-ATS에 대한 허용 처리는 Information Property List에서 가능한데,
+ATS에 대한 허용 처리는 Information Property List에서 가능
 
-BaseURL을 Local Package에서 관리하고 있었기 때문에
+특정 도메인 예외 처리를 하려면 도메인이 필요
 
-패키지의 소스 코드 파일에 있는 BaseURL 값을 읽어서 Information Property List에 적용 시키기 위해
+현재 BaseURL을 Local Package에서 관리
 
-Run Script를 통해 소스 코드를 읽어 이미 생성된 Information Property List에 예외 처리하는 방법 적용
+패키지의 소스 코드 파일에 있는 값을 읽어서 Info.plist에 적용 시키기 위해서는
 
-이 과정에서 추가된 ATS 설정에는 리터럴한 BaseURL 값이 추가되기 때문에 해당 Information Property List 파일을 Git Ingnore 처리
+Run Script를 통해 소스 코드를 읽어서 Info.plist에 예외 처리 속성을 추가
 
-(🚨 이 과정에서 프로젝트를 새로 Clone 받을 경우, Information Property List 파일이 존재하지 않아서 해당 파일을 생성시켜주는 스크립트도 추가해야했는데,
-이렇게 추가된 파일은 자동으로 Target 설정이 되면서 Copy Bundle Resources에 자동 추가되기 때문에 오류를 발생시키기 때문에 제거 해주는 작업이 필요)
+🚨이 과정에서 추가된 속성에 도메인이 그대로 노출되기 때문에, Info.plist에 대한 Git Ignore처리와 Run Script 실행 시, Info.plist를 생성하는 방식으로 수정
+
+🚨새로 생성된 Info.plist에 대해서 자동으로 Target과 Copy Bundle Resources으로 추가되며 빌드 시 오류 발생시키기 때문에 해당 설정을 제거 해주는 작업 필요
+
+⬇
+
+**전체 도메인 허용 방식**
