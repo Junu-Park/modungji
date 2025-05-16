@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5101A8B82DD09E4F008CF16B /* Alamofire */; };
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
+		519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 519B08AC2DD726A000CDDF38 /* KakaoSDK */; };
 		519BFC912DD1054B00CDDF38 /* EstateAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 519BFC902DD1054B00CDDF38 /* EstateAPI */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 			files = (
 				5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */,
 				519BFC912DD1054B00CDDF38 /* EstateAPI in Frameworks */,
+				519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +92,7 @@
 			packageProductDependencies = (
 				5101A8B82DD09E4F008CF16B /* Alamofire */,
 				519BFC902DD1054B00CDDF38 /* EstateAPI */,
+				519B08AC2DD726A000CDDF38 /* KakaoSDK */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -122,6 +125,7 @@
 			packageReferences = (
 				5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */,
 				519BFC8F2DD1054B00CDDF38 /* XCLocalSwiftPackageReference "EstateAPI" */,
+				519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
@@ -383,6 +387,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.24.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -390,6 +402,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		519B08AC2DD726A000CDDF38 /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
 		};
 		519BFC902DD1054B00CDDF38 /* EstateAPI */ = {
 			isa = XCSwiftPackageProductDependency;
