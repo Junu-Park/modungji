@@ -9,13 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        VStack(spacing: 20) {
+            Group {
+                KakaoLoginButtonView()
+                
+                AppleLoginButtonView()
+            }
+            .frame(height: 50)
+            .padding(.horizontal, 20)
         }
-        .padding()
     }
 }
 
