@@ -305,6 +305,8 @@
 		};
 		517AED592DCDEF37005646A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 517AED4C2DCDEF36005646A1 /* Modungji */;
+			baseConfigurationReferenceRelativePath = KakaoKey.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -340,6 +342,8 @@
 		};
 		517AED5A2DCDEF37005646A1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 517AED4C2DCDEF36005646A1 /* Modungji */;
+			baseConfigurationReferenceRelativePath = KakaoKey.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
