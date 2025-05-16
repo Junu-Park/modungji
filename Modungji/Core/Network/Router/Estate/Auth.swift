@@ -8,7 +8,7 @@
 import Foundation
 
 import Alamofire
-import EstateAPI
+import ModungjiSecret
 
 extension EstateRouter {
     enum Auth: APIRouter {
@@ -48,7 +48,7 @@ extension EstateRouter {
         
         var headers: HTTPHeaders {
             var headers = HTTPHeaders()
-            headers.add(name: "SeSACKey", value: EstateAPI.apiKey)
+            headers.add(name: "SeSACKey", value: ModungjiSecret.Estate.key)
             
             switch self {
             case .renewToken:

@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-import EstateAPI
 import KakaoSDKAuth
 import KakaoSDKCommon
+import ModungjiSecret
 
 @main
 struct ModungjiApp: App {
     
     init() {
-        KakaoSDK.initSDK(appKey: EstateAPI.kakaoKey)
+        KakaoSDK.initSDK(appKey: ModungjiSecret.Kakao.key)
     }
     
     var body: some Scene {

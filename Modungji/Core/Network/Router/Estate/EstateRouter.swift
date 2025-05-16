@@ -8,8 +8,8 @@
 import Foundation
 
 import Alamofire
-import EstateAPI
+import ModungjiSecret
 
 enum EstateRouter {
-    static let baseURL: String = EstateAPI.baseURL
+    static let baseURL: String = ModungjiSecret.Estate.baseURL
 }
