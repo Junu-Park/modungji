@@ -17,9 +17,22 @@
 		517AED762DCDF0DA005646A1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		519B0A0B2DD72BE400CDDF38 /* Exceptions for "Modungji" folder in "Modungji" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 517AED492DCDEF36005646A1 /* Modungji */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		517AED4C2DCDEF36005646A1 /* Modungji */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				519B0A0B2DD72BE400CDDF38 /* Exceptions for "Modungji" folder in "Modungji" target */,
+			);
 			path = Modungji;
 			sourceTree = "<group>";
 		};
