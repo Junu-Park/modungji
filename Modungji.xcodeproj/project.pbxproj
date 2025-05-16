@@ -79,8 +79,8 @@
 			buildPhases = (
 				517AED462DCDEF36005646A1 /* Sources */,
 				517AED472DCDEF36005646A1 /* Frameworks */,
-				517AED482DCDEF36005646A1 /* Resources */,
 				519B0BFE2DD72FBC00CDDF38 /* Kakao Key Config File Script */,
+				517AED482DCDEF36005646A1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -165,11 +165,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(PROJECT_DIR)/KakaoKey.xcconfig",
+				"$(PROJECT_DIR)/Modungji/KakaoKey.xcconfig",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nESTATE_API_FILE_PATH=\"${SRCROOT}/EstateAPI/Sources/EstateAPI/EstateAPI.swift\"\nKAKAO_KEY_FILE=\"${PROJECT_DIR}/KakaoKey.xcconfig\"\n\n# EstateAPI 파일이 없다면 에러\nif [ ! -f \"$ESTATE_API_FILE_PATH\" ]; then\n    echo \"❌ error: $ESTATE_API_FILE_PATH 파일이 존재하지 않습니다.\"\n    exit 1 \nfi\n\n# kakaoKey 추출\nKEY=$(grep \"kakaoKey\" \"$ESTATE_API_FILE_PATH\" | grep -o '\"[^\"]*\"' | sed 's/\"//g')\n\nif [ -z \"$KEY\" ]; then\n    echo \"❌ error: kakaoKey 값을 추출하지 못했습니다.\"\n    exit 1\nfi\n\n# KakaoKey 파일 체크\nif [ -f \"$KAKAO_KEY_FILE\" ]; then\n    if grep -q \"^KAKAO_KEY\" \"$KAKAO_KEY_FILE\"; then\n        echo \"✅ success: $KAKAO_KEY_FILE 파일이 이미 존재하고 키 값이 포함되어 있습니다.\"\n        exit 0\n    else\n        echo \"KAKAO_KEY = $KEY\" >> \"$KAKAO_KEY_FILE\"\n        echo \"✅ success: $KAKAO_KEY_FILE 파일에 키 값을 추가했습니다.\"\n        exit 0\n    fi\nelse\n    cat <<EOF > \"$KAKAO_KEY_FILE\"\nKAKAO_KEY = $KEY\nEOF\n    echo \"✅ success: $KAKAO_KEY_FILE 파일 생성 후, 키 값을 추가했습니다.\"\n    exit 0\nfi\n";
+			shellScript = "set -e\n\nESTATE_API_FILE_PATH=\"${SRCROOT}/EstateAPI/Sources/EstateAPI/EstateAPI.swift\"\nKAKAO_KEY_FILE=\"${PROJECT_DIR}/Modungji/KakaoKey.xcconfig\"\n\n# EstateAPI 파일이 없다면 에러\nif [ ! -f \"$ESTATE_API_FILE_PATH\" ]; then\n    echo \"❌ error: $ESTATE_API_FILE_PATH 파일이 존재하지 않습니다.\"\n    exit 1 \nfi\n\n# kakaoKey 추출\nKEY=$(grep \"kakaoKey\" \"$ESTATE_API_FILE_PATH\" | grep -o '\"[^\"]*\"' | sed 's/\"//g')\n\nif [ -z \"$KEY\" ]; then\n    echo \"❌ error: kakaoKey 값을 추출하지 못했습니다.\"\n    exit 1\nfi\n\n# KakaoKey 파일 체크\nif [ -f \"$KAKAO_KEY_FILE\" ]; then\n    if grep -q \"^KAKAO_KEY\" \"$KAKAO_KEY_FILE\"; then\n        echo \"✅ success: $KAKAO_KEY_FILE 파일이 이미 존재하고 키 값이 포함되어 있습니다.\"\n        exit 0\n    else\n        echo \"KAKAO_KEY = $KEY\" >> \"$KAKAO_KEY_FILE\"\n        echo \"✅ success: $KAKAO_KEY_FILE 파일에 키 값을 추가했습니다.\"\n        exit 0\n    fi\nelse\n    cat <<EOF > \"$KAKAO_KEY_FILE\"\nKAKAO_KEY = $KEY\nEOF\n    echo \"✅ success: $KAKAO_KEY_FILE 파일 생성 후, 키 값을 추가했습니다.\"\n    exit 0\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
