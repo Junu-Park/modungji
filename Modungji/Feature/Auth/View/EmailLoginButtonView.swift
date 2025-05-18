@@ -10,7 +10,7 @@ import SwiftUI
 struct EmailLoginButtonView: View {
     var body: some View {
         NavigationLink {
-            // TODO: 이메일 로그인 화면으로 전환
+            SignInUpWithEmailView(isSignUp: false)
         } label: {
             RoundedRectangle(cornerRadius: 6)
                 .stroke(.gray100, lineWidth: 1)
