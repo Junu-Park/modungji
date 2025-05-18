@@ -20,17 +20,19 @@ struct ModungjiApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .onOpenURL { url in
-                    if AuthApi.isKakaoTalkLoginUrl(url) {
-                        guard AuthController.handleOpenUrl(url: url) else {
-                            print("유효하지 않은 리다이렉트 URL")
-                            return
+            NavigationStack {
+                SignInView()
+                    .onOpenURL { url in
+                        if AuthApi.isKakaoTalkLoginUrl(url) {
+                            guard AuthController.handleOpenUrl(url: url) else {
+                                print("유효하지 않은 리다이렉트 URL")
+                                return
+                            }
+                        } else {
+                            print("카카오톡이 아닌 다른 곳에서 리다이렉트된 URL")
                         }
-                    } else {
-                        print("카카오톡이 아닌 다른 곳에서 리다이렉트된 URL")
                     }
-                }
+            }
         }
     }
 }
