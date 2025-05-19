@@ -13,7 +13,7 @@ final class NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
     /// 서버에러 -> Result<Failure>, 그 외 코드 에러  -> throw
-    static func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
         
         let response = await AF.request(requestURL)
             .serializingData()
@@ -37,7 +37,7 @@ final class NetworkManager {
         }
     }
     
-    static func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
         
         let multipartFormData = MultipartFormData()
         multipartFormData.append(imageData, withName: "profileImage.png")
