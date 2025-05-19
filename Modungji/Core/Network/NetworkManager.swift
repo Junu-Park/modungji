@@ -26,10 +26,16 @@ final class NetworkManager {
         do {
             if (200...299).contains(statusCode) {
                 let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                
+                NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
+                
                 return .success(successResponse)
             } else {
                 var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
+                
+                NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
+                
                 return .failure(errorResponse)
             }
         } catch {
@@ -53,10 +59,16 @@ final class NetworkManager {
         do {
             if (200...299).contains(statusCode) {
                 let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                
+                NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
+                
                 return .success(successResponse)
             } else {
                 var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
+                
+                NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
+                
                 return .failure(errorResponse)
             }
         } catch {
@@ -65,3 +77,47 @@ final class NetworkManager {
     }
 }
 
+#if DEBUG
+private enum NetworkLog {
+    
+    private static let isPrint = true
+    
+    /// 네트워크 성공시 출력합니다.
+    static func success<T: Decodable>(
+        url: String,
+        statusCode: Int,
+        data: T
+    ) {
+        let message = """
+            [✅ SUCCESS]
+            - endPoint: \(url)
+            - statusCode: \(statusCode)
+            =====================================================
+            """
+        
+        if isPrint {
+            print(message)
+            dump(data)
+        }
+    }
+    
+    /// 네트워크 로그를 출력합니다.
+    static func failure<T: Decodable> (
+        url: String,
+        statusCode: Int,
+        data: T
+    ) {
+        let message = """
+            [❌ FAILURE]
+            - endPoint: \(url)
+            - statusCode: \(statusCode)
+            =====================================================
+            """
+        
+        if isPrint {
+            print(message)
+            dump(data)
+        }
+    }
+}
+#endif
