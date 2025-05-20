@@ -74,3 +74,11 @@ Run Script를 통해 소스 코드를 읽어서 Info.plist에 예외 처리 속�
 기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합 관리
 
 Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Configuration 생성해서 관리
+
+## Token 관리 방식
+**Keychain 저장 방식**
+
+vs UserDefaults vs Realm(서드파티 라이브러리)
+
+## 네트워크 에러 처리 방식
+Result vs Error Throw
