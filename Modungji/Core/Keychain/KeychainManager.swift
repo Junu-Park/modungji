@@ -16,13 +16,13 @@ final class KeychainManager {
         
         var query: NSMutableDictionary {
             return [
-                kSecClass: kSecClassKey,
-                kSecAttrLabel: self.rawValue
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrAccount: self.rawValue
             ]
         }
     }
     
-    static func saveToken(tokenType: TokenType, token: String) throws(KeychainError) {
+    func saveToken(tokenType: TokenType, token: String) throws {
         let query = tokenType.query
         
         guard let encodedToken = token.data(using: .utf8) else {
@@ -39,7 +39,7 @@ final class KeychainManager {
         }
     }
     
-    static func getToken(tokenType: TokenType) throws(KeychainError) -> String {
+    func getToken(tokenType: TokenType) throws(KeychainError) -> String {
         let query = tokenType.query
         query[kSecMatchLimit] = kSecMatchLimitOne
         query[kSecReturnData] = kCFBooleanTrue
@@ -62,7 +62,7 @@ final class KeychainManager {
         return token
     }
     
-    static func deleteToken(tokenType: TokenType) throws(KeychainError) {
+    func deleteToken(tokenType: TokenType) throws(KeychainError) {
         let query = tokenType.query
         let status = SecItemDelete(query)
         

@@ -13,7 +13,7 @@ final class NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
     /// 서버에러 -> Result<Failure>, 그 외 코드 에러  -> throw
-    static func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
         
         let response = await AF.request(requestURL)
             .serializingData()
@@ -26,10 +26,16 @@ final class NetworkManager {
         do {
             if (200...299).contains(statusCode) {
                 let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                
+                NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
+                
                 return .success(successResponse)
             } else {
                 var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
+                
+                NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
+                
                 return .failure(errorResponse)
             }
         } catch {
@@ -37,7 +43,7 @@ final class NetworkManager {
         }
     }
     
-    static func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
         
         let multipartFormData = MultipartFormData()
         multipartFormData.append(imageData, withName: "profileImage.png")
@@ -53,10 +59,16 @@ final class NetworkManager {
         do {
             if (200...299).contains(statusCode) {
                 let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                
+                NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
+                
                 return .success(successResponse)
             } else {
                 var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
+                
+                NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
+                
                 return .failure(errorResponse)
             }
         } catch {
@@ -65,3 +77,47 @@ final class NetworkManager {
     }
 }
 
+#if DEBUG
+private enum NetworkLog {
+    
+    private static let isPrint = true
+    
+    /// 네트워크 성공시 출력합니다.
+    static func success<T: Decodable>(
+        url: String,
+        statusCode: Int,
+        data: T
+    ) {
+        let message = """
+            [✅ SUCCESS]
+            - endPoint: \(url)
+            - statusCode: \(statusCode)
+            =====================================================
+            """
+        
+        if isPrint {
+            print(message)
+            dump(data)
+        }
+    }
+    
+    /// 네트워크 로그를 출력합니다.
+    static func failure<T: Decodable> (
+        url: String,
+        statusCode: Int,
+        data: T
+    ) {
+        let message = """
+            [❌ FAILURE]
+            - endPoint: \(url)
+            - statusCode: \(statusCode)
+            =====================================================
+            """
+        
+        if isPrint {
+            print(message)
+            dump(data)
+        }
+    }
+}
+#endif

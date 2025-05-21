@@ -52,11 +52,12 @@ extension EstateRouter {
             
             switch self {
             case .renewToken:
+                let keychainManager = KeychainManager()
                 do {
-                    let accessToken = try KeychainManager.getToken(tokenType: .accessToken)
+                    let accessToken = try keychainManager.getToken(tokenType: .accessToken)
                     headers.add(name: "Authorization", value: accessToken)
                     
-                    let refreshToken = try KeychainManager.getToken(tokenType: .refreshToken)
+                    let refreshToken = try keychainManager.getToken(tokenType: .refreshToken)
                     headers.add(name: "RefreshToken", value: refreshToken)
                 } catch {
                     // TODO: KeychainError 에러처리
