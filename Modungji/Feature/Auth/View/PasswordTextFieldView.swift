@@ -31,6 +31,7 @@ struct PasswordTextFieldView: View {
             
             self.secureButtonView()
         }
+        .keyboardType(.alphabet)
     }
     
     private func secureButtonView() -> some View {
