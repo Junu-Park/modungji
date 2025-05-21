@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SignInView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
+    
     var body: some View {
         VStack(spacing: 20) {
             Group {
@@ -18,9 +20,14 @@ struct SignInView: View {
                 EmailLoginButtonView()
             }
             .frame(height: 50)
-            .padding(.horizontal, 20)
             
             EmailSignUpButtonView()
+        }
+        .padding(20)
+        .alert("에러", isPresented: self.$viewModel.state.showErrorAlert) {
+            Button("확인", role: .cancel) { }
+        } message: {
+            Text(self.viewModel.state.errorMessage)
         }
     }
 }
