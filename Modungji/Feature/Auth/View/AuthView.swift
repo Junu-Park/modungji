@@ -55,7 +55,7 @@ extension AuthView {
     
     var emailLoginButton: some View {
         NavigationLink {
-            SignInUpWithEmailView(isSignUp: false)
+            AuthWithEmailView(isSignUp: false)
         } label: {
             RoundedRectangle(cornerRadius: 6)
                 .stroke(.gray100, lineWidth: 1)
@@ -70,7 +70,7 @@ extension AuthView {
     
     var emailSignUpButton: some View {
         NavigationLink {
-            SignInUpWithEmailView(isSignUp: true)
+            AuthWithEmailView(isSignUp: true)
         } label: {
             Text("이메일로 회원가입")
                 .bold()

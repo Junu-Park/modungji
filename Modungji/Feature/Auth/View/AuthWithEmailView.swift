@@ -1,5 +1,5 @@
 //
-//  SignInUpWithEmailView.swift
+//  AuthWithEmailView.swift
 //  Modungji
 //
 //  Created by 박준우 on 5/18/25.
@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-struct SignInUpWithEmailView: View {
+// MARK: - AuthWithEmailView
+struct AuthWithEmailView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     
     private let isSignUp: Bool
