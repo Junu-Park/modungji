@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-final class AuthWithEmailViewModel {
+final class AuthWithEmailViewModel: ObservableObject {
     struct Input {
         var email: String = ""
         var nickname: String = ""
