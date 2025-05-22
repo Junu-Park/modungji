@@ -125,15 +125,6 @@ extension AuthWithEmailView {
                     Text(self.isSignUp ? "이메일로 회원가입" : "이메일로 로그인")
                 }
         }
-        // TODO: ViewModel로 빼야하나?
-        .disabled(
-            {
-                if self.isSignUp {
-                    return !(self.viewModel.state.isValidatePassword && self.viewModel.state.isMatchPasswordCheck && self.viewModel.state.validateEmailResponseEntity.isValid && !self.viewModel.input.nickname.isEmpty)
-                } else {
-                    return self.viewModel.input.email.isEmpty || self.viewModel.input.password.isEmpty
-                }
-            }()
-        )
+        .disabled(!self.viewModel.state.canConfirmAuthWithEmail)
     }
 }

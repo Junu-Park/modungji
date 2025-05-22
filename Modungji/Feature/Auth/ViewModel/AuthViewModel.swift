@@ -17,6 +17,7 @@ final class AuthViewModel: ObservableObject {
         var loginResponseEntity: LoginResponseEntity = LoginResponseEntity(user_id: "", email: "", nick: "", profileImage: nil, accessToken: "", refreshToken: "")
         var isValidatePassword: Bool = false
         var isMatchPasswordCheck: Bool = false
+        var canConfirmAuthWithEmail: Bool = false
     }
     
     struct Input {
@@ -59,7 +60,10 @@ final class AuthViewModel: ObservableObject {
                         .eraseToAnyPublisher()
                 }
                 
-                return Future { promise in
+                return Future { [weak self] promise in
+                    guard let self else {
+                        return
+                    }
                     Task {
                         do {
                             let result = try await self.service.checkEmailValidation(email)
@@ -72,7 +76,11 @@ final class AuthViewModel: ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .eraseToAnyPublisher()
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self else {
+                    return Just(ValidateEmailResponseEntity(isValid: false, message: "")).eraseToAnyPublisher()
+                }
+                
                 self.state.errorMessage = "잠시 후, 다시 시도해주세요."
                 self.state.showErrorAlert = true
                 
@@ -87,7 +95,6 @@ final class AuthViewModel: ObservableObject {
             .store(in: &self.cancellables)
         
         Publishers.CombineLatest(self.$input.map(\.password), self.$input.map(\.passwordCheck))
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates { previous, current in
                 previous.0 == current.0 && previous.1 == current.1
             }
@@ -97,6 +104,39 @@ final class AuthViewModel: ObservableObject {
                 }
                 self.state.isValidatePassword = self.service.checkPasswordValidation(password: pw)
                 self.state.isMatchPasswordCheck = self.service.checkPasswordCheckMatch(password: pw, passwordCheck: pwc)
+            }
+            .store(in: &self.cancellables)
+        
+        let signUpButtonState = Publishers.CombineLatest4(
+            self.$state.map(\.isValidatePassword),
+            self.$state.map(\.isMatchPasswordCheck),
+            self.$input.map(\.nickname),
+            self.$state.map(\.validateEmailResponseEntity.isValid))
+            .debounce(for: .milliseconds(400), scheduler: RunLoop.main)
+            .map { (pw, pwc, nick, email) in
+                return pw && pwc && !nick.isEmpty && email
+            }
+        
+        let loginButtonState = Publishers.CombineLatest(
+            self.$input.map(\.email),
+            self.$input.map(\.password))
+            .map { (email, pw) in
+                return !email.isEmpty && !pw.isEmpty
+            }
+        
+        Publishers.CombineLatest(signUpButtonState, loginButtonState)
+            .map { [weak self] signUpButtonState, loginButtonState in
+                guard let self else {
+                    return false
+                }
+                
+                return self.input.isSignUp ? signUpButtonState : loginButtonState
+            }
+            .sink { [weak self] state in
+                guard let self else {
+                    return
+                }
+                self.state.canConfirmAuthWithEmail = state
             }
             .store(in: &self.cancellables)
     }
