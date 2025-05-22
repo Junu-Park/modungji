@@ -48,7 +48,13 @@ final class AuthViewModel: ObservableObject {
     
     private func transform() {
         Publishers.CombineLatest(self.$input.map(\.email), self.$input.map(\.isSignUp))
-            .filter { email, isSignUp in
+            .filter { [weak self] email, isSignUp in
+                guard let self else {
+                    return false
+                }
+                if isSignUp {
+                    self.state.canConfirmAuthWithEmail = false
+                }
                 return isSignUp
             }
             .map(\.0)
