@@ -46,7 +46,7 @@ struct AuthWithEmailView: View {
                     .padding([.top, .leading], 8)
             }
 
-            PasswordTextFieldView(password: self.$viewModel.input.password, isPasswordCheck: false)
+            PasswordTextFieldView(isPasswordCheck: false)
                 .padding(8)
                 .frame(height: 50)
                 .background(alignment: .bottom) {
@@ -60,7 +60,7 @@ struct AuthWithEmailView: View {
             }
                 
             if self.isSignUp {
-                PasswordTextFieldView(password: self.$viewModel.input.passwordCheck, isPasswordCheck: true)
+                PasswordTextFieldView(isPasswordCheck: true)
                     .padding(8)
                     .frame(height: 50)
                     .background(alignment: .bottom) {

@@ -7,34 +7,41 @@
 
 import SwiftUI
 
+// MARK: - PasswordTextFieldView
 struct PasswordTextFieldView: View {
+    @EnvironmentObject var viewModel: AuthViewModel
     @State private var isSecure: Bool = true
-    @Binding var password: String
     
-    private let placeholder: String
+    private let isPasswordCheck: Bool
+    
+    private var placeholder: String {
+        return self.isPasswordCheck ? "비밀번호 확인" : "비밀번호"
+    }
     private var secureImage: String {
         return self.isSecure ? "eye.slash" : "eye"
     }
     
-    init(password: Binding<String>, isPasswordCheck: Bool = false) {
-        self._password = password
-        self.placeholder = isPasswordCheck ? "비밀번호 확인" : "비밀번호"
+    init(isPasswordCheck: Bool = false) {
+        self.isPasswordCheck = isPasswordCheck
     }
     
     var body: some View {
         HStack(spacing: 4) {
             if self.isSecure {
-                SecureField(self.placeholder, text: self.$password)
+                SecureField(self.placeholder, text: isPasswordCheck ? self.$viewModel.input.passwordCheck : self.$viewModel.input.password)
             } else {
-                TextField(self.placeholder, text: self.$password)
+                TextField(self.placeholder, text: isPasswordCheck ? self.$viewModel.input.passwordCheck : self.$viewModel.input.password)
             }
             
-            self.secureButtonView()
+            self.secureButton
         }
         .keyboardType(.alphabet)
     }
-    
-    private func secureButtonView() -> some View {
+}
+
+// MARK: - PasswordTextFieldView Component
+extension PasswordTextFieldView {
+    var secureButton: some View {
         Button {
             self.isSecure.toggle()
         } label: {
