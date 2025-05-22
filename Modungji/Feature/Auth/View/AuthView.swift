@@ -1,5 +1,5 @@
 //
-//  SignInView.swift
+//  AuthView.swift
 //  Modungji
 //
 //  Created by 박준우 on 5/18/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SignInView: View {
+struct AuthView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     
     var body: some View {
@@ -33,5 +33,5 @@ struct SignInView: View {
 }
 
 #Preview {
-    SignInView()
+    AuthView()
 }

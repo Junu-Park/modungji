@@ -29,7 +29,7 @@ struct ModungjiApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                SignInView()
+                AuthView()
                     .onOpenURL { url in
                         if AuthApi.isKakaoTalkLoginUrl(url) {
                             guard AuthController.handleOpenUrl(url: url) else {
