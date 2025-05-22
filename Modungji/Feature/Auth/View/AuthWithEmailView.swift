@@ -19,62 +19,21 @@ struct AuthWithEmailView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField("이메일", text: self.$viewModel.input.email)
-                .padding(8)
-                .frame(height: 50)
-                .background(alignment: .bottom) {
-                    Rectangle().foregroundStyle(.gray100).frame(height: 1)
-                }
+            emailInputView()
             
             if self.isSignUp {
-                Text(self.viewModel.state.validateEmailResponseEntity.message)
-                    .foregroundStyle(self.viewModel.state.validateEmailResponseEntity.isValid ? .blue : .red)
-                    .font(PDFont.caption1)
-                    .padding([.top, .leading], 8)
-            }
-            
-            if self.isSignUp {
-                TextField("닉네임", text: self.$viewModel.input.nickname)
-                    .padding(8)
-                    .frame(height: 50)
-                    .background(alignment: .bottom) {
-                        Rectangle().foregroundStyle(.gray100).frame(height: 1)
-                    }
-                Text("닉네임을 입력해주세요.")
-                    .foregroundStyle(self.viewModel.input.nickname.isEmpty ? .red : .blue)
-                    .font(PDFont.caption1)
-                    .padding([.top, .leading], 8)
+                nicknameInputView
             }
 
-            PasswordTextFieldView(isPasswordCheck: false)
-                .padding(8)
-                .frame(height: 50)
-                .background(alignment: .bottom) {
-                    Rectangle().foregroundStyle(.gray100).frame(height: 1)
-                }
-            if self.isSignUp {
-                Text("최소 8자 이상이며, 영문자, 숫자, 특수문자(@$!%*#?&)를 각각 1개 이상 포함")
-                    .foregroundStyle(self.viewModel.state.isValidatePassword ? .blue : .red)
-                    .font(PDFont.caption1)
-                    .padding([.top, .leading], 8)
-            }
+            passwordInputView()
                 
             if self.isSignUp {
-                PasswordTextFieldView(isPasswordCheck: true)
-                    .padding(8)
-                    .frame(height: 50)
-                    .background(alignment: .bottom) {
-                        Rectangle().foregroundStyle(.gray100).frame(height: 1)
-                    }
-                Text("동일한 비밀번호를 입력해주세요.")
-                    .foregroundStyle(self.viewModel.state.isMatchPasswordCheck ? .blue : .red)
-                    .font(PDFont.caption1)
-                    .padding([.top, .leading], 8)
+                passwordCheckInputView
             }
             
             Spacer()
             
-            self.signUpWithEmailButtonView()
+            self.confirmButtonView()
         }
         .tint(.gray100)
         .font(PDFont.body2)
@@ -86,8 +45,72 @@ struct AuthWithEmailView: View {
             self.viewModel.action(.resetInput)
         }
     }
+}
+
+// MARK: - AuthWithEmailView Component
+extension AuthWithEmailView {
+    @ViewBuilder
+    func emailInputView() -> some View {
+        TextField("이메일", text: self.$viewModel.input.email)
+            .padding(8)
+            .frame(height: 50)
+            .background(alignment: .bottom) {
+                Rectangle().foregroundStyle(.gray100).frame(height: 1)
+            }
+        
+        if self.isSignUp {
+            Text(self.viewModel.state.validateEmailResponseEntity.message)
+                .foregroundStyle(self.viewModel.state.validateEmailResponseEntity.isValid ? .blue : .red)
+                .font(PDFont.caption1)
+                .padding([.top, .leading], 8)
+        }
+    }
     
-    private func signUpWithEmailButtonView() -> some View {
+    @ViewBuilder
+    var nicknameInputView: some View {
+        TextField("닉네임", text: self.$viewModel.input.nickname)
+            .padding(8)
+            .frame(height: 50)
+            .background(alignment: .bottom) {
+                Rectangle().foregroundStyle(.gray100).frame(height: 1)
+            }
+        Text("닉네임을 입력해주세요.")
+            .foregroundStyle(self.viewModel.input.nickname.isEmpty ? .red : .blue)
+            .font(PDFont.caption1)
+            .padding([.top, .leading], 8)
+    }
+    
+    @ViewBuilder
+    func passwordInputView() -> some View {
+        PasswordTextFieldView(isPasswordCheck: false)
+            .padding(8)
+            .frame(height: 50)
+            .background(alignment: .bottom) {
+                Rectangle().foregroundStyle(.gray100).frame(height: 1)
+            }
+        if self.isSignUp {
+            Text("최소 8자 이상이며, 영문자, 숫자, 특수문자(@$!%*#?&)를 각각 1개 이상 포함")
+                .foregroundStyle(self.viewModel.state.isValidatePassword ? .blue : .red)
+                .font(PDFont.caption1)
+                .padding([.top, .leading], 8)
+        }
+    }
+    
+    @ViewBuilder
+    var passwordCheckInputView: some View {
+        PasswordTextFieldView(isPasswordCheck: true)
+            .padding(8)
+            .frame(height: 50)
+            .background(alignment: .bottom) {
+                Rectangle().foregroundStyle(.gray100).frame(height: 1)
+            }
+        Text("동일한 비밀번호를 입력해주세요.")
+            .foregroundStyle(self.viewModel.state.isMatchPasswordCheck ? .blue : .red)
+            .font(PDFont.caption1)
+            .padding([.top, .leading], 8)
+    }
+    
+    func confirmButtonView() -> some View {
         Button {
             if isSignUp {
                 viewModel.action(.signUpWithEmail)
