@@ -14,6 +14,7 @@ import ModungjiSecret
 @main
 struct ModungjiApp: App {
     @StateObject private var authViewModel: AuthViewModel
+    @StateObject private var authWithEmailViewModel: AuthWithEmailViewModel
     
     init() {
         KakaoSDK.initSDK(appKey: ModungjiSecret.Kakao.key)
@@ -24,6 +25,7 @@ struct ModungjiApp: App {
         )
         
         self._authViewModel = StateObject(wrappedValue: AuthViewModel(service: authService))
+        self._authWithEmailViewModel = StateObject(wrappedValue: AuthWithEmailViewModel(service: authService))
     }
     
     var body: some Scene {
@@ -41,7 +43,8 @@ struct ModungjiApp: App {
                         }
                     }
             }
-            .environmentObject(authViewModel)
+            .environmentObject(self.authViewModel)
+            .environmentObject(self.authWithEmailViewModel)
         }
     }
 }
