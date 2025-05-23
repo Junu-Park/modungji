@@ -181,7 +181,9 @@ final class AuthWithEmailViewModel: ObservableObject {
                 
                 let response = try await self.service.loginWithEmail(request: request)
                 
-                self.state.loginData = response
+                await MainActor.run {
+                    self.state.loginData = response
+                }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
                     self.state.alertMessage = error.message
