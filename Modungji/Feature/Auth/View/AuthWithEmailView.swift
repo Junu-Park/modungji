@@ -10,24 +10,23 @@ import SwiftUI
 // MARK: - AuthWithEmailView
 struct AuthWithEmailView: View {
     @EnvironmentObject var viewModel: AuthViewModel
+    private let authType: AuthWithEmailType
     
-    private let isSignUp: Bool
-    
-    init(isSignUp: Bool) {
-        self.isSignUp = isSignUp
+    init(authType: AuthWithEmailType) {
+        self.authType = authType
     }
     
     var body: some View {
         VStack(alignment: .leading) {
             self.emailInputView()
             
-            if self.isSignUp {
+            if self.viewModel.state.authType == .signUp {
                 self.nicknameInputView
             }
 
             self.passwordInputView()
                 
-            if self.isSignUp {
+            if self.viewModel.state.authType == .signUp {
                 self.passwordCheckInputView
             }
             
@@ -58,7 +57,7 @@ extension AuthWithEmailView {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         
-        if self.isSignUp {
+        if self.viewModel.state.authType == .signUp {
             Text(self.viewModel.state.validateEmailResponseEntity.message)
                 .foregroundStyle(self.viewModel.state.validateEmailResponseEntity.isValid ? .blue : .red)
                 .font(PDFont.caption1)
@@ -88,7 +87,7 @@ extension AuthWithEmailView {
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
-        if self.isSignUp {
+        if self.viewModel.state.authType == .signUp {
             Text("최소 8자 이상이며, 영문자, 숫자, 특수문자(@$!%*#?&)를 각각 1개 이상 포함")
                 .foregroundStyle(self.viewModel.state.isValidatePassword ? .blue : .red)
                 .font(PDFont.caption1)
@@ -112,7 +111,7 @@ extension AuthWithEmailView {
     
     func confirmButtonView() -> some View {
         Button {
-            if isSignUp {
+            if self.viewModel.state.authType == .signUp {
                 viewModel.action(.signUpWithEmail)
             } else {
                 viewModel.action(.loginWithEmail)
