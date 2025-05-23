@@ -13,7 +13,7 @@ final class AuthViewModel: ObservableObject {
     struct State {
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
-        var loginResponseEntity: LoginResponseEntity = LoginResponseEntity(user_id: "", email: "", nick: "", profileImage: nil, accessToken: "", refreshToken: "")
+        var loginData: LoginResponseEntity?
     }
     
     enum Action {
@@ -44,7 +44,7 @@ final class AuthViewModel: ObservableObject {
             do {
                 let result = try await self.service.authWithApple(result: result)
                 await MainActor.run {
-                    self.state.loginResponseEntity = result
+                    self.state.loginData = result
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
@@ -60,7 +60,7 @@ final class AuthViewModel: ObservableObject {
             do {
                 let result = try await self.service.authWithKakao()
                 
-                self.state.loginResponseEntity = result
+                self.state.loginData = result
                 
             } catch let error as EstateErrorResponseEntity {
                 self.state.errorMessage = error.message
