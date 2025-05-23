@@ -10,6 +10,8 @@ import SwiftUI
 // MARK: - AuthWithEmailView
 struct AuthWithEmailView: View {
     @EnvironmentObject var viewModel: AuthWithEmailViewModel
+    @Environment(\.dismiss) var dismiss
+    
     private let authType: AuthWithEmailType
     
     init(authType: AuthWithEmailType) {
@@ -128,6 +130,13 @@ extension AuthWithEmailView {
                 }
         }
         .disabled(!self.viewModel.state.canAuth)
+        .customOnChange(value: self.viewModel.state.loginData) { loginData in
+            if loginData != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.dismiss()
+                }
+            }
+        }
     }
 }
 

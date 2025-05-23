@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LoginResponseEntity {
+struct LoginResponseEntity: Equatable {
     let user_id: String
     let email: String
     let nick: String
