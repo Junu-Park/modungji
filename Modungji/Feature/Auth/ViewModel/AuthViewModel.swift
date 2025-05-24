@@ -13,7 +13,6 @@ final class AuthViewModel: ObservableObject {
     struct State {
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
-        var loginData: LoginResponseEntity?
     }
     
     enum Action {
@@ -24,9 +23,11 @@ final class AuthViewModel: ObservableObject {
     @Published var state: State = State()
     private var cancellables: Set<AnyCancellable> = []
     private let service: AuthService
+    private let authState: AuthState
     
-    init(service: AuthService) {
+    init(service: AuthService, authState: AuthState) {
         self.service = service
+        self.authState = authState
     }
     
     func action(_ action: Action) {
@@ -44,7 +45,7 @@ final class AuthViewModel: ObservableObject {
             do {
                 let result = try await self.service.authWithApple(result: result)
                 await MainActor.run {
-                    self.state.loginData = result
+                    self.authState.login(accessToken: result.accessToken, refreshToken: result.refreshToken)
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
@@ -60,8 +61,7 @@ final class AuthViewModel: ObservableObject {
             do {
                 let result = try await self.service.authWithKakao()
                 
-                self.state.loginData = result
-                
+                self.authState.login(accessToken: result.accessToken, refreshToken: result.refreshToken)
             } catch let error as EstateErrorResponseEntity {
                 self.state.errorMessage = error.message
                 self.state.showErrorAlert = true

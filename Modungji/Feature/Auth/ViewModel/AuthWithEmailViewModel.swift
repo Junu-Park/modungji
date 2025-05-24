@@ -24,7 +24,6 @@ final class AuthWithEmailViewModel: ObservableObject {
         var isMatchPassword: Bool = false
         var canAuth: Bool = false
         var authType: AuthWithEmailType = .login
-        var loginData: LoginResponseEntity?
         var showAlert: Bool = false
         var alertMessage: String = ""
     }
@@ -39,10 +38,12 @@ final class AuthWithEmailViewModel: ObservableObject {
     @Published var state: State = .init()
     @Published var input: Input = .init()
     private var cancellables: Set<AnyCancellable> = .init()
-    private var service: AuthService
+    private let service: AuthService
+    private let authState: AuthState
     
-    init(service: AuthService) {
+    init(service: AuthService, authState: AuthState) {
         self.service = service
+        self.authState = authState
         self.transform()
     }
     
@@ -182,7 +183,7 @@ final class AuthWithEmailViewModel: ObservableObject {
                 let response = try await self.service.loginWithEmail(request: request)
                 
                 await MainActor.run {
-                    self.state.loginData = response
+                    self.authState.login(accessToken: response.accessToken, refreshToken: response.refreshToken)
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
@@ -200,8 +201,9 @@ final class AuthWithEmailViewModel: ObservableObject {
                 
                 let response = try await self.service.signUpWithEmail(request: request)
                 
-                self.state.loginData = response
-                
+                await MainActor.run {
+                    self.authState.login(accessToken: response.accessToken, refreshToken: response.refreshToken)
+                }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
                     self.state.alertMessage = error.message
