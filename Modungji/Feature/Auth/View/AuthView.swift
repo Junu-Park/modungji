@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - AuthView
 struct AuthView: View {
-    @EnvironmentObject var viewModel: AuthViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         VStack(spacing: 20) {
@@ -26,10 +26,10 @@ struct AuthView: View {
             self.emailSignUpButton
         }
         .padding(20)
-        .alert("에러", isPresented: self.$viewModel.state.showErrorAlert) {
+        .alert("에러", isPresented: self.$authViewModel.state.showErrorAlert) {
             Button("확인", role: .cancel) { }
         } message: {
-            Text(self.viewModel.state.errorMessage)
+            Text(self.authViewModel.state.errorMessage)
         }
     }
 }
@@ -38,7 +38,7 @@ struct AuthView: View {
 extension AuthView {
     var kakaoLoginButton: some View {
         Button {
-            self.viewModel.action(.authWithKakao)
+            self.authViewModel.action(.authWithKakao)
         } label: {
             Image(.kakaoLoginButton)
                 .resizable()
@@ -49,7 +49,7 @@ extension AuthView {
         SignInWithAppleButton(.signIn) { request in
             request.requestedScopes = [.email, .fullName]
         } onCompletion: { result in
-            self.viewModel.action(.authWithApple(result: result))
+            self.authViewModel.action(.authWithApple(result: result))
         }
     }
     
@@ -78,8 +78,4 @@ extension AuthView {
                 .foregroundStyle(.gray100)
         }
     }
-}
-
-#Preview {
-    AuthView()
 }
