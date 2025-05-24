@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - AuthWithEmailView
 struct AuthWithEmailView: View {
-    @EnvironmentObject var viewModel: AuthWithEmailViewModel
+    @EnvironmentObject var authWithEmailViewModel: AuthWithEmailViewModel
     @Environment(\.dismiss) var dismiss
     
     private let authType: AuthWithEmailType
@@ -22,13 +22,13 @@ struct AuthWithEmailView: View {
         VStack(alignment: .leading) {
             self.emailInputView()
             
-            if self.viewModel.state.authType == .signUp {
+            if self.authWithEmailViewModel.state.authType == .signUp {
                 self.nicknameInputView
             }
 
             self.passwordInputView()
                 
-            if self.viewModel.state.authType == .signUp {
+            if self.authWithEmailViewModel.state.authType == .signUp {
                 self.passwordCheckInputView
             }
             
@@ -40,12 +40,12 @@ struct AuthWithEmailView: View {
         .font(PDFont.body2)
         .padding(20)
         .onAppear {
-            self.viewModel.action(.changeAuthType(self.authType))
+            self.authWithEmailViewModel.action(.changeAuthType(self.authType))
         }
         .onDisappear {
-            self.viewModel.action(.reset)
+            self.authWithEmailViewModel.action(.reset)
         }
-        .alert(self.viewModel.state.alertMessage, isPresented: self.$viewModel.state.showAlert) {
+        .alert(self.authWithEmailViewModel.state.alertMessage, isPresented: self.$authWithEmailViewModel.state.showAlert) {
             Button("닫기") { }
         }
     }
@@ -55,16 +55,16 @@ struct AuthWithEmailView: View {
 extension AuthWithEmailView {
     @ViewBuilder
     func emailInputView() -> some View {
-        TextField("이메일", text: self.$viewModel.input.email)
+        TextField("이메일", text: self.$authWithEmailViewModel.input.email)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         
-        if self.viewModel.state.authType == .signUp {
-            Text(self.viewModel.state.emailValidationMessage)
-                .foregroundStyle(self.viewModel.state.isEmailValid ? .blue : .red)
+        if self.authWithEmailViewModel.state.authType == .signUp {
+            Text(self.authWithEmailViewModel.state.emailValidationMessage)
+                .foregroundStyle(self.authWithEmailViewModel.state.isEmailValid ? .blue : .red)
                 .font(PDFont.caption1)
                 .padding([.top, .leading], 8)
         }
@@ -72,14 +72,14 @@ extension AuthWithEmailView {
     
     @ViewBuilder
     var nicknameInputView: some View {
-        TextField("닉네임", text: self.$viewModel.input.nickname)
+        TextField("닉네임", text: self.$authWithEmailViewModel.input.nickname)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         Text("닉네임을 입력해주세요.")
-            .foregroundStyle(self.viewModel.state.isNicknameValid ? .blue : .red)
+            .foregroundStyle(self.authWithEmailViewModel.state.isNicknameValid ? .blue : .red)
             .font(PDFont.caption1)
             .padding([.top, .leading], 8)
     }
@@ -92,9 +92,9 @@ extension AuthWithEmailView {
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
-        if self.viewModel.state.authType == .signUp {
+        if self.authWithEmailViewModel.state.authType == .signUp {
             Text("최소 8자 이상이며, 영문자, 숫자, 특수문자(@$!%*#?&)를 각각 1개 이상 포함")
-                .foregroundStyle(self.viewModel.state.isPasswordValid ? .blue : .red)
+                .foregroundStyle(self.authWithEmailViewModel.state.isPasswordValid ? .blue : .red)
                 .font(PDFont.caption1)
                 .padding([.top, .leading], 8)
         }
@@ -109,40 +109,33 @@ extension AuthWithEmailView {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         Text("동일한 비밀번호를 입력해주세요.")
-            .foregroundStyle(self.viewModel.state.isMatchPassword ? .blue : .red)
+            .foregroundStyle(self.authWithEmailViewModel.state.isMatchPassword ? .blue : .red)
             .font(PDFont.caption1)
             .padding([.top, .leading], 8)
     }
     
     func confirmButtonView() -> some View {
         Button {
-            if self.viewModel.state.authType == .signUp {
-                viewModel.action(.signUp)
+            if self.authWithEmailViewModel.state.authType == .signUp {
+                authWithEmailViewModel.action(.signUp)
             } else {
-                viewModel.action(.login)
+                authWithEmailViewModel.action(.login)
             }
         } label: {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(lineWidth: 1)
                 .frame(height: 50)
                 .overlay {
-                    Text(self.viewModel.state.authType == .signUp ? "이메일로 회원가입" : "이메일로 로그인")
+                    Text(self.authWithEmailViewModel.state.authType == .signUp ? "이메일로 회원가입" : "이메일로 로그인")
                 }
         }
-        .disabled(!self.viewModel.state.canAuth)
-        .customOnChange(value: self.viewModel.state.loginData) { loginData in
-            if loginData != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.dismiss()
-                }
-            }
-        }
+        .disabled(!self.authWithEmailViewModel.state.canAuth)
     }
 }
 
 // MARK: - PasswordTextFieldView
 private struct PasswordTextFieldView: View {
-    @EnvironmentObject var viewModel: AuthWithEmailViewModel
+    @EnvironmentObject var authWithEmailViewModel: AuthWithEmailViewModel
     @State private var isSecure: Bool = true
     
     private let isPasswordCheck: Bool
@@ -160,9 +153,9 @@ private struct PasswordTextFieldView: View {
     var body: some View {
         HStack(spacing: 4) {
             if self.isSecure {
-                SecureField(self.placeholder, text: isPasswordCheck ? self.$viewModel.input.passwordCheck : self.$viewModel.input.password)
+                SecureField(self.placeholder, text: isPasswordCheck ? self.$authWithEmailViewModel.input.passwordCheck : self.$authWithEmailViewModel.input.password)
             } else {
-                TextField(self.placeholder, text: isPasswordCheck ? self.$viewModel.input.passwordCheck : self.$viewModel.input.password)
+                TextField(self.placeholder, text: isPasswordCheck ? self.$authWithEmailViewModel.input.passwordCheck : self.$authWithEmailViewModel.input.password)
             }
             
             self.secureButton
