@@ -82,3 +82,5 @@ vs UserDefaults vs Realm(서드파티 라이브러리)
 
 ## 네트워크 에러 처리 방식
 Result vs Error Throw
+
+## 로직을 class이 아닌 struct으로 구현한 이유
