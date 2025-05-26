@@ -84,3 +84,5 @@ vs UserDefaults vs Realm(서드파티 라이브러리)
 Result vs Error Throw
 
 ## 로직을 class이 아닌 struct으로 구현한 이유
+
+## @EnvironmentObject가 아닌 @Environment를 사용한 이유
