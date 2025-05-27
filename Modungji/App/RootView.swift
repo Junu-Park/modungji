@@ -11,16 +11,22 @@ import KakaoSDKAuth
 
 struct RootView: View {
     @EnvironmentObject var authState: AuthState
+    @EnvironmentObject var pathModel: PathModel
     
     var body: some View {
-        NavigationStack {
-            if self.authState.isLogin {
-                MainView()
-            } else {
-                AuthView()
-                    .onOpenURL { url in
-                        self.handleRedirectUrl(url)
-                    }
+        NavigationStack(path: self.$pathModel.path) {
+            Group {
+                if self.authState.isLogin {
+                    MainView()
+                } else {
+                    AuthView()
+                        .onOpenURL { url in
+                            self.handleRedirectUrl(url)
+                        }
+                }
+            }
+            .navigationDestination(for: Path.self) { path in
+                path.view
             }
         }
     }
