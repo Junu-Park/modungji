@@ -9,8 +9,9 @@ import SwiftUI
 
 // MARK: - AuthWithEmailView
 struct AuthWithEmailView: View {
+    @EnvironmentObject var pathModel: PathModel
+    @EnvironmentObject var authState: AuthState
     @EnvironmentObject var authWithEmailViewModel: AuthWithEmailViewModel
-    @Environment(\.dismiss) var dismiss
     
     private let authType: AuthWithEmailType
     
@@ -47,6 +48,11 @@ struct AuthWithEmailView: View {
         }
         .alert(self.authWithEmailViewModel.state.alertMessage, isPresented: self.$authWithEmailViewModel.state.showAlert) {
             Button("닫기") { }
+        }
+        .customOnChange(value: self.authState.isLogin) { isLogin in
+            if isLogin {
+                self.pathModel.pop()
+            }
         }
     }
 }

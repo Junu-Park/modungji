@@ -11,6 +11,7 @@ import SwiftUI
 // MARK: - AuthView
 struct AuthView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var pathModel: PathModel
     
     var body: some View {
         VStack(spacing: 20) {
@@ -54,8 +55,8 @@ extension AuthView {
     }
     
     var emailLoginButton: some View {
-        NavigationLink {
-            AuthWithEmailView(authType: .login)
+        Button {
+            self.pathModel.push(.authWithEmail(authType: .login))
         } label: {
             RoundedRectangle(cornerRadius: 6)
                 .stroke(.gray100, lineWidth: 1)
@@ -69,8 +70,8 @@ extension AuthView {
     }
     
     var emailSignUpButton: some View {
-        NavigationLink {
-            AuthWithEmailView(authType: .signUp)
+        Button {
+            self.pathModel.push(.authWithEmail(authType: .signUp))
         } label: {
             Text("이메일로 회원가입")
                 .bold()
