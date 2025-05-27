@@ -10,11 +10,13 @@ import SwiftUI
 private struct InjectDependencyModifier: ViewModifier {
     let diContainer: DIContainer
     let authState: AuthState = AuthState()
+    let pathModel: PathModel = PathModel()
     
     func body(content: Content) -> some View {
         content
             .environment(\.DIContainer, self.diContainer)
             .environmentObject(self.authState)
+            .environmentObject(self.pathModel)
             .environmentObject(
                 AuthViewModel(
                     service: self.diContainer.service.authService,
