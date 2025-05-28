@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EstateType: String {
+enum EstateType: String, CaseIterable {
     case oneroom = "원룸"
     case officetel = "오피스텔"
     case apartment = "아파트"
