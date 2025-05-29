@@ -13,11 +13,31 @@ struct RootView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var pathModel: PathModel
     
+    @State private var selectedTab: Int = 0
+    
     var body: some View {
         NavigationStack(path: self.$pathModel.path) {
             Group {
                 if self.authState.isLogin {
-                    MainView()
+                    TabView(selection: $selectedTab) {
+                        MainView()
+                            .tabItem {
+                                self.tabItem(.home)
+                            }
+                            .tag(0)
+                        
+                        Text("관심매물")
+                            .tabItem {
+                                self.tabItem(.interestEstate)
+                            }
+                            .tag(1)
+                        
+                        Text("설정")
+                            .tabItem {
+                                self.tabItem(.setting)
+                            }
+                            .tag(2)
+                    }
                 } else {
                     AuthView()
                         .onOpenURL { url in
