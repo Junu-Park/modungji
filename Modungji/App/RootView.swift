@@ -15,6 +15,10 @@ struct RootView: View {
     
     @State private var selectedTab: Int = 0
     
+    init() {
+        setTabBarAppearance()
+    }
+    
     var body: some View {
         NavigationStack(path: self.$pathModel.path) {
             Group {
@@ -60,6 +64,29 @@ struct RootView: View {
         } else {
             print("카카오톡이 아닌 다른 곳에서 리다이렉트된 URL")
         }
+    }
+    
+    private func setTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        
+        let font = UIFont(name: "Pretendard-Regular", size: 12)!
+        
+        // 선택 상태
+        appearance.stackedLayoutAppearance.selected.iconColor = .gray90
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray90]
+        
+        // 미선택 상태
+        appearance.stackedLayoutAppearance.normal.iconColor = .gray45
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray45]
+        
+        // 배경
+        appearance.backgroundColor = .gray0
+        
+        // 경계선
+        appearance.shadowColor = .separator.withAlphaComponent(0.2)
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 
