@@ -42,3 +42,15 @@ struct RootView: View {
         }
     }
 }
+
+extension RootView {
+    @ViewBuilder
+    private func tabItem(_ type: TabItemType) -> some View {
+        Image(self.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
+            .renderingMode(.template)
+            .padding(.top, 16)
+        
+        Text(type.title)
+            .font(PDFont.caption1)
+    }
+}
