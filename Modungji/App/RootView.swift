@@ -13,11 +13,35 @@ struct RootView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var pathModel: PathModel
     
+    @State private var selectedTab: Int = 0
+    
+    init() {
+        setTabBarAppearance()
+    }
+    
     var body: some View {
         NavigationStack(path: self.$pathModel.path) {
             Group {
                 if self.authState.isLogin {
-                    MainView()
+                    TabView(selection: $selectedTab) {
+                        MainView()
+                            .tabItem {
+                                self.tabItem(.home)
+                            }
+                            .tag(0)
+                        
+                        Text("관심매물")
+                            .tabItem {
+                                self.tabItem(.interestEstate)
+                            }
+                            .tag(1)
+                        
+                        Text("설정")
+                            .tabItem {
+                                self.tabItem(.setting)
+                            }
+                            .tag(2)
+                    }
                 } else {
                     AuthView()
                         .onOpenURL { url in
@@ -40,5 +64,40 @@ struct RootView: View {
         } else {
             print("카카오톡이 아닌 다른 곳에서 리다이렉트된 URL")
         }
+    }
+    
+    private func setTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        
+        let font = UIFont(name: "Pretendard-Regular", size: 12)!
+        
+        // 선택 상태
+        appearance.stackedLayoutAppearance.selected.iconColor = .gray90
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray90]
+        
+        // 미선택 상태
+        appearance.stackedLayoutAppearance.normal.iconColor = .gray45
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray45]
+        
+        // 배경
+        appearance.backgroundColor = .gray0
+        
+        // 경계선
+        appearance.shadowColor = .separator.withAlphaComponent(0.2)
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+}
+
+extension RootView {
+    @ViewBuilder
+    private func tabItem(_ type: TabItemType) -> some View {
+        Image(self.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
+            .renderingMode(.template)
+            .padding(.top, 16)
+        
+        Text(type.title)
+            .font(PDFont.caption1)
     }
 }
