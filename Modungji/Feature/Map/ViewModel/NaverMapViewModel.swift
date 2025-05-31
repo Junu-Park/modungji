@@ -11,6 +11,7 @@ final class NaverMapViewModel: NSObject, ObservableObject {
     @Published var currentCoord: CoordinateEntity = .init(latitude: 37.5666805, longitude: 126.9784147)
     
     private weak var mapView: NMFMapView?
+    private var updateWorkItem: DispatchWorkItem?
     
     func setNaverMapView(_ view: NMFMapView) {
         self.mapView = view
@@ -23,7 +24,17 @@ final class NaverMapViewModel: NSObject, ObservableObject {
 
 extension NaverMapViewModel: NMFMapViewCameraDelegate {
     func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
-        let coord = mapView.cameraPosition.target
-        self.currentCoord = .init(latitude: coord.lat, longitude: coord.lng)
+        self.updateWorkItem?.cancel()
+        
+        self.updateWorkItem = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            
+            let coord = mapView.cameraPosition.target
+            self.currentCoord = .init(latitude: coord.lat, longitude: coord.lng)
+        }
+        
+        guard let updateWorkItem else { return }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: updateWorkItem)
     }
 }
