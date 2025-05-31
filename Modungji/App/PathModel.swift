@@ -10,7 +10,7 @@ import SwiftUI
 final class PathModel: ObservableObject {
     @Published var path: NavigationPath = .init()
     
-    func push(_ path: Path) {
+    func push(_ path: PathType) {
         self.path.append(path)
     }
     
