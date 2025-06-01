@@ -32,11 +32,13 @@ final class NaverMapViewModel: NSObject, ObservableObject {
         }
         mapView.positionMode = mode
         if mode == .normal {
-            let nmCoord = mapView.locationOverlay.location
-            let cameraUpdate = NMFCameraUpdate(scrollTo: nmCoord)
-            cameraUpdate.animation = .fly
-            
-            mapView.moveCamera(cameraUpdate)
+            DispatchQueue.main.async {
+                let nmCoord = mapView.locationOverlay.location
+                let cameraUpdate = NMFCameraUpdate(scrollTo: nmCoord)
+                cameraUpdate.animation = .fly
+                
+                mapView.moveCamera(cameraUpdate)
+            }
         }
     }
 }
