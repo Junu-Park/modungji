@@ -9,11 +9,6 @@ import NMapsMap
 
 final class NaverMapViewModel: NSObject, ObservableObject {
     @Published var currentCoord: CoordinateEntity = .init(latitude: 37.5666805, longitude: 126.9784147)
-    @Published var currentMode: NMFMyPositionMode = .disabled {
-        didSet {
-            self.setPositionMode(self.currentMode)
-        }
-    }
     
     private weak var mapView: NMFMapView?
     private var updateWorkItem: DispatchWorkItem?
@@ -26,19 +21,23 @@ final class NaverMapViewModel: NSObject, ObservableObject {
         mapView.addCameraDelegate(delegate: self)
     }
     
-    private func setPositionMode(_ mode: NMFMyPositionMode) {
+    func setPositionMode() {
         guard let mapView else {
             return
         }
-        mapView.positionMode = mode
-        if mode == .normal {
-            DispatchQueue.main.async {
+        
+        if mapView.positionMode == .disabled {
+            mapView.positionMode = .normal
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                 let nmCoord = mapView.locationOverlay.location
                 let cameraUpdate = NMFCameraUpdate(scrollTo: nmCoord)
                 cameraUpdate.animation = .fly
                 
                 mapView.moveCamera(cameraUpdate)
             }
+        } else {
+            mapView.positionMode = .disabled
         }
     }
 }
