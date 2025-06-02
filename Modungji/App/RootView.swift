@@ -49,7 +49,7 @@ struct RootView: View {
                         }
                 }
             }
-            .navigationDestination(for: Path.self) { path in
+            .navigationDestination(for: PathType.self) { path in
                 path.view
             }
         }

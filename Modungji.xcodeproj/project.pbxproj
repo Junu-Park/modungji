@@ -11,6 +11,7 @@
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
 		519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 519B08AC2DD726A000CDDF38 /* KakaoSDK */; };
 		519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */ = {isa = PBXBuildFile; productRef = 519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */; };
+		51DD39792DE9A32500CCD1FE /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 51DD39782DE9A32500CCD1FE /* NMapsMap */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */,
+				51DD39792DE9A32500CCD1FE /* NMapsMap in Frameworks */,
 				519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */,
 				519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */,
 			);
@@ -94,6 +96,7 @@
 				5101A8B82DD09E4F008CF16B /* Alamofire */,
 				519B08AC2DD726A000CDDF38 /* KakaoSDK */,
 				519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */,
+				51DD39782DE9A32500CCD1FE /* NMapsMap */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -127,6 +130,7 @@
 				5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */,
 				519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				519B0FB12DD79C6B00CDDF38 /* XCLocalSwiftPackageReference "ModungjiSecret" */,
+				51DD39772DE9A32500CCD1FE /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
@@ -426,6 +430,14 @@
 				minimumVersion = 2.24.2;
 			};
 		};
+		51DD39772DE9A32500CCD1FE /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/navermaps/SPM-NMapsMap";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.21.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -442,6 +454,11 @@
 		519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ModungjiSecret;
+		};
+		51DD39782DE9A32500CCD1FE /* NMapsMap */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51DD39772DE9A32500CCD1FE /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */;
+			productName = NMapsMap;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
