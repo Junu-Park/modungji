@@ -85,12 +85,6 @@ struct EstateOptionsDTO: Decodable {
     }
 }
 
-// MARK: - GeolocationDTO
-struct GeolocationDTO: Decodable {
-    let longitude: Double
-    let latitude: Double
-}
-
 // MARK: - CreatorDTO
 struct CreatorDTO: Decodable {
     let userId: String
