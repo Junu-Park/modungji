@@ -31,8 +31,9 @@ struct GetEstateDetailResponseDTO: Decodable {
     let isSafeEstate: Bool
     let isRecommended: Bool
     let comments: [CommentDTO]
-    let createdAt: String
-    let updatedAt: String
+    // TODO: 스웨거에는 필수값이라 표기되어 있음
+    let createdAt: String?
+    let updatedAt: String?
     
     enum CodingKeys: String, CodingKey {
         case estateId = "estate_id"
@@ -89,8 +90,8 @@ struct EstateOptionsDTO: Decodable {
 struct CreatorDTO: Decodable {
     let userId: String
     let nick: String
-    let introduction: String
-    let profileImage: String
+    let introduction: String?
+    let profileImage: String?
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"

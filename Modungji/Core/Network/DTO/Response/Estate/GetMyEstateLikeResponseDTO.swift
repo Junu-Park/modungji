@@ -31,7 +31,7 @@ struct EstateLikeDTO: Decodable {
     let area: Double
     let floors: Int
     let geolocation: GeolocationDTO
-    let distance: Double
+    let distance: Double?
     let likeCount: Int
     let isSafeEstate: Bool
     let isRecommended: Bool

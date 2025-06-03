@@ -17,5 +17,5 @@ struct HotTopicDTO: Decodable {
     let title: String
     let content: String
     let date: String
-    let link: String
+    let link: String?
 }
