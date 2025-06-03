@@ -108,14 +108,14 @@ extension MainView {
     
     private func estateFilterView() -> some View {
         HStack(spacing: 16) {
-            ForEach(EstateType.allCases, id: \.self) { type in
+            ForEach(EstateCategory.allCases, id: \.self) { type in
                 self.estateFilterButton(type: type)
             }
         }
         .padding(20)
     }
     
-    private func estateFilterButton(type: EstateType) -> some View {
+    private func estateFilterButton(type: EstateCategory) -> some View {
         Button {
             
         } label: {
