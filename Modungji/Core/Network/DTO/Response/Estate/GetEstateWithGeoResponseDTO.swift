@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - GetEstateWithGeoResponseDTO
 struct GetEstateWithGeoResponseDTO: Decodable {
-    let data: [EstateWithGeoListDTO]
+    let data: [EstateWithGeoDTO]
 }
 
-// MARK: - EstateWithGeoListDTO
-struct EstateWithGeoListDTO: Decodable {
+// MARK: - EstateWithGeoDTO
+struct EstateWithGeoDTO: Decodable {
     let estateId: String
     let category: String
     let title: String

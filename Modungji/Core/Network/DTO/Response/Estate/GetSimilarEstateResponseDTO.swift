@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - GetSimilarEstateResponseDTO
 struct GetSimilarEstateResponseDTO: Decodable {
-    let data: [SimilarEstateListDTO]
+    let data: [SimilarEstateDTO]
 }
 
-// MARK: - SimilarEstateListDTO
-struct SimilarEstateListDTO: Decodable {
+// MARK: - SimilarEstateDTO
+struct SimilarEstateDTO: Decodable {
     let estateId: String
     let category: String
     let title: String

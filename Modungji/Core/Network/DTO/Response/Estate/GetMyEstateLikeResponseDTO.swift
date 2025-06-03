@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - GetMyEstateLikeResponseDTO
 struct GetMyEstateLikeResponseDTO: Decodable {
-    let data: [EstateLikeListDTO]
+    let data: [EstateLikeDTO]
     let nextCursor: String?
     
     enum CodingKeys: String, CodingKey {
@@ -18,8 +18,8 @@ struct GetMyEstateLikeResponseDTO: Decodable {
     }
 }
 
-// MARK: - EstateLikeListDTO
-struct EstateLikeListDTO: Decodable {
+// MARK: - EstateLikeDTO
+struct EstateLikeDTO: Decodable {
     let estateId: String
     let category: String
     let title: String
