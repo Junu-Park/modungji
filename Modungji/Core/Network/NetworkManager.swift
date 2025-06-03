@@ -13,7 +13,7 @@ final class NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
     /// 서버에러 -> Result<Failure>, 그 외 코드 에러  -> throw
-    func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstate<T: Decodable>(requestURL: APIRouter, successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
         
         let response = await AF.request(requestURL)
             .serializingData()
@@ -31,7 +31,7 @@ final class NetworkManager {
                 
                 return .success(successResponse)
             } else {
-                var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
+                var errorResponse = try JSONDecoder().decode(ErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
                 
                 NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
@@ -43,7 +43,7 @@ final class NetworkManager {
         }
     }
     
-    func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, EstateErrorResponseDTO> {
+    func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
         
         let multipartFormData = MultipartFormData()
         multipartFormData.append(imageData, withName: "profileImage.png")
@@ -64,7 +64,7 @@ final class NetworkManager {
                 
                 return .success(successResponse)
             } else {
-                var errorResponse = try JSONDecoder().decode(EstateErrorResponseDTO.self, from: response.data!)
+                var errorResponse = try JSONDecoder().decode(ErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
                 
                 NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
