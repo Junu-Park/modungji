@@ -1,5 +1,5 @@
 //
-//  EstateType.swift
+//  EstateCategory.swift
 //  Modungji
 //
 //  Created by 박준우 on 5/23/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EstateType: String, CaseIterable {
+enum EstateCategory: String, CaseIterable {
     case oneroom = "원룸"
     case officetel = "오피스텔"
     case apartment = "아파트"
