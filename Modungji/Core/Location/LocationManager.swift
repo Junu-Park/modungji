@@ -5,49 +5,26 @@
 //  Created by 박준우 on 5/31/25.
 //
 
-import CoreLocation
 import Combine
+import CoreLocation
 import UIKit
 
-final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let manager: CLLocationManager = CLLocationManager()
+struct LocationManager {
     
-    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    
-    override init() {
-        super.init()
-        
-        self.authorizationStatus = self.manager.authorizationStatus
-        
-        self.manager.delegate = self
+    func getAuthorizationState() -> CLAuthorizationStatus {
+        return CLLocationManager().authorizationStatus
     }
     
-    func requestAuthorization() {
-        switch self.authorizationStatus {
-        case .notDetermined:
-            self.manager.requestWhenInUseAuthorization()
-        case .restricted:
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-                
-                Task {
-                    await UIApplication.shared.open(url)
-                }
-            }
-        case .denied:
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-                
-                Task {
-                    await UIApplication.shared.open(url)
-                }
-            }
-        case .authorizedAlways:
-            break
-        case .authorizedWhenInUse:
-            self.manager.requestAlwaysAuthorization()
-        case .authorized:
-            break
-        @unknown default:
-            break
-        }
+    func requestWhenInUseAuthorization() {
+        CLLocationManager().requestWhenInUseAuthorization()
+    }
+    
+    func requestAlwaysAuthorization() {
+        CLLocationManager().requestAlwaysAuthorization()
+    }
+    
+    func openAppSetting() async {
+        let url = URL(string: UIApplication.openSettingsURLString)!
+        await UIApplication.shared.open(url)
     }
 }
