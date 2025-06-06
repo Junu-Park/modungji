@@ -19,22 +19,24 @@ struct MapServiceImp: MapService {
         return try await self.repository.getEstateWithGeo(entity: entity)
     }
     
-    func getUserLocation() async throws {
+    func getUserLocation() async throws -> Bool {
         let state = self.repository.getAuthorizationState()
         
         switch state {
         case .notDetermined:
             self.repository.requestWhenInUseAuthorization()
+            return false
         case .restricted:
             throw EstateErrorResponseEntity(message: "위치 권한을 확인해주세요.")
         case .denied:
             throw EstateErrorResponseEntity(message: "위치 권한을 확인해주세요.")
         case .authorizedAlways:
-            break
+            return true
         case .authorizedWhenInUse:
             self.repository.requestAlwaysAuthorization()
+            return true
         case .authorized:
-            break
+            return true
         @unknown default:
             throw EstateErrorResponseEntity(message: "위치 권한을 확인해주세요.")
         }
