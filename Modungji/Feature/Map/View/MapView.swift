@@ -8,24 +8,28 @@
 import SwiftUI
 
 struct MapView: View {
-    @StateObject var viewModel = NaverMapViewModel()
+    @StateObject private var viewModel: MapViewModel
+    
+    init(viewModel: MapViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         VStack{
-            Text("현재 좌표: \(self.viewModel.currentCoord.latitude, specifier: "%.3f"), \(self.viewModel.currentCoord.longitude, specifier: "%.3f")")
-                .padding()
-            
             NaverMapView(viewModel: self.viewModel)
                 .overlay(alignment: .bottomTrailing) {
                     Button {
-                        self.viewModel.setPositionMode()
+                        self.viewModel.action(.tapCurrentLocationButton)
                     } label: {
                         Circle()
-                            .fill(.brightCoast)
+                            .fill(self.viewModel.state.showCurrentLocationMarker ? .red : .brightCoast)
                             .frame(width: 50, height: 50)
                             .padding(20)
                     }
                 }
+        }
+        .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
+            Button("닫기") { }
         }
     }
 }
