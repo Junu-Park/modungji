@@ -1,0 +1,126 @@
+//
+//  MapViewModel.swift
+//  Modungji
+//
+//  Created by 박준우 on 6/5/25.
+//
+
+import Combine
+
+import NMapsMap
+
+final class MapViewModel: NSObject, ObservableObject {
+    
+    struct State {
+        var category: Category?
+        var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
+        var maxDistance: Int?
+        var showCurrentLocationMarker: Bool = false
+        var estateMarkerList: [NMFMarker] = []
+        var showErrorAlert: Bool = false
+        var errorMessage: String = ""
+    }
+    
+    enum Action {
+        case moveCamera(entity: NaverMapEntity)
+        case tapCurrentLocationButton
+    }
+    
+    @Published var state: State = State()
+    private var cancellables: Set<AnyCancellable> = []
+    private let service: MapService
+    
+    init(service: MapService) {
+        self.service = service
+        
+        super.init()
+        
+        self.transform()
+    }
+    
+    func transform() {
+        Publishers.CombineLatest3(
+            self.$state.map(\.category),
+            self.$state.map(\.centerLocation),
+            self.$state.map(\.maxDistance)
+        )
+        .dropFirst()
+        .removeDuplicates(by: ==)
+        .debounce(for: .seconds(0.7), scheduler: RunLoop.main)
+        .sink { category, centerLocation, maxDistance  in
+            Task {
+                do {
+                    let entity = GetEstateWithGeoRequestEntity(
+                        category: nil,
+                        longitude: centerLocation.longitude,
+                        latitude: centerLocation.latitude,
+                        maxDistance: maxDistance
+                    )
+                    
+                    let result = try await self.service.getEstateWithGeo(entity: entity)
+                    
+                    await MainActor.run {
+                        if !self.state.estateMarkerList.isEmpty {
+                            self.state.estateMarkerList.forEach { marker in
+                                marker.mapView = nil
+                            }
+                            
+                            self.state.estateMarkerList.removeAll()
+                        }
+                        
+                        let markerList = result.map({ entity in
+                            let marker = NMFMarker()
+                            marker.position = NMGLatLng(lat: entity.geolocation.latitude, lng: entity.geolocation.longitude)
+                            return marker
+                        })
+                        self.state.estateMarkerList = markerList
+                    }
+                } catch let error as EstateErrorResponseEntity {
+                    await MainActor.run {
+                        self.state.errorMessage = error.message
+                        self.state.showErrorAlert = true
+                    }
+                }
+            }
+        }
+        .store(in: &self.cancellables)
+    }
+    
+    func action(_ action: Action) {
+        switch action {
+        case .moveCamera(let entity):
+            self.moveCamera(entity: entity)
+        case .tapCurrentLocationButton:
+            self.tapCurrentLocationButton()
+        }
+    }
+    
+    private func moveCamera(entity: NaverMapEntity) {
+        self.state.centerLocation = entity.centerLocation
+        
+        let maxDistance = entity.centerLocation.getMeterDistance(with: entity.southLocation)
+        self.state.maxDistance = maxDistance
+    }
+    
+    
+    private func tapCurrentLocationButton() {
+        if self.state.showCurrentLocationMarker {
+            self.state.showCurrentLocationMarker = false
+        } else {
+            Task {
+                do {
+                    try await self.service.getUserLocation()
+                    
+                    await MainActor.run {
+                        self.state.showCurrentLocationMarker = true
+                    }
+                } catch let error as EstateErrorResponseEntity {
+                    await MainActor.run {
+                        self.state.errorMessage = error.message
+                        self.state.showErrorAlert = true
+                    }
+                }
+            }
+        }
+    }
+}
