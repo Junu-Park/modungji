@@ -11,4 +11,5 @@ enum PathType: Hashable {
     case auth
     case authWithEmail(authType: AuthWithEmailType)
     case main
+    case map
 }
