@@ -28,12 +28,18 @@ struct DIContainer {
     }
     let service: Service
     
+    struct State {
+        let authState: AuthState
+    }
+    let state: State
+    
     private init(
         networkManager: NetworkManager? = nil,
         keychainManager: KeychainManager? = nil,
         kakaoManager: KakaoManager? = nil,
         authRepository: AuthRepository? = nil,
-        authService: AuthService? = nil
+        authService: AuthService? = nil,
+        authState: AuthState? = nil
     ) {
         self.manager = Manager(
             networkManager: networkManager ?? NetworkManager(),
@@ -54,6 +60,8 @@ struct DIContainer {
                 repository: self.repository.authRepository
             )
         )
+        
+        self.state = State(authState: authState ?? AuthState())
     }
 }
 

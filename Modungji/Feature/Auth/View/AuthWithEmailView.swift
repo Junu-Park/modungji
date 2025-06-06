@@ -11,12 +11,13 @@ import SwiftUI
 struct AuthWithEmailView: View {
     @EnvironmentObject var pathModel: PathModel
     @EnvironmentObject var authState: AuthState
-    @EnvironmentObject var authWithEmailViewModel: AuthWithEmailViewModel
+    @StateObject private var authWithEmailViewModel: AuthWithEmailViewModel
     
     private let authType: AuthWithEmailType
     
-    init(authType: AuthWithEmailType) {
+    init(authType: AuthWithEmailType, viewModel: AuthWithEmailViewModel) {
         self.authType = authType
+        self._authWithEmailViewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {

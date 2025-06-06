@@ -24,13 +24,13 @@ struct RootView: View {
             Group {
                 if self.authState.isLogin {
                     TabView(selection: $selectedTab) {
-                        MainView()
+                        self.pathModel.build(.main)
                             .tabItem {
                                 self.tabItem(.home)
                             }
                             .tag(0)
                         
-                        Text("관심매물")
+                        self.pathModel.build(.map)
                             .tabItem {
                                 self.tabItem(.interestEstate)
                             }
@@ -43,14 +43,14 @@ struct RootView: View {
                             .tag(2)
                     }
                 } else {
-                    AuthView()
+                    self.pathModel.build(.auth)
                         .onOpenURL { url in
                             self.handleRedirectUrl(url)
                         }
                 }
             }
             .navigationDestination(for: PathType.self) { path in
-                path.view
+                self.pathModel.build(path)
             }
         }
     }
