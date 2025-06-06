@@ -13,18 +13,21 @@ struct DIContainer {
         let networkManager: NetworkManager
         let keychainManager: KeychainManager
         let kakaoManager: KakaoManager
+        let locationManager: LocationManager
     }
     let manager: Manager
     
     // Repository
     struct Repository {
         let authRepository: AuthRepository
+        let mapRepository: MapRepository
     }
     let repository: Repository
     
     // Service
     struct Service {
         let authService: AuthService
+        let mapService: MapService
     }
     let service: Service
     
@@ -37,14 +40,18 @@ struct DIContainer {
         networkManager: NetworkManager? = nil,
         keychainManager: KeychainManager? = nil,
         kakaoManager: KakaoManager? = nil,
+        locationManager: LocationManager? = nil,
         authRepository: AuthRepository? = nil,
+        mapRepository: MapRepository? = nil,
         authService: AuthService? = nil,
+        mapService: MapService? = nil,
         authState: AuthState? = nil
     ) {
         self.manager = Manager(
             networkManager: networkManager ?? NetworkManager(),
             keychainManager: keychainManager ?? KeychainManager(),
-            kakaoManager: kakaoManager ?? KakaoManager()
+            kakaoManager: kakaoManager ?? KakaoManager(),
+            locationManager: locationManager ?? LocationManager()
         )
         
         self.repository = Repository(
@@ -52,12 +59,19 @@ struct DIContainer {
                 networkManager: self.manager.networkManager,
                 kakaoManager: self.manager.kakaoManager,
                 keychainManger: self.manager.keychainManager
+            ),
+            mapRepository: mapRepository ?? MapRepositoryImp(
+                networkManager: self.manager.networkManager,
+                locationManager: self.manager.locationManager
             )
         )
         
         self.service = Service(
             authService: authService ?? AuthServiceImp(
                 repository: self.repository.authRepository
+            ),
+            mapService: mapService ?? MapServiceImp(
+                repository: self.repository.mapRepository
             )
         )
         
