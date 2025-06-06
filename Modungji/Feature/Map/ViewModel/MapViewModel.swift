@@ -109,10 +109,10 @@ final class MapViewModel: NSObject, ObservableObject {
         } else {
             Task {
                 do {
-                    try await self.service.getUserLocation()
+                    let isPermitted = try await self.service.getUserLocation()
                     
                     await MainActor.run {
-                        self.state.showCurrentLocationMarker = true
+                        self.state.showCurrentLocationMarker = isPermitted
                     }
                 } catch let error as EstateErrorResponseEntity {
                     await MainActor.run {
