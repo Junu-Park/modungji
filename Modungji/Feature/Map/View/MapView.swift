@@ -21,11 +21,22 @@ struct MapView: View {
                     Button {
                         self.viewModel.action(.tapCurrentLocationButton)
                     } label: {
-                        Circle()
-                            .fill(self.viewModel.state.showCurrentLocationMarker ? .red : .brightCoast)
-                            .frame(width: 50, height: 50)
-                            .padding(20)
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(.clear)
+                            .frame(width: 48, height: 48)
+                            .shapeBorderBackground(
+                                shape: .rect(cornerRadius: 10),
+                                backgroundColor: .gray0,
+                                borderColor: .gray45
+                            )
+                            .shadow(color: .gray45, radius: 4)
+                            .overlay {
+                                Image(self.viewModel.state.showCurrentLocationMarker ? .focus : .unfocus)
+                                    .renderingMode(.template)
+                                    .foregroundStyle(.gray75)
+                            }
                     }
+                    .padding(20)
                 }
         }
         .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
