@@ -13,6 +13,8 @@ import NMapsMap
 
 @main
 struct ModungjiApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     private let diContainer = DIContainer.getDefaultDIContainer()
     
     init() {
