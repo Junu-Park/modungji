@@ -3,3 +3,4 @@ xcuserdata/
 ModungjiSecret/
 *.xcconfig
 Development/
+GoogleService-Info.plist
