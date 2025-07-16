@@ -1,5 +1,5 @@
 //
-//  MapBubbleMarkerView.swift
+//  MapLeafMarkerView.swift
 //  Modungji
 //
 //  Created by 박준우 on 7/16/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MapBubbleMarkerView: View {
+struct MapLeafMarkerView: View {
     let imageName: String
     let depositPay: Int
     let monthPay: Int
@@ -22,7 +22,7 @@ struct MapBubbleMarkerView: View {
                         .frame(width: 64, height: 64)
                         .foregroundStyle(.brightCoast)
                     
-                    Text("\(self.depositPay)/\(monthPay)")
+                    Text("\(String(self.depositPay / 10000)) / \(String(self.monthPay / 10000))")
                         .font(PDFont.caption2.bold())
                         .foregroundStyle(.gray60)
                 }
@@ -31,7 +31,7 @@ struct MapBubbleMarkerView: View {
     }
 }
 
-extension MapBubbleMarkerView {
+extension MapLeafMarkerView {
     func converToUIImage() -> UIImage {
         let render = ImageRenderer(content: self)
         render.scale = UIScreen.main.scale
@@ -40,5 +40,5 @@ extension MapBubbleMarkerView {
 }
 
 #Preview {
-    MapBubbleMarkerView(imageName: "Test", depositPay: 1000, monthPay: 40)
+    MapLeafMarkerView(imageName: "Test", depositPay: 1000, monthPay: 40)
 }
