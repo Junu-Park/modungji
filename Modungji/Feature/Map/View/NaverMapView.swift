@@ -49,11 +49,9 @@ struct NaverMapView: UIViewRepresentable {
     private func getNaverMapView() -> NMFNaverMapView {
         let naverMap = NMFNaverMapView()
         
-        // Zoom Level 제한 설정
-        naverMap.mapView.minZoomLevel = 10
-        naverMap.mapView.maxZoomLevel = 17
+        naverMap.mapView.minZoomLevel = 7
+        naverMap.mapView.maxZoomLevel = 19
 
-        // Zoom 컨트롤러 제거
         naverMap.showZoomControls = false
         
         // 지도 시작 위치 설정 및 카메라 이동
