@@ -9,24 +9,29 @@ import SwiftUI
 
 struct MapLeafMarkerView: View {
     let imageName: String
-    let depositPay: Int
-    let monthPay: Int
+    let deposit: Int
+    let monthlyRent: Int
     
     var body: some View {
         Image(.mapBubble)
+            .resizable()
+            .scaledToFill()
             .padding(.top, 6)
+            .padding(.horizontal, -12)
             .frame(width: 72, height: 100)
             .overlay(alignment: .top) {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 3) {
                     RoundedRectangle(cornerRadius: 4)
-                        .frame(width: 64, height: 64)
+                        .aspectRatio(1, contentMode: .fit)
                         .foregroundStyle(.brightCoast)
                     
-                    Text("\(String(self.depositPay / 10000)) / \(String(self.monthPay / 10000))")
+                    Text("\(self.convertPriceToString(deposit)) / \(self.convertPriceToString(monthlyRent))")
                         .font(PDFont.caption2.bold())
                         .foregroundStyle(.gray60)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
-                .padding(.top, 4)
+                .padding([.top, .horizontal], 4)
             }
     }
     
@@ -53,5 +58,5 @@ extension MapLeafMarkerView {
 }
 
 #Preview {
-    MapLeafMarkerView(imageName: "Test", depositPay: 1000, monthPay: 40)
+    MapLeafMarkerView(imageName: "Test", deposit: 1000000000000, monthlyRent: 110001)
 }
