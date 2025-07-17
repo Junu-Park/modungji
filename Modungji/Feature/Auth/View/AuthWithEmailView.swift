@@ -93,7 +93,7 @@ extension AuthWithEmailView {
     
     @ViewBuilder
     func passwordInputView() -> some View {
-        PasswordTextFieldView(isPasswordCheck: false)
+        PasswordTextFieldView(authWithEmailViewModel: self.authWithEmailViewModel, isPasswordCheck: false)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
@@ -109,7 +109,7 @@ extension AuthWithEmailView {
     
     @ViewBuilder
     var passwordCheckInputView: some View {
-        PasswordTextFieldView(isPasswordCheck: true)
+        PasswordTextFieldView(authWithEmailViewModel: self.authWithEmailViewModel, isPasswordCheck: true)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
@@ -142,7 +142,7 @@ extension AuthWithEmailView {
 
 // MARK: - PasswordTextFieldView
 private struct PasswordTextFieldView: View {
-    @EnvironmentObject var authWithEmailViewModel: AuthWithEmailViewModel
+    @ObservedObject var authWithEmailViewModel: AuthWithEmailViewModel
     @State private var isSecure: Bool = true
     
     private let isPasswordCheck: Bool
@@ -153,8 +153,9 @@ private struct PasswordTextFieldView: View {
         return self.isSecure ? "eye.slash" : "eye"
     }
     
-    init(isPasswordCheck: Bool = false) {
+    init(authWithEmailViewModel: AuthWithEmailViewModel, isPasswordCheck: Bool = false) {
         self.isPasswordCheck = isPasswordCheck
+        self.authWithEmailViewModel = authWithEmailViewModel
     }
     
     var body: some View {
