@@ -29,6 +29,19 @@ struct MapLeafMarkerView: View {
                 .padding(.top, 4)
             }
     }
+    
+    private func convertPriceToString(_ price: Int) -> String {
+        if price >= 1000000000000 {
+            return String(price / 1000000000000) + "조"
+        }
+        else if price >= 100000000 {
+            return String(price / 100000000) + "억"
+        } else if price >= 10000 {
+            return String(price / 10000) + "만"
+        } else {
+            return "1만↓"
+        }
+    }
 }
 
 extension MapLeafMarkerView {
