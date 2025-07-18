@@ -16,7 +16,7 @@ final class MapViewModel: NSObject, ObservableObject {
         var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
         var maxDistance: Int?
         var showCurrentLocationMarker: Bool = false
-        var estateMarkerList: [NMFMarker] = []
+        var estateList: [GetEstateWithGeoResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -60,20 +60,7 @@ final class MapViewModel: NSObject, ObservableObject {
                     let result = try await self.service.getEstateWithGeo(entity: entity)
                     
                     await MainActor.run {
-                        if !self.state.estateMarkerList.isEmpty {
-                            self.state.estateMarkerList.forEach { marker in
-                                marker.mapView = nil
-                            }
-                            
-                            self.state.estateMarkerList.removeAll()
-                        }
-                        
-                        let markerList = result.map({ entity in
-                            let marker = NMFMarker()
-                            marker.position = NMGLatLng(lat: entity.geolocation.latitude, lng: entity.geolocation.longitude)
-                            return marker
-                        })
-                        self.state.estateMarkerList = markerList
+                        self.state.estateList = result
                     }
                 } catch let error as EstateErrorResponseEntity {
                     await MainActor.run {
