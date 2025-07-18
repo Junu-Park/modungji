@@ -22,6 +22,7 @@ struct NaverMapView: UIViewRepresentable {
         // Naver Map Camera Delegate 연결
         naverMap.mapView.addCameraDelegate(delegate: context.coordinator)
         
+        context.coordinator.cluster.mapView = naverMap.mapView
         return naverMap
     }
     
@@ -73,17 +74,28 @@ struct NaverMapView: UIViewRepresentable {
 }
 
 extension NaverMapView {
-    final class Coordinator: NSObject, NMFMapViewCameraDelegate {
+    final class Coordinator: NSObject, NMFMapViewCameraDelegate, NMCClusterMarkerUpdater, NMCLeafMarkerUpdater {
+
+        var cluster: NMCClusterer<MapClusterKey> = .init()
         
-        private let viewModel: MapViewModel
+        private var viewModel: MapViewModel
         private var updateWorkItem: DispatchWorkItem?
         
         init(viewModel: MapViewModel) {
             self.viewModel = viewModel
+            
+            super.init()
+            
+            let clusterBuilder = NMCComplexBuilder<MapClusterKey>()
+            clusterBuilder.clusterMarkerUpdater = self
+            clusterBuilder.leafMarkerUpdater = self
+            self.cluster = clusterBuilder.build()
         }
         
         func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
             self.updateWorkItem?.cancel()
+            
+            self.cluster.clear()
             
             self.updateWorkItem = DispatchWorkItem { [weak self] in
                 guard let self else { return }
@@ -101,6 +113,22 @@ extension NaverMapView {
             guard let updateWorkItem else { return }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: updateWorkItem)
+        }
+        
+        func updateClusterMarker(_ info: NMCClusterMarkerInfo, _ marker: NMFMarker) {
+            marker.iconImage = NMFOverlayImage(image: MapClusterMarkerView(count: info.size).converToUIImage())
+        }
+        
+        func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
+            guard let key = info.key as? MapClusterKey else { return }
+            
+            marker.iconImage = NMFOverlayImage(
+                image: MapLeafMarkerView(
+                    imageName: key.entity.thumbnail,
+                    deposit: key.entity.deposit,
+                    monthlyRent: key.entity.monthlyRent
+                ).converToUIImage()
+            )
         }
     }
 }
