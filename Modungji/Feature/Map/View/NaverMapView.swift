@@ -42,9 +42,13 @@ struct NaverMapView: UIViewRepresentable {
             }
         }
         
-        self.viewModel.state.estateMarkerList.forEach { marker in
-            marker.mapView = uiView.mapView
+        var markerList: [MapClusterKey: NSNull] = [:]
+        
+        for entity in self.viewModel.state.estateList {
+            markerList[MapClusterKey(entity: entity)] = NSNull()
         }
+        
+        context.coordinator.cluster.addAll(markerList)
     }
     
     private func getNaverMapView() -> NMFNaverMapView {
