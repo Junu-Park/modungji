@@ -78,7 +78,7 @@ struct NaverMapView: UIViewRepresentable {
 }
 
 extension NaverMapView {
-    final class Coordinator: NSObject, NMFMapViewCameraDelegate, NMCClusterMarkerUpdater, NMCLeafMarkerUpdater {
+    final class Coordinator: NSObject, NMFMapViewCameraDelegate, NMCClusterMarkerUpdater, NMCLeafMarkerUpdater, NMCThresholdStrategy {
 
         var cluster: NMCClusterer<MapClusterKey> = .init()
         
@@ -93,6 +93,9 @@ extension NaverMapView {
             let clusterBuilder = NMCComplexBuilder<MapClusterKey>()
             clusterBuilder.clusterMarkerUpdater = self
             clusterBuilder.leafMarkerUpdater = self
+            clusterBuilder.thresholdStrategy = self
+            clusterBuilder.minClusteringZoom = 10
+            clusterBuilder.maxClusteringZoom = 18
             self.cluster = clusterBuilder.build()
         }
         
@@ -133,6 +136,25 @@ extension NaverMapView {
                     monthlyRent: key.entity.monthlyRent
                 ).converToUIImage()
             )
+        }
+        
+        func getThreshold(_ zoom: Int) -> Double {
+            switch zoom {
+            case ...10:
+                return 75
+            case 11...12:
+                return 80
+            case 13...14:
+                return 85
+            case 15...16:
+                return 90
+            case 17...18:
+                return 95
+            case 19...:
+                return 100
+            default:
+                return 70
+            }
         }
     }
 }
