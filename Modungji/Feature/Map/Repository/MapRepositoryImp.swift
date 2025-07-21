@@ -34,6 +34,21 @@ struct MapRepositoryImp: MapRepository {
         }
     }
     
+    func getEstateWithID(estateID: String) async throws -> GetEstateDetailResponseEntity {
+        let response = try await self.networkManager.requestEstate(
+            requestURL: EstateRouter.Estate.getEstateDetail(
+                estateID: estateID
+            ),
+            successDecodingType: GetEstateDetailResponseDTO.self
+        )
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(dto: success)
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
+    
     func getAuthorizationState() -> CLAuthorizationStatus {
         return self.locationManager.getAuthorizationState()
     }
