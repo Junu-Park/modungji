@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetEstateWithIDResponseEntity {
+struct GetEstateDetailResponseEntity {
    let estateID: String
    let category: String
    let title: String
