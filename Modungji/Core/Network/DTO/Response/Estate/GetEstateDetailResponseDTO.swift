@@ -22,9 +22,9 @@ struct GetEstateDetailResponseDTO: Decodable {
     let area: Double
     let parkingCount: Int
     let floors: Int
-    let options: EstateOptionsDTO
+    let options: EstateOptionDTO
     let geolocation: GeolocationDTO
-    let creator: CreatorDTO
+    let creator: UserDTO
     let isLiked: Bool
     let isReserved: Bool
     let likeCount: Int
@@ -63,8 +63,8 @@ struct GetEstateDetailResponseDTO: Decodable {
         case updatedAt
     }
 }
-// MARK: - EstateOptionsDTO
-struct EstateOptionsDTO: Decodable {
+// MARK: - EstateOptionDTO
+struct EstateOptionDTO: Decodable {
     let refrigerator: Bool
     let washer: Bool
     let airConditioner: Bool
@@ -86,8 +86,8 @@ struct EstateOptionsDTO: Decodable {
     }
 }
 
-// MARK: - CreatorDTO
-struct CreatorDTO: Decodable {
+// MARK: - UserDTO
+struct UserDTO: Decodable {
     let userId: String
     let nick: String
     let introduction: String?
@@ -106,8 +106,8 @@ struct CommentDTO: Decodable {
     let commentId: String
     let content: String
     let createdAt: String
-    let creator: CreatorDTO
-    let replies: [CommentReplyDTO]?
+    let creator: UserDTO
+    let replies: [ReplyDTO]
     
     enum CodingKeys: String, CodingKey {
         case commentId = "comment_id"
@@ -118,12 +118,12 @@ struct CommentDTO: Decodable {
     }
 }
 
-// MARK: - CommentReplyDTO
-struct CommentReplyDTO: Decodable {
+// MARK: - ReplyDTO
+struct ReplyDTO: Decodable {
     let commentId: String
     let content: String
     let createdAt: String
-    let creator: CreatorDTO
+    let creator: UserDTO
     
     enum CodingKeys: String, CodingKey {
         case commentId = "comment_id"
