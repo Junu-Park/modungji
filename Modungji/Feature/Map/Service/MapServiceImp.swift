@@ -19,6 +19,10 @@ struct MapServiceImp: MapService {
         return try await self.repository.getEstateWithGeo(entity: entity)
     }
     
+    func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity {
+        return try await self.repository.getEstateDetail(estateID: estateID)
+    }
+    
     func getUserLocation() async throws -> Bool {
         let state = self.repository.getAuthorizationState()
         
