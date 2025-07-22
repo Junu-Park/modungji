@@ -34,7 +34,7 @@ struct MapRepositoryImp: MapRepository {
         }
     }
     
-    func getEstateWithID(estateID: String) async throws -> GetEstateDetailResponseEntity {
+    func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity {
         let response = try await self.networkManager.requestEstate(
             requestURL: EstateRouter.Estate.getEstateDetail(
                 estateID: estateID
