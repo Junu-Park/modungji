@@ -124,6 +124,9 @@ extension NaverMapView {
         
         func updateClusterMarker(_ info: NMCClusterMarkerInfo, _ marker: NMFMarker) {
             marker.iconImage = NMFOverlayImage(image: MapClusterMarkerView(count: info.size).converToUIImage())
+            marker.touchHandler = { overlay in
+                return true
+            }
         }
         
         func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
@@ -136,6 +139,11 @@ extension NaverMapView {
                     monthlyRent: key.entity.monthlyRent
                 ).converToUIImage()
             )
+            
+            marker.touchHandler = { overlay in
+                self.viewModel.action(.tapEstate(estateID: key.entity.estateId))
+                return true
+            }
         }
         
         func getThreshold(_ zoom: Int) -> Double {

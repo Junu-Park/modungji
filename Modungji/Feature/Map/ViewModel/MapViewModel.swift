@@ -24,6 +24,7 @@ final class MapViewModel: NSObject, ObservableObject {
     enum Action {
         case moveCamera(entity: NaverMapEntity)
         case tapCurrentLocationButton
+        case tapEstate(estateID: String)
     }
     
     @Published var state: State = State()
@@ -79,6 +80,8 @@ final class MapViewModel: NSObject, ObservableObject {
             self.moveCamera(entity: entity)
         case .tapCurrentLocationButton:
             self.tapCurrentLocationButton()
+        case .tapEstate(let estateID):
+            self.tapEstate(estateID: estateID)
         }
     }
     
@@ -106,6 +109,21 @@ final class MapViewModel: NSObject, ObservableObject {
                         self.state.errorMessage = error.message
                         self.state.showErrorAlert = true
                     }
+                }
+            }
+        }
+    }
+    
+    private func tapEstate(estateID: String) {
+        Task {
+            do {
+                let response = try await self.service.getEstateDetail(estateID: estateID)
+                
+                print(response)
+            } catch let error as EstateErrorResponseEntity {
+                await MainActor.run {
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
                 }
             }
         }
