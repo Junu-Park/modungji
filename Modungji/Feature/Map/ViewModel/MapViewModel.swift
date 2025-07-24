@@ -9,7 +9,7 @@ import Combine
 
 import NMapsMap
 
-final class MapViewModel: NSObject, ObservableObject {
+final class MapViewModel: ObservableObject {
     
     struct State {
         var category: Category?
@@ -33,8 +33,6 @@ final class MapViewModel: NSObject, ObservableObject {
     
     init(service: MapService) {
         self.service = service
-        
-        super.init()
         
         self.transform()
     }
