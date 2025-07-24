@@ -16,4 +16,5 @@ protocol AuthRepository {
     func loginWithEmail(request: LoginWithEmailRequestDTO) async throws -> LoginResponseEntity
     func saveToken(accessToken: String, refreshToken: String) async throws
     @discardableResult func signUpWithEmail(request: JoinRequestDTO) async throws -> SignUpWithEmailResponseEntity
+    func authWithAuto() async throws -> RefreshResponseEntity
 }

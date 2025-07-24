@@ -30,6 +30,9 @@ struct AuthView: View {
             
             self.emailSignUpButton
         }
+        .onAppear {
+            self.viewModel.action(.authWithAuto)
+        }
         .padding(20)
         .alert("에러", isPresented: self.$viewModel.state.showErrorAlert) {
             Button("확인", role: .cancel) { }

@@ -19,4 +19,6 @@ protocol AuthService {
     
     func checkPasswordValidation(password: String) -> Bool
     func checkPasswordCheckMatch(password: String, passwordCheck: String) -> Bool
+    
+    func authWithAuto() async throws -> RefreshResponseEntity
 }

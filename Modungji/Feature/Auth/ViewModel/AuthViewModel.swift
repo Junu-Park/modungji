@@ -18,6 +18,7 @@ final class AuthViewModel: ObservableObject {
     enum Action {
         case authWithApple(result: Result<ASAuthorization, any Error>)
         case authWithKakao
+        case authWithAuto
     }
     
     @Published var state: State = State()
@@ -37,6 +38,8 @@ final class AuthViewModel: ObservableObject {
             self.authWithApple(result: result)
         case .authWithKakao:
             self.authWithKakao()
+        case .authWithAuto:
+            self.authWithAuto()
         }
     }
     
@@ -65,6 +68,25 @@ final class AuthViewModel: ObservableObject {
             } catch let error as EstateErrorResponseEntity {
                 self.state.errorMessage = error.message
                 self.state.showErrorAlert = true
+            }
+        }
+    }
+    
+    private func authWithAuto() {
+        Task {
+            do {
+                let result = try await self.service.authWithAuto()
+                
+                await MainActor.run {
+                    self.authState.login(accessToken: result.accessToken, refreshToken: result.refreshToken)
+                }
+            } catch let error as EstateErrorResponseEntity {
+                if let statusCode = error.statusCode, statusCode == 418 {
+                    await MainActor.run {
+                        self.state.errorMessage = error.message
+                        self.state.showErrorAlert = true
+                    }
+                }
             }
         }
     }

@@ -100,4 +100,12 @@ final class AuthServiceImp: AuthService {
     func checkPasswordCheckMatch(password: String, passwordCheck: String) -> Bool {
         return !password.isEmpty && (password == passwordCheck)
     }
+    
+    func authWithAuto() async throws -> RefreshResponseEntity {
+        let response = try await self.repository.authWithAuto()
+        
+        try await self.repository.saveToken(accessToken: response.accessToken, refreshToken: response.refreshToken)
+        
+        return response
+    }
 }

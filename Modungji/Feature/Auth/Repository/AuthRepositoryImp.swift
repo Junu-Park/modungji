@@ -96,4 +96,15 @@ final class AuthRepositoryImp: AuthRepository {
             throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
         }
     }
+    
+    func authWithAuto() async throws -> RefreshResponseEntity {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Auth.renewToken, successDecodingType: RefreshResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return RefreshResponseEntity(accessToken: success.accessToken, refreshToken: success.refreshToken)
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
 }
