@@ -10,7 +10,7 @@ import Foundation
 import KakaoSDKAuth
 import KakaoSDKUser
 
-final class KakaoManager {
+struct KakaoManager {
     
     @MainActor
     func requestLogin() async -> OAuthToken? {

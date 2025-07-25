@@ -8,9 +8,9 @@
 import AuthenticationServices
 import Foundation
 
-final class AuthServiceImp: AuthService {
+struct AuthServiceImp: AuthService {
     
-    let repository: AuthRepository
+    private let repository: AuthRepository
     
     init(repository: AuthRepository) {
         self.repository = repository

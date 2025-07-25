@@ -9,7 +9,7 @@ import Foundation
 
 import Alamofire
 
-final class AuthRepositoryImp: AuthRepository {
+struct AuthRepositoryImp: AuthRepository {
     
     private let networkManager: NetworkManager
     private let kakaoManager: KakaoManager

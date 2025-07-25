@@ -9,7 +9,7 @@ import Foundation
 
 import Alamofire
 
-final class NetworkManager {
+struct NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
     /// 서버에러 -> Result<Failure>, 그 외 코드 에러  -> throw

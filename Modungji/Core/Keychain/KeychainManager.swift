@@ -8,7 +8,7 @@
 import Foundation
 import Security
 
-final class KeychainManager {
+struct KeychainManager {
     
     enum TokenType: String {
         case accessToken
