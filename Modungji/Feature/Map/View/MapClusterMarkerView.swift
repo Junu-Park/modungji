@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MapClusterMarkerView: View {
+struct MapClusterMarkerView: ClusterMarkerViewProtocol {
     let count: Int
     
     private var circleSize: CGFloat {
@@ -38,13 +38,5 @@ struct MapClusterMarkerView: View {
                     .foregroundStyle(.gray0)
                     .font(PDFont.title1.bold())
             }
-    }
-}
-
-extension MapClusterMarkerView {
-    func converToUIImage() -> UIImage {
-        let render = ImageRenderer(content: self)
-        render.scale = UIScreen.main.scale
-        return render.uiImage ?? UIImage()
     }
 }
