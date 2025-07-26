@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MapLeafMarkerView: View {
-    let imageName: String
+struct MapLeafMarkerView: ClusterMarkerViewProtocol {
+    let image: UIImage
     let deposit: Int
     let monthlyRent: Int
     
@@ -21,9 +21,10 @@ struct MapLeafMarkerView: View {
             .frame(width: 72, height: 100)
             .overlay(alignment: .top) {
                 VStack(alignment: .leading, spacing: 3) {
-                    RoundedRectangle(cornerRadius: 4)
+                    Image(uiImage: image)
+                        .resizable()
                         .aspectRatio(1, contentMode: .fit)
-                        .foregroundStyle(.brightCoast)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
                     
                     Text("\(self.convertPriceToString(deposit)) / \(self.convertPriceToString(monthlyRent))")
                         .font(PDFont.caption2.bold())
@@ -47,16 +48,4 @@ struct MapLeafMarkerView: View {
             return "1만↓"
         }
     }
-}
-
-extension MapLeafMarkerView {
-    func converToUIImage() -> UIImage {
-        let render = ImageRenderer(content: self)
-        render.scale = UIScreen.main.scale
-        return render.uiImage ?? UIImage()
-    }
-}
-
-#Preview {
-    MapLeafMarkerView(imageName: "Test", deposit: 1000000000000, monthlyRent: 110001)
 }
