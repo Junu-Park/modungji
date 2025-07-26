@@ -25,7 +25,13 @@ struct NetworkManager {
         
         do {
             if (200...299).contains(statusCode) {
-                let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                guard let data = response.data else {
+                    let errorResponse = ErrorResponseDTO(message: "Empty Data")
+                    NetworkLog.failure(url: requestURL.path, statusCode: 0, data: errorResponse)
+                    return .failure(errorResponse)
+                }
+                
+                let successResponse = try JSONDecoder().decode(T.self, from: data)
                 
                 NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
                 
@@ -58,11 +64,51 @@ struct NetworkManager {
         
         do {
             if (200...299).contains(statusCode) {
-                let successResponse = try JSONDecoder().decode(T.self, from: response.data!)
+                guard let data = response.data else {
+                    let errorResponse = ErrorResponseDTO(message: "Empty Data")
+                    NetworkLog.failure(url: requestURL.path, statusCode: 0, data: errorResponse)
+                    return .failure(errorResponse)
+                }
+                
+                let successResponse = try JSONDecoder().decode(T.self, from: data)
                 
                 NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: successResponse)
                 
                 return .success(successResponse)
+            } else {
+                var errorResponse = try JSONDecoder().decode(ErrorResponseDTO.self, from: response.data!)
+                errorResponse.statusCode = statusCode
+                
+                NetworkLog.failure(url: requestURL.path, statusCode: statusCode, data: errorResponse)
+                
+                return .failure(errorResponse)
+            }
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
+    
+    func requestEstate(requestURL: APIRouter) async throws -> Result<Data, ErrorResponseDTO> {
+        
+        let response = await AF.request(requestURL)
+            .serializingData()
+            .response
+        
+        guard let statusCode = response.response?.statusCode else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            if (200...299).contains(statusCode) {
+                guard let data = response.data else {
+                    let errorResponse = ErrorResponseDTO(message: "Empty Data")
+                    NetworkLog.failure(url: requestURL.path, statusCode: 0, data: errorResponse)
+                    return .failure(errorResponse)
+                }
+                
+                NetworkLog.success(url: requestURL.path, statusCode: statusCode, data: data)
+                
+                return .success(data)
             } else {
                 var errorResponse = try JSONDecoder().decode(ErrorResponseDTO.self, from: response.data!)
                 errorResponse.statusCode = statusCode
