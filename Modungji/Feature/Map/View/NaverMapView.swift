@@ -84,6 +84,10 @@ extension NaverMapView {
         
         private var viewModel: MapViewModel
         private var updateWorkItem: DispatchWorkItem?
+        private var defaultLeafMarkerImage: NMFOverlayImage = NMFOverlayImage(
+            image: DefaultMapLeafMakerView().converToUIImage(),
+            reuseIdentifier: "DefaultMapLeafMakerImage"
+        )
         
         init(viewModel: MapViewModel) {
             self.viewModel = viewModel
@@ -132,17 +136,37 @@ extension NaverMapView {
         func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
             guard let key = info.key as? MapClusterKey else { return }
             
-            marker.iconImage = NMFOverlayImage(
-                image: MapLeafMarkerView(
-                    imageName: key.entity.thumbnail,
-                    deposit: key.entity.deposit,
-                    monthlyRent: key.entity.monthlyRent
-                ).converToUIImage()
-            )
+            marker.iconImage = self.defaultLeafMarkerImage
             
             marker.touchHandler = { overlay in
                 self.viewModel.action(.tapEstate(estateID: key.entity.estateId))
                 return true
+            }
+            
+            Task {
+                do {
+                    let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.Image.image(urlString: key.entity.thumbnail))
+                    
+                    switch response {
+                    case .success(let success):
+                        if let loadedImage = UIImage(data: success) {
+                            await MainActor.run {
+                                marker.iconImage = NMFOverlayImage(
+                                    image: MapLeafMarkerView(
+                                        image: loadedImage,
+                                        deposit: key.entity.deposit,
+                                        monthlyRent: key.entity.monthlyRent
+                                    ).converToUIImage(),
+                                    reuseIdentifier: key.entity.estateId
+                                )
+                            }
+                        }
+                    case .failure:
+                        break
+                    }
+                } catch {
+                    print(error)
+                }
             }
         }
         
