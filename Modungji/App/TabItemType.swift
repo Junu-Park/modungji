@@ -33,7 +33,7 @@ enum TabItemType: Int, CaseIterable {
         case .map:
             return .map
         case .chat:
-            return .interestFill
+            return .chatFill
         case .setting:
             return .settingFill
         }
@@ -46,7 +46,7 @@ enum TabItemType: Int, CaseIterable {
         case .map:
             return .map
         case .chat:
-            return .interestEmpty
+            return .chatEmpty
         case .setting:
             return .settingEmpty
         }
