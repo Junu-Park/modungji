@@ -30,9 +30,9 @@ struct KakaoManager {
                 UserApi.shared.loginWithKakaoAccount { token, error in
                     if let error {
                         continuation.resume(returning: nil)
+                    } else {
+                        continuation.resume(returning: token)
                     }
-                    
-                    continuation.resume(returning: token)
                 }
             }
         }
