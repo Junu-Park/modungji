@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct MainView: View {
+    @StateObject private var viewModel: MainViewModel
     @State private var searchQuery: String = ""
+    
+    init(viewModel: MainViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         ZStack {
@@ -18,7 +23,7 @@ struct MainView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         
-                        self.estateBannerView()
+                        self.estateBannerView(data: viewModel.state.bannerEstateList)
                         
                         Group {
                             self.estateFilterView()
@@ -41,6 +46,9 @@ struct MainView: View {
                 Spacer()
             }
         }
+        .onAppear {
+            self.viewModel.action(.initView)
+        }
     }
 }
 
@@ -58,9 +66,9 @@ extension MainView {
         .padding(20)
     }
     
-    private func estateBannerView() -> some View {
+    private func estateBannerView(data: [BannerEstateResponseEntity]) -> some View {
         TabView {
-            ForEach(Mock.estateBannerDatas, id: \.id) { entity in
+            ForEach(data, id: \.estateId) { entity in
                 self.estateBanner(data: entity)
             }
         }
@@ -68,7 +76,7 @@ extension MainView {
         .frame(height: 400)
     }
     
-    private func estateBanner(data: EstateBannerEntity) -> some View {
+    private func estateBanner(data: BannerEstateResponseEntity) -> some View {
         Image(systemName: "photo")
             .resizable()
             .scaledToFill()
@@ -82,7 +90,7 @@ extension MainView {
                             .resizable()
                             .frame(width: 16, height: 16)
                         
-                        Text("\(data.address.si) \(data.address.dong)")
+                        Text("\("~~시 ~~동")")
                             .font(PDFont.caption2)
                     }
                     .foregroundStyle(.gray15)
@@ -352,8 +360,4 @@ extension MainView {
         }
         .padding(.horizontal, 20)
     }
-}
-
-#Preview {
-    MainView()
 }
