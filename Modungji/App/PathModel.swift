@@ -48,7 +48,11 @@ final class PathModel: ObservableObject {
             
             AuthWithEmailView(authType: authType, viewModel: viewModel)
         case .main:
-            MainView()
+            let viewModel = MainViewModel(
+                service: self.diContainer.service.mainService
+            )
+            
+            MainView(viewModel: viewModel)
         case .map:
             let viewModel = MapViewModel(
                 service: self.diContainer.service.mapService
