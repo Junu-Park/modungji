@@ -1,5 +1,5 @@
 //
-//  GetBannerEstateResponseDTO.swift
+//  GetEstateBannerResponseDTO.swift
 //  Modungji
 //
 //  Created by 박준우 on 6/3/25.
@@ -7,13 +7,13 @@
 
 import Foundation
 
-// MARK: - GetBannerEstateResponseDTO
-struct GetBannerEstateResponseDTO: Decodable {
-    let data: [BannerEstateDTO]
+// MARK: - GetEstateBannerResponseDTO
+struct GetEstateBannerResponseDTO: Decodable {
+    let data: [EstateBannerDTO]
 }
 
-// MARK: - BannerEstateDTO
-struct BannerEstateDTO: Decodable {
+// MARK: - EstateBannerDTO
+struct EstateBannerDTO: Decodable {
     let estateId: String
     let category: String
     let title: String

@@ -8,5 +8,5 @@
 import Foundation
 
 protocol MainRepository {
-    func getBannerEstate() async throws -> [BannerEstateResponseEntity]
+    func getEstateBanner() async throws -> [EstateBannerResponseEntity]
 }

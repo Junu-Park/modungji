@@ -12,10 +12,10 @@ struct EstateBannerEntity {
     let title: String
     let introduction: String
     let thumbnail: String
-    let address: Address
+    let address: AddressEntity
 }
 
-struct Address {
+struct AddressEntity {
     let si: String
     let gu: String
     let dong: String

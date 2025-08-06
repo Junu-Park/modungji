@@ -9,7 +9,7 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     struct State {
-        var bannerEstateList: [BannerEstateResponseEntity] = []
+        var EstateBannerList: [EstateBannerResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -40,10 +40,10 @@ final class MainViewModel: ObservableObject {
     private func initView() {
         Task {
             do {
-                let result = try await self.service.getBannerEstate()
+                let result = try await self.service.getEstateBanner()
                 
                 await MainActor.run {
-                    self.state.bannerEstateList = result
+                    self.state.EstateBannerList = result
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {

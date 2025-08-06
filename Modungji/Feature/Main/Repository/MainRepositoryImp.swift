@@ -14,8 +14,8 @@ struct MainRepositoryImp: MainRepository {
         self.networkManager = networkManager
     }
     
-    func getBannerEstate() async throws -> [BannerEstateResponseEntity] {
-        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Estate.getBannerEstate, successDecodingType: GetBannerEstateResponseDTO.self)
+    func getEstateBanner() async throws -> [EstateBannerResponseEntity] {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Estate.getEstateBanner, successDecodingType: GetEstateBannerResponseDTO.self)
         
         switch response {
         case .success(let success):
@@ -25,8 +25,8 @@ struct MainRepositoryImp: MainRepository {
         }
     }
     
-    private func convertToEntity(_ dto: BannerEstateDTO) -> BannerEstateResponseEntity {
+    private func convertToEntity(_ dto: EstateBannerDTO) -> EstateBannerResponseEntity {
         
-        return BannerEstateResponseEntity(estateId: dto.estateId, title: dto.title, introduction: dto.introduction, thumbnails: dto.thumbnails.first ?? "", geolocation: GeolocationEntity(latitude: dto.geolocation.latitude, longitude: dto.geolocation.longitude))
+        return EstateBannerResponseEntity(estateId: dto.estateId, title: dto.title, introduction: dto.introduction, thumbnails: dto.thumbnails.first ?? "", geolocation: GeolocationEntity(latitude: dto.geolocation.latitude, longitude: dto.geolocation.longitude))
     }
 }

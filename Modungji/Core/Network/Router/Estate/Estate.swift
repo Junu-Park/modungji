@@ -16,7 +16,7 @@ extension EstateRouter {
         case updateEstateLike(estateID: String, body: UpdateEstateLikeRequestDTO)
         case getMyEstateLike(category: EstateCategory?, next: String?, limit: Int = 5)
         case getEstateWithGeo(category: EstateCategory?, longitude: Double?, latitude: Double?, maxDistance: Int?)
-        case getBannerEstate
+        case getEstateBanner
         case getHotEstate
         case getSimilarEstate
         case getTodayTopic
@@ -35,7 +35,7 @@ extension EstateRouter {
                 return "likes/me"
             case .getEstateWithGeo:
                 return "geolocation"
-            case .getBannerEstate:
+            case .getEstateBanner:
                 return "today-estates"
             case .getHotEstate:
                 return "hot-estates"

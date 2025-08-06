@@ -23,7 +23,7 @@ struct MainView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         
-                        self.estateBannerView(data: viewModel.state.bannerEstateList)
+                        self.estateBannerView(data: viewModel.state.EstateBannerList)
                         
                         Group {
                             self.estateFilterView()
@@ -66,7 +66,7 @@ extension MainView {
         .padding(20)
     }
     
-    private func estateBannerView(data: [BannerEstateResponseEntity]) -> some View {
+    private func estateBannerView(data: [EstateBannerResponseEntity]) -> some View {
         TabView {
             ForEach(data, id: \.estateId) { entity in
                 self.estateBanner(data: entity)
@@ -76,7 +76,7 @@ extension MainView {
         .frame(height: 400)
     }
     
-    private func estateBanner(data: BannerEstateResponseEntity) -> some View {
+    private func estateBanner(data: EstateBannerResponseEntity) -> some View {
         Image(systemName: "photo")
             .resizable()
             .scaledToFill()
