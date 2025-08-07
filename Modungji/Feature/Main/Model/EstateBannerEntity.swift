@@ -16,7 +16,10 @@ struct EstateBannerEntity {
 }
 
 struct AddressEntity {
-    let si: String
-    let gu: String
-    let dong: String
+    // 시/도
+    let area1: String
+    // 시/군/구
+    let area2: String
+    // 읍/면/동
+    let area3: String
 }
