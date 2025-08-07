@@ -21,10 +21,10 @@ extension NaverRouter {
         
         var path: String {
             switch self {
-            case .reverseGeocoding(let coords):
-                return "map-reversegeocode/v2/gc\(coords)"
-            case .geocoding(let query):
-                return "map-geocode/v2/geocode\(query)"
+            case .reverseGeocoding:
+                return "map-reversegeocode/v2/gc"
+            case .geocoding:
+                return "map-geocode/v2/geocode"
             }
         }
         
