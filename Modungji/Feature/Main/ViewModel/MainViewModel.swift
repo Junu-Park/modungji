@@ -9,7 +9,7 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     struct State {
-        var EstateBannerList: [EstateBannerResponseEntity] = []
+        var EstateBannerList: [EstateBannerEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
