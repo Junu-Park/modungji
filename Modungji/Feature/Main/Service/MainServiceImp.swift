@@ -14,7 +14,8 @@ struct MainServiceImp: MainService {
         self.repository = repository
     }
     
-    func getEstateBanner() async throws -> [EstateBannerResponseEntity] {
+    func getEstateBanner() async throws -> [EstateBannerEntity] {
+        let response = try await self.repository.getEstateBanner()
         
         return try await self.repository.getEstateBanner()
     }
