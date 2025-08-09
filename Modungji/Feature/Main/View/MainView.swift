@@ -66,9 +66,9 @@ extension MainView {
         .padding(20)
     }
     
-    private func estateBannerView(data: [EstateBannerResponseEntity]) -> some View {
+    private func estateBannerView(data: [EstateBannerEntity]) -> some View {
         TabView {
-            ForEach(data, id: \.estateId) { entity in
+            ForEach(data, id: \.id) { entity in
                 self.estateBanner(data: entity)
             }
         }
@@ -76,9 +76,8 @@ extension MainView {
         .frame(height: 400)
     }
     
-    private func estateBanner(data: EstateBannerResponseEntity) -> some View {
-        Image(systemName: "photo")
-            .resizable()
+    private func estateBanner(data: EstateBannerEntity) -> some View {
+        URLImageView(urlString: data.thumbnail)
             .scaledToFill()
             .frame(width: UIScreen.main.bounds.width)
             .clipped()
@@ -90,7 +89,7 @@ extension MainView {
                             .resizable()
                             .frame(width: 16, height: 16)
                         
-                        Text("\("~~시 ~~동")")
+                        Text("\(data.address.area1) \(data.address.area3)")
                             .font(PDFont.caption2)
                     }
                     .foregroundStyle(.gray15)
