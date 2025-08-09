@@ -17,6 +17,32 @@ struct MainServiceImp: MainService {
     func getEstateBanner() async throws -> [EstateBannerEntity] {
         let response = try await self.repository.getEstateBanner()
         
-        return try await self.repository.getEstateBanner()
+        return try await withThrowingTaskGroup(of: (Int, EstateBannerEntity).self) { group in
+            for (index, banner) in response.enumerated() {
+                group.addTask {
+                    let address = try await self.repository.getAddress(
+                        coords: "\(banner.geolocation.longitude),\(banner.geolocation.latitude)"
+                    )
+                    
+                    let entity = EstateBannerEntity(
+                        id: banner.estateId,
+                        title: banner.title,
+                        introduction: banner.introduction,
+                        thumbnail: banner.thumbnails,
+                        address: .init(area1: address.area1Alias, area2: address.area2, area3: address.area3)
+                    )
+                    
+                    return (index, entity)
+                }
+            }
+            
+            var result = Array<EstateBannerEntity?>(repeating: nil, count: response.count)
+            
+            for try await (index, entity) in group {
+                result[index] = entity
+            }
+            
+            return result.compactMap { $0 }
+        }
     }
 }
