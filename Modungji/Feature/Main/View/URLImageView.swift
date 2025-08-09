@@ -17,13 +17,15 @@ struct URLImageView: View {
     }
     
     var body: some View {
-        Group {
-            if let uiImage {
-                Image(uiImage: uiImage)
-                    .resizable()
-            } else {
-                RoundedRectangle(cornerRadius: 4)
-                    .foregroundStyle(.brightCream)
+        ZStack {
+            Group {
+                if let uiImage {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                } else {
+                    RoundedRectangle(cornerRadius: 4)
+                        .foregroundStyle(.brightCream)
+                }
             }
         }
         .task {
