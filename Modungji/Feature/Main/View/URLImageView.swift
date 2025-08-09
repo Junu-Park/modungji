@@ -9,7 +9,7 @@ import SwiftUI
 
 struct URLImageView: View {
     @State private var uiImage: UIImage?
-    @State private var isLoading: Bool = true
+    
     private let urlString: String
     
     init(urlString: String) {
@@ -20,32 +20,62 @@ struct URLImageView: View {
         Group {
             if let uiImage {
                 Image(uiImage: uiImage)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-            } else if isLoading {
-                ProgressView()
+                    .resizable()
             } else {
                 RoundedRectangle(cornerRadius: 4)
                     .foregroundStyle(.brightCream)
             }
         }
         .task {
-            defer { isLoading = false }
-            do {
-                let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.Image.image(urlString: self.urlString))
-                
-                switch response {
-                case .success(let success):
-                    self.uiImage = UIImage(data: success)
-                case .failure:
-                    self.uiImage = nil
-                }
-            } catch {
-                self.uiImage = nil
+            if self.uiImage == nil {
+                self.uiImage = await ImageCacheManager.shared.getImage(urlString: urlString)
             }
         }
     }
 }
 
+final class ImageCacheManager {
+    static let shared = ImageCacheManager()
+    
+    private let cache = NSCache<NSString, UIImage>()
+    
+    private init() {
+        cache.countLimit = 50
+        cache.totalCostLimit = 50 * 1024 * 1024 // 50MB
+    }
+    
+    func getImage(urlString: String) async -> UIImage? {
+        let cacheKey = NSString(string: urlString)
+        
+        guard let cacheImage = cache.object(forKey: cacheKey) else {
+            do {
+                return try await getImageFromURL(urlString: urlString)
+            } catch {
+                return nil
+            }
+        }
+        
+        return cacheImage
+    }
+    
+    private func getImageFromURL(urlString: String) async throws -> UIImage? {
+        let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.Image.image(urlString: urlString))
+        
+        switch response {
+        case .success(let data):
+            guard let image = UIImage(data: data) else {
+                return nil
+            }
+            
+            let cacheKey = NSString(string: urlString)
+            cache.setObject(image, forKey: cacheKey)
+            return image
+        case .failure:
+            return nil
+        }
+    }
+}
+    
 #Preview {
     URLImageView(urlString: "")
 }
