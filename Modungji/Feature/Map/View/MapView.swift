@@ -15,7 +15,7 @@ struct MapView: View {
     }
     
     var body: some View {
-        VStack{
+        VStack {
             NaverMapView(viewModel: self.viewModel)
                 .overlay(alignment: .bottomTrailing) {
                     Button {

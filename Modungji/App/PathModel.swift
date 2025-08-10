@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 final class PathModel: ObservableObject {
     @Published var path: NavigationPath = .init()
     
@@ -55,7 +56,8 @@ final class PathModel: ObservableObject {
             MainView(viewModel: viewModel)
         case .map:
             let viewModel = MapViewModel(
-                service: self.diContainer.service.mapService
+                service: self.diContainer.service.mapService,
+                pathModel: self
             )
             
             MapView(viewModel: viewModel)

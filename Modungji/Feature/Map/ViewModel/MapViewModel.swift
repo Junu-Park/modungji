@@ -30,9 +30,11 @@ final class MapViewModel: ObservableObject {
     @Published var state: State = State()
     private var cancellables: Set<AnyCancellable> = []
     private let service: MapService
+    private let pathModel: PathModel
     
-    init(service: MapService) {
+    init(service: MapService, pathModel: PathModel) {
         self.service = service
+        self.pathModel = pathModel
         
         self.transform()
     }
