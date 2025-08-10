@@ -22,6 +22,7 @@ struct DIContainer {
         let authRepository: AuthRepository
         let mapRepository: MapRepository
         let mainRepository: MainRepository
+        let detailRepository: DetailRepository
     }
     let repository: Repository
     
@@ -30,6 +31,7 @@ struct DIContainer {
         let authService: AuthService
         let mapService: MapService
         let mainService: MainService
+        let detailService: DetailService
     }
     let service: Service
     
@@ -46,9 +48,11 @@ struct DIContainer {
         authRepository: AuthRepository? = nil,
         mapRepository: MapRepository? = nil,
         mainRepository: MainRepository? = nil,
+        detailRepository: DetailRepository? = nil,
         authService: AuthService? = nil,
         mapService: MapService? = nil,
         mainService: MainService? = nil,
+        detailService: DetailService? = nil,
         authState: AuthState? = nil
     ) {
         self.manager = Manager(
@@ -70,6 +74,9 @@ struct DIContainer {
             ),
             mainRepository: mainRepository ?? MainRepositoryImp(
                 networkManager: self.manager.networkManager
+            ),
+            detailRepository: detailRepository ?? DetailRepositoryImp(
+                networkManager: self.manager.networkManager
             )
         )
         
@@ -82,6 +89,9 @@ struct DIContainer {
             ),
             mainService: mainService ?? MainServiceImp(
                 repository: self.repository.mainRepository
+            ),
+            detailService: detailService ?? DetailServiceImp(
+                repository: self.repository.detailRepository
             )
         )
         
