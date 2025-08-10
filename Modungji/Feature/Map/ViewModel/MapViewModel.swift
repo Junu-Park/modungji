@@ -118,8 +118,7 @@ final class MapViewModel: ObservableObject {
         Task {
             do {
                 let response = try await self.service.getEstateDetail(estateID: estateID)
-                
-                print(response)
+                await self.pathModel.push(.detail(estateID: estateID))
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
                     self.state.errorMessage = error.message

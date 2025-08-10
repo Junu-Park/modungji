@@ -61,6 +61,8 @@ final class PathModel: ObservableObject {
             )
             
             MapView(viewModel: viewModel)
+        case .detail(let estateID):
+            EmptyView()
         }
     }
 }
