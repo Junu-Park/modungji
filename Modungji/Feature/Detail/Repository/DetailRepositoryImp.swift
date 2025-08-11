@@ -45,16 +45,16 @@ struct DetailRepositoryImp: DetailRepository {
             area: dto.area,
             parkingCount: dto.parkingCount,
             floors: dto.floors,
-            options: EstateOptionEntity(
-                refrigerator: dto.options.refrigerator,
-                washer: dto.options.washer,
-                airConditioner: dto.options.airConditioner,
-                closet: dto.options.closet,
-                shoeRack: dto.options.shoeRack,
-                microwave: dto.options.microwave,
-                sink: dto.options.sink,
-                tv: dto.options.tv
-            ),
+            options: [
+                EstateOptionEntity(name: "냉장고", image: .refrigerator, state: dto.options.refrigerator),
+                EstateOptionEntity(name: "세탁", image: .washingMachine, state: dto.options.washer),
+                EstateOptionEntity(name: "에어컨", image: .airConditioner, state: dto.options.airConditioner),
+                EstateOptionEntity(name: "옷장", image: .closet, state: dto.options.closet),
+                EstateOptionEntity(name: "신발장", image: .shoeCabinet, state: dto.options.shoeRack),
+                EstateOptionEntity(name: "전자레인지", image: .microwave, state: dto.options.microwave),
+                EstateOptionEntity(name: "싱크대", image: .sink, state: dto.options.sink),
+                EstateOptionEntity(name: "TV", image: .television, state: dto.options.tv)
+            ],
             geolocation: GeolocationEntity(
                 latitude: dto.geolocation.latitude,
                 longitude: dto.geolocation.longitude

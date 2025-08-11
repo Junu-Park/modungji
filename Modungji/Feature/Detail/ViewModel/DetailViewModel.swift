@@ -26,16 +26,7 @@ final class DetailViewModel: ObservableObject {
             area: 0,
             parkingCount: 0,
             floors: 0,
-            options: .init(
-                refrigerator: false,
-                washer: false,
-                airConditioner: false,
-                closet: false,
-                shoeRack: false,
-                microwave: false,
-                sink: false,
-                tv: false
-            ),
+            options: [],
             geolocation: .init(
                 latitude: 0,
                 longitude: 0
@@ -62,7 +53,6 @@ final class DetailViewModel: ObservableObject {
     enum Action {
         case getDetailData(estateID: String)
     }
-    
     
     @Published var state: State = State()
     private let estateID: String

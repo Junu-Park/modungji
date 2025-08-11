@@ -22,7 +22,7 @@ struct GetEstateDetailResponseEntity {
    let area: Double
    let parkingCount: Int
    let floors: Int
-   let options: EstateOptionEntity
+   let options: [EstateOptionEntity]
    let geolocation: GeolocationEntity
    let creator: UserEntity
    let isLiked: Bool
@@ -33,56 +33,12 @@ struct GetEstateDetailResponseEntity {
    let comments: [CommentEntity]
    let createdAt: String
    let updatedAt: String
-   
-   enum CodingKeys: String, CodingKey {
-       case estateID = "estate_id"
-       case category
-       case title
-       case introduction
-       case reservationPrice = "reservation_price"
-       case thumbnails
-       case description
-       case deposit
-       case monthlyRent = "monthly_rent"
-       case builtYear = "built_year"
-       case maintenanceFee = "maintenance_fee"
-       case area
-       case parkingCount = "parking_count"
-       case floors
-       case options
-       case geolocation
-       case creator
-       case isLiked = "is_liked"
-       case isReserved = "is_reserved"
-       case likeCount = "like_count"
-       case isSafeEstate = "is_safe_estate"
-       case isRecommended = "is_recommended"
-       case comments
-       case createdAt
-       case updatedAt
-   }
 }
 
 struct EstateOptionEntity {
-   let refrigerator: Bool
-   let washer: Bool
-   let airConditioner: Bool
-   let closet: Bool
-   let shoeRack: Bool
-   let microwave: Bool
-   let sink: Bool
-   let tv: Bool
-   
-   enum CodingKeys: String, CodingKey {
-       case refrigerator
-       case washer
-       case airConditioner = "air_conditioner"
-       case closet
-       case shoeRack = "shoe_rack"
-       case microwave
-       case sink
-       case tv
-   }
+    let name: String
+    let image: ImageResource
+    let state: Bool
 }
 
 struct UserEntity {
@@ -90,13 +46,6 @@ struct UserEntity {
    let nick: String
    let introduction: String
    let profileImage: String
-   
-   enum CodingKeys: String, CodingKey {
-       case userID = "user_id"
-       case nick
-       case introduction
-       case profileImage
-   }
 }
 
 struct CommentEntity {
@@ -105,14 +54,6 @@ struct CommentEntity {
    let createdAt: String
    let creator: UserEntity
    let replies: [ReplyEntity]
-   
-   enum CodingKeys: String, CodingKey {
-       case commentID = "comment_id"
-       case content
-       case createdAt
-       case creator
-       case replies
-   }
 }
 
 struct ReplyEntity {
@@ -120,11 +61,4 @@ struct ReplyEntity {
    let content: String
    let createdAt: String
    let creator: UserEntity
-   
-   enum CodingKeys: String, CodingKey {
-       case commentID = "comment_id"
-       case content
-       case createdAt
-       case creator
-   }
 }
