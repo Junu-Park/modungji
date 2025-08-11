@@ -115,16 +115,6 @@ final class MapViewModel: ObservableObject {
     }
     
     private func tapEstate(estateID: String) {
-        Task {
-            do {
-                let response = try await self.service.getEstateDetail(estateID: estateID)
-                await self.pathModel.push(.detail(estateID: estateID))
-            } catch let error as EstateErrorResponseEntity {
-                await MainActor.run {
-                    self.state.errorMessage = error.message
-                    self.state.showErrorAlert = true
-                }
-            }
-        }
+        self.pathModel.push(.detail(estateID: estateID))
     }
 }
