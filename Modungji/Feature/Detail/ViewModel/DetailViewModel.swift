@@ -51,7 +51,7 @@ final class DetailViewModel: ObservableObject {
     }
     
     enum Action {
-        case getDetailData(estateID: String)
+        case getDetailData
     }
     
     @Published var state: State = State()
@@ -67,8 +67,8 @@ final class DetailViewModel: ObservableObject {
     
     func action(_ action: Action) {
         switch action {
-        case .getDetailData(let estateID):
-            self.getDetailData(estateID: estateID)
+        case .getDetailData:
+            self.getDetailData(estateID: self.estateID)
         }
     }
     
