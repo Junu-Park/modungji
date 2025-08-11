@@ -9,7 +9,7 @@ import Foundation
 
 final class DetailViewModel: ObservableObject {
     struct State {
-        var isLoading: Bool = false
+        var isLoading: Bool = true
         var detailData: GetEstateDetailResponseEntity =
             .init(
             estateID: "",
@@ -63,6 +63,8 @@ final class DetailViewModel: ObservableObject {
         self.estateID = estateID
         self.service = service
         self.pathModel = pathModel
+        
+        self.getDetailData(estateID: estateID)
     }
     
     func action(_ action: Action) {
@@ -73,9 +75,13 @@ final class DetailViewModel: ObservableObject {
     }
     
     private func getDetailData(estateID: String) {
-        Task {
+        Task { @MainActor in
+            defer {
+                self.state.isLoading = false
+            }
             do {
-                let response = try await self.service.getEstateDetail(estateID: estateID)
+                self.state.isLoading = true
+                self.state.detailData = try await self.service.getEstateDetail(estateID: estateID)
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
                     self.state.errorMessage = error.message
