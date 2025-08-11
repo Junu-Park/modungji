@@ -9,6 +9,5 @@ import Foundation
 
 protocol MapService {
     func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity]
-    func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity
     func getUserLocation() async throws -> Bool
 }
