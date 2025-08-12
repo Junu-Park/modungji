@@ -12,7 +12,9 @@ struct ReverseGeocodingDTO: Decodable {
 }
 
 struct AddressDTO: Decodable {
+    let name: String
     let region: Region
+    let land: Land?
 }
 
 struct Region: Decodable {
@@ -24,4 +26,14 @@ struct Region: Decodable {
 struct Area: Decodable {
     let name: String
     let alias: String?
+}
+
+struct Land: Decodable {
+    let name: String
+    let number: String
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case number = "number1"
+    }
 }

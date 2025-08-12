@@ -40,7 +40,7 @@ extension NaverRouter {
             case .reverseGeocoding(let coords):
                 return [
                     "coords": coords,
-                    "orders": "admcode",
+                    "orders": "admcode,roadaddr",
                     "output": "json"
                 ]
             case .geocoding(let query):

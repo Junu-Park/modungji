@@ -42,10 +42,33 @@ struct MainRepositoryImp: MainRepository {
     }
     
     private func convertToEntity(_ dto: ReverseGeocodingDTO) -> ReverseGeocodingResponseEntity {
-        guard let data = dto.results.first?.region else {
-            return ReverseGeocodingResponseEntity(area1: "알 수 없음", area1Alias: "알 수 없음", area2: "알 수 없음", area3: "알 수 없음")
+        let admcodes = dto.results.filter({ $0.name == "admcode" })
+        let roadaddrs = dto.results.filter({ $0.name == "roadaddr" })
+        
+        guard let admcode = admcodes.first else {
+            return ReverseGeocodingResponseEntity(isExistRoadAddr: false, area1: "알 수 없음", area1Alias: "알 수 없음", area2: "알 수 없음", area3: "알 수 없음", roadName: "알 수 없음", roadNumber: "")
         }
         
-        return ReverseGeocodingResponseEntity(area1: data.area1.name, area1Alias: data.area1.alias ?? data.area1.name, area2: data.area2.name, area3: data.area3.name)
+        if let roadaddr = roadaddrs.first, let roadName = roadaddr.land?.name, let roadNumber = roadaddr.land?.number {
+            return .init(
+                isExistRoadAddr: true,
+                area1: admcode.region.area1.name,
+                area1Alias: admcode.region.area1.alias ?? admcode.region.area1.name,
+                area2: admcode.region.area2.name,
+                area3: admcode.region.area3.name,
+                roadName: roadName,
+                roadNumber: roadNumber
+            )
+        } else {
+            return .init(
+                isExistRoadAddr: false,
+                area1: admcode.region.area1.name,
+                area1Alias: admcode.region.area1.alias ?? admcode.region.area1.name,
+                area2: admcode.region.area2.name,
+                area3: admcode.region.area3.name,
+                roadName: "",
+                roadNumber: ""
+            )
+        }
     }
 }

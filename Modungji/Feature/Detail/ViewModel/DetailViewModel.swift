@@ -44,7 +44,8 @@ final class DetailViewModel: ObservableObject {
             isRecommended: false,
             comments: [],
             createdAt: "",
-            updatedAt: ""
+            updatedAt: "",
+            address: ""
         )
         var showErrorAlert: Bool = false
         var errorMessage: String = ""

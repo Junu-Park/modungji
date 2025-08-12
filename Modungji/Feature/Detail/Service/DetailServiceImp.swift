@@ -16,7 +16,14 @@ struct DetailServiceImp: DetailService {
     }
     
     func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity {
-        return try await self.repository.getEstateDetail(estateID: estateID)
+        var detailResponse = try await self.repository.getEstateDetail(estateID: estateID)
+        let addressResponse = try await self.repository.getAddress(coords: "\(detailResponse.geolocation.longitude),\(detailResponse.geolocation.latitude)")
+        if addressResponse.isExistRoadAddr {
+            detailResponse.address = "\(addressResponse.area1Alias) \(addressResponse.area2) \(addressResponse.roadName) \(addressResponse.roadNumber)"
+        } else {
+            detailResponse.address = "\(addressResponse.area1Alias) \(addressResponse.area2) \(addressResponse.area3)"
+        }
+        return detailResponse
     }
     
     func updateEstateLike(estateID: String, status: Bool) async throws -> UpdateEstateLikeResponseEntity {
