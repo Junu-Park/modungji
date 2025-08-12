@@ -25,7 +25,7 @@ struct GetEstateDetailResponseEntity {
    let options: [EstateOptionEntity]
    let geolocation: GeolocationEntity
    let creator: UserEntity
-   let isLiked: Bool
+   var isLiked: Bool
    let isReserved: Bool
    let likeCount: Int
    let isSafeEstate: Bool

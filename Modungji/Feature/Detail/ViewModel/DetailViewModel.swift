@@ -52,6 +52,7 @@ final class DetailViewModel: ObservableObject {
     
     enum Action {
         case getDetailData
+        case tapLike
     }
     
     @Published var state: State = State()
@@ -64,24 +65,42 @@ final class DetailViewModel: ObservableObject {
         self.service = service
         self.pathModel = pathModel
         
-        self.getDetailData(estateID: estateID)
+        self.getDetailData()
     }
     
     func action(_ action: Action) {
         switch action {
         case .getDetailData:
-            self.getDetailData(estateID: self.estateID)
+            self.getDetailData()
+        case .tapLike:
+            self.tapLike()
         }
     }
     
-    private func getDetailData(estateID: String) {
+    private func getDetailData() {
         Task { @MainActor in
             defer {
                 self.state.isLoading = false
             }
             do {
                 self.state.isLoading = true
-                self.state.detailData = try await self.service.getEstateDetail(estateID: estateID)
+                self.state.detailData = try await self.service.getEstateDetail(estateID: self.estateID)
+            } catch let error as EstateErrorResponseEntity {
+                await MainActor.run {
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
+                }
+            }
+        }
+    }
+    
+    private func tapLike() {
+        Task {
+            do {
+                let status = try await self.service.updateEstateLike(estateID: self.estateID, status: !self.state.detailData.isLiked).likeStatus
+                await MainActor.run {
+                    self.state.detailData.isLiked = status
+                }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
                     self.state.errorMessage = error.message
