@@ -9,4 +9,5 @@ import Foundation
 
 protocol DetailRepository {
     func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity
+    func updateEstateLike(estateID: String, request: UpdateEstateLikeRequestDTO) async throws -> UpdateEstateLikeResponseEntity
 }

@@ -18,4 +18,9 @@ struct DetailServiceImp: DetailService {
     func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity {
         return try await self.repository.getEstateDetail(estateID: estateID)
     }
+    
+    func updateEstateLike(estateID: String, status: Bool) async throws -> UpdateEstateLikeResponseEntity {
+        let request = UpdateEstateLikeRequestDTO(like_status: status)
+        return try await self.repository.updateEstateLike(estateID: estateID, request: request)
+    }
 }

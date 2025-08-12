@@ -29,6 +29,22 @@ struct DetailRepositoryImp: DetailRepository {
         }
     }
     
+    func updateEstateLike(estateID: String, request: UpdateEstateLikeRequestDTO) async throws -> UpdateEstateLikeResponseEntity {
+        let response = try await self.networkManager.requestEstate(
+            requestURL: EstateRouter.Estate.updateEstateLike(
+                estateID: estateID,
+                body: request
+            ),
+            successDecodingType: UpdateEstateLikeResponseDTO.self
+        )
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(dto: success)
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
+    
     private func convertToEntity(dto: GetEstateDetailResponseDTO) -> GetEstateDetailResponseEntity {
         return GetEstateDetailResponseEntity(
             estateID: dto.estateId,
@@ -101,5 +117,9 @@ struct DetailRepositoryImp: DetailRepository {
             createdAt: dto.createdAt ?? "",
             updatedAt: dto.updatedAt ?? ""
         )
+    }
+    
+    private func convertToEntity(dto: UpdateEstateLikeResponseDTO) -> UpdateEstateLikeResponseEntity {
+        return .init(likeStatus: dto.likeStatus)
     }
 }
