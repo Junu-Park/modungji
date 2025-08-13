@@ -9,6 +9,7 @@ import SwiftUI
 
 import FirebaseCore
 import FirebaseMessaging
+import iamport_ios
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     
@@ -39,6 +40,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // 영문 입력 상태에서 Option + Shift + K 누르면 애플 로고 나온당!
         print(" APNs device token: \(deviceToken.map { String(format: "%02x", $0) }.joined())")
         Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        Iamport.shared.receivedURL(url)
+        
+        return true
     }
 }
 
