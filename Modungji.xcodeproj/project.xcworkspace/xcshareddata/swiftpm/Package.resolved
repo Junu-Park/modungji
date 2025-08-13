@@ -1,5 +1,5 @@
 {
-  "originHash" : "e02303043f7be4fcf53343c3cecbc5feb76f0cb81c0fe4666cad4281f1822d63",
+  "originHash" : "cc0dd701d43596c4ce93946717de32b0f00adf67904407bf261eeb0e2ce89be5",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -92,6 +92,15 @@
       }
     },
     {
+      "identity" : "iamport-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/iamport/iamport-ios.git",
+      "state" : {
+        "revision" : "cfa5ca2bb0f2be4e51981f14fd20d32d6c9d3636",
+        "version" : "1.4.7"
+      }
+    },
+    {
       "identity" : "interop-ios-for-google-sdks",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/interop-ios-for-google-sdks.git",
@@ -137,6 +146,15 @@
       }
     },
     {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
+      "state" : {
+        "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
+        "version" : "6.9.0"
+      }
+    },
+    {
       "identity" : "spm-nmapsgeometry",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/navermaps/SPM-NMapsGeometry.git",
@@ -161,6 +179,15 @@
       "state" : {
         "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
         "version" : "1.30.0"
+      }
+    },
+    {
+      "identity" : "then",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devxoul/Then.git",
+      "state" : {
+        "revision" : "e421a7b3440a271834337694e6050133a3958bc7",
+        "version" : "2.7.0"
       }
     }
   ],

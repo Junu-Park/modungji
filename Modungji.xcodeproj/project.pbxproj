@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5101A8B82DD09E4F008CF16B /* Alamofire */; };
+		517026C62E4E63AB0084EF41 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 517026C52E4E63AB0084EF41 /* iamport-ios */; };
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
 		519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 519B08AC2DD726A000CDDF38 /* KakaoSDK */; };
 		519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */ = {isa = PBXBuildFile; productRef = 519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */; };
@@ -52,6 +53,7 @@
 				51D212652DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				51DD39792DE9A32500CCD1FE /* NMapsMap in Frameworks */,
 				519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */,
+				517026C62E4E63AB0084EF41 /* iamport-ios in Frameworks */,
 				519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +105,7 @@
 				51DD39782DE9A32500CCD1FE /* NMapsMap */,
 				51D212642DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport */,
 				51D212662DFC273E0033EB89 /* FirebaseMessaging */,
+				517026C52E4E63AB0084EF41 /* iamport-ios */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -138,6 +141,7 @@
 				519B0FB12DD79C6B00CDDF38 /* XCLocalSwiftPackageReference "ModungjiSecret" */,
 				51DD39772DE9A32500CCD1FE /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
 				51D212632DFC273E0033EB89 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				517026C42E4E63AB0084EF41 /* XCRemoteSwiftPackageReference "iamport-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
@@ -433,6 +437,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		517026C42E4E63AB0084EF41 /* XCRemoteSwiftPackageReference "iamport-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iamport/iamport-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.7;
+			};
+		};
 		519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -464,6 +476,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5101A8B72DD09E4F008CF16B /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		517026C52E4E63AB0084EF41 /* iamport-ios */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 517026C42E4E63AB0084EF41 /* XCRemoteSwiftPackageReference "iamport-ios" */;
+			productName = "iamport-ios";
 		};
 		519B08AC2DD726A000CDDF38 /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;
