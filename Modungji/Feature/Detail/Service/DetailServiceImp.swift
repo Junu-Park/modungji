@@ -30,4 +30,9 @@ struct DetailServiceImp: DetailService {
         let request = UpdateEstateLikeRequestDTO(like_status: status)
         return try await self.repository.updateEstateLike(estateID: estateID, request: request)
     }
+    
+    func createOrder(estateID: String, price: Int) async throws -> CreateOrderResponseEntity {
+        let request = CreateOrderRequestDTO(estate_id: estateID, total_price: price)
+        return try await self.repository.createOrder(request: request)
+    }
 }

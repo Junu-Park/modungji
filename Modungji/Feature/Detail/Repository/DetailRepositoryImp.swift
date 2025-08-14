@@ -56,6 +56,17 @@ struct DetailRepositoryImp: DetailRepository {
         }
     }
     
+    func createOrder(request: CreateOrderRequestDTO) async throws -> CreateOrderResponseEntity {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Order.createOrder(body: request), successDecodingType: CreateOrderResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(success)
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     private func convertToEntity(dto: GetEstateDetailResponseDTO) -> GetEstateDetailResponseEntity {
         return GetEstateDetailResponseEntity(
             estateID: dto.estateId,
@@ -164,5 +175,15 @@ struct DetailRepositoryImp: DetailRepository {
                 roadNumber: ""
             )
         }
+    }
+    
+    private func convertToEntity(_ dto: CreateOrderResponseDTO) -> CreateOrderResponseEntity {
+        return .init(
+            orderID: dto.orderID,
+            orderCode: dto.orderCode,
+            totalPrice: dto.totalPrice,
+            createdAt: dto.createdAt,
+            updatedAt: dto.updatedAt
+        )
     }
 }
