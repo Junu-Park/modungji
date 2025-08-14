@@ -7,6 +7,8 @@
 
 import Foundation
 
+import iamport_ios
+
 final class DetailViewModel: ObservableObject {
     struct State {
         var isLoading: Bool = true
@@ -47,6 +49,8 @@ final class DetailViewModel: ObservableObject {
             updatedAt: "",
             address: ""
         )
+        var showPayment: Bool = false
+        var payment: IamportPayment?
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -54,6 +58,7 @@ final class DetailViewModel: ObservableObject {
     enum Action {
         case getDetailData
         case tapLike
+        case tapPayment
     }
     
     @Published var state: State = State()
@@ -75,6 +80,8 @@ final class DetailViewModel: ObservableObject {
             self.getDetailData()
         case .tapLike:
             self.tapLike()
+        case .tapPayment:
+            self.tapPayment()
         }
     }
     
@@ -101,6 +108,43 @@ final class DetailViewModel: ObservableObject {
                 let status = try await self.service.updateEstateLike(estateID: self.estateID, status: !self.state.detailData.isLiked).likeStatus
                 await MainActor.run {
                     self.state.detailData.isLiked = status
+                }
+            } catch let error as EstateErrorResponseEntity {
+                await MainActor.run {
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
+                }
+            }
+        }
+    }
+    
+    private func tapPayment() {
+        
+        self.state.isLoading = true
+        
+        Task {
+            defer {
+                DispatchQueue.main.async {
+                    self.state.isLoading = false
+                }
+            }
+            do {
+                let orderResponse = try await self.service.createOrder(estateID: self.estateID, price: self.state.detailData.reservationPrice)
+                
+                await MainActor.run {
+                    self.state.payment = IamportPayment(
+                        pg: "PG.html5_inicis.makePgRawName(pgId: \"INIpayTest\")",
+                        merchant_uid: orderResponse.orderCode,
+                        amount: "\(orderResponse.totalPrice)"
+                    )
+                    .then {
+                        $0.pay_method = PayMethod.card.rawValue
+                        $0.name = self.state.detailData.title
+                        $0.buyer_name = "박준우"
+                        $0.app_scheme = "iamport"
+                    }
+                    
+                    self.state.showPayment = true
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
