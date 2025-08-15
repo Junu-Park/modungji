@@ -12,7 +12,7 @@ import ModungjiSecret
 
 extension EstateRouter {
     enum Payment: APIRouter {
-        case validatePayment(body: ValidationPaymentRequestDTO)
+        case validatePayment(body: ValidatePaymentRequestDTO)
         case getPaymentReceipt(orderCode: String)
         
         var baseURL: URL? {
@@ -22,7 +22,7 @@ extension EstateRouter {
         var path: String {
             switch self {
             case .validatePayment:
-                return ""
+                return "validation"
             case .getPaymentReceipt(let orderCode):
                 return "\(orderCode)"
             }
@@ -32,7 +32,7 @@ extension EstateRouter {
             switch self {
             case .validatePayment:
                 return .post
-            case .getPaymentReceipt(let orderCode):
+            case .getPaymentReceipt:
                 return .get
             }
         }
