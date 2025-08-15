@@ -49,7 +49,7 @@ final class DetailViewModel: ObservableObject {
             updatedAt: "",
             address: ""
         )
-        var showPayment: Bool = false
+        var isProgressPayment: Bool = false
         var payment: IamportPayment?
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
@@ -59,13 +59,14 @@ final class DetailViewModel: ObservableObject {
         case getDetailData
         case tapLike
         case tapPayment
-        case paymentValidation
+        case paymentValidation(iamportResponse: IamportResponse?)
     }
     
     @Published var state: State = State()
     private let estateID: String
     private let service: DetailService
     private let pathModel: PathModel
+    
     
     init(estateID: String, service: DetailService, pathModel: PathModel) {
         self.estateID = estateID
@@ -83,8 +84,8 @@ final class DetailViewModel: ObservableObject {
             self.tapLike()
         case .tapPayment:
             self.tapPayment()
-        case .paymentValidation:
-            self.paymentValidation()
+        case .paymentValidation(let iamportResponse):
+            self.paymentValidation(iamportResponse: iamportResponse)
         }
     }
     
@@ -122,8 +123,8 @@ final class DetailViewModel: ObservableObject {
     }
     
     private func tapPayment() {
-        
         self.state.isLoading = true
+        self.state.isProgressPayment = true
         
         Task {
             do {
@@ -139,10 +140,73 @@ final class DetailViewModel: ObservableObject {
                         $0.pay_method = PayMethod.card.rawValue
                         $0.name = self.state.detailData.title
                         $0.buyer_name = "박준우"
-                        $0.app_scheme = "iamport"
+                        $0.app_scheme = "Modungji"
                     }
+                }
+            } catch let error as EstateErrorResponseEntity {
+                await MainActor.run {
+                    self.state.isLoading = false
+                    self.state.isProgressPayment = false
                     
-                    self.state.showPayment = true
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
+                }
+            }
+        }
+    }
+    
+    private func paymentValidation(iamportResponse: IamportResponse?) {
+        
+        DispatchQueue.main.async {
+            self.state.isProgressPayment = false
+        }
+        
+        
+        guard let iamportResponse else {
+            DispatchQueue.main.async {
+                self.state.isLoading = false
+                
+                self.state.errorMessage = "Iamport is stopped"
+                self.state.showErrorAlert = true
+            }
+            
+            return
+        }
+        
+        guard let isSuccess = iamportResponse.success, isSuccess else {
+            DispatchQueue.main.async {
+                self.state.isLoading = false
+                
+                self.state.errorMessage = "Iamport is failed"
+                self.state.showErrorAlert = true
+            }
+            
+            return
+        }
+        
+        guard let impUID = iamportResponse.imp_uid else {
+            DispatchQueue.main.async {
+                self.state.isLoading = false
+                
+                self.state.errorMessage = "Iamport impUID is nil"
+                self.state.showErrorAlert = true
+            }
+            
+            return
+        }
+        
+        Task {
+            defer {
+                DispatchQueue.main.async {
+                    self.state.isLoading = false
+                }
+            }
+            
+            do {
+                let response = try await self.service.validatePayment(impUID: impUID)
+                
+                await MainActor.run {
+                    self.state.detailData.isReserved = response
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
@@ -151,9 +215,5 @@ final class DetailViewModel: ObservableObject {
                 }
             }
         }
-    }
-    
-    private func paymentValidation() {
-        self.state.isLoading = false
     }
 }
