@@ -59,6 +59,7 @@ final class DetailViewModel: ObservableObject {
         case getDetailData
         case tapLike
         case tapPayment
+        case paymentValidation
     }
     
     @Published var state: State = State()
@@ -82,6 +83,8 @@ final class DetailViewModel: ObservableObject {
             self.tapLike()
         case .tapPayment:
             self.tapPayment()
+        case .paymentValidation:
+            self.paymentValidation()
         }
     }
     
@@ -123,11 +126,6 @@ final class DetailViewModel: ObservableObject {
         self.state.isLoading = true
         
         Task {
-            defer {
-                DispatchQueue.main.async {
-                    self.state.isLoading = false
-                }
-            }
             do {
                 let orderResponse = try await self.service.createOrder(estateID: self.estateID, price: self.state.detailData.reservationPrice)
                 
@@ -153,5 +151,9 @@ final class DetailViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func paymentValidation() {
+        self.state.isLoading = false
     }
 }
