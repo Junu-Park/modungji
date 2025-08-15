@@ -67,6 +67,17 @@ struct DetailRepositoryImp: DetailRepository {
         }
     }
     
+    func validatePayment(request: ValidatePaymentRequestDTO) async throws -> Bool {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Payment.validatePayment(body: request))
+        
+        switch response {
+        case .success:
+            return true
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     private func convertToEntity(dto: GetEstateDetailResponseDTO) -> GetEstateDetailResponseEntity {
         return GetEstateDetailResponseEntity(
             estateID: dto.estateId,

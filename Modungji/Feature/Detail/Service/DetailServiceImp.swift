@@ -35,4 +35,9 @@ struct DetailServiceImp: DetailService {
         let request = CreateOrderRequestDTO(estate_id: estateID, total_price: price)
         return try await self.repository.createOrder(request: request)
     }
+    
+    func validatePayment(impUID: String) async throws -> Bool {
+        let request = ValidatePaymentRequestDTO(imp_uid: impUID)
+        return try await self.repository.validatePayment(request: request)
+    }
 }

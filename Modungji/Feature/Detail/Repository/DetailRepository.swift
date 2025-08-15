@@ -12,4 +12,5 @@ protocol DetailRepository {
     func updateEstateLike(estateID: String, request: UpdateEstateLikeRequestDTO) async throws -> UpdateEstateLikeResponseEntity
     func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity
     func createOrder(request: CreateOrderRequestDTO) async throws -> CreateOrderResponseEntity
+    func validatePayment(request: ValidatePaymentRequestDTO) async throws -> Bool
 }

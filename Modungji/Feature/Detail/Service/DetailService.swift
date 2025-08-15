@@ -11,4 +11,5 @@ protocol DetailService {
     func getEstateDetail(estateID: String) async throws -> GetEstateDetailResponseEntity
     func updateEstateLike(estateID: String, status: Bool) async throws -> UpdateEstateLikeResponseEntity
     func createOrder(estateID: String, price: Int) async throws -> CreateOrderResponseEntity
+    func validatePayment(impUID: String) async throws -> Bool 
 }
