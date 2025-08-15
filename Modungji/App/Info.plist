@@ -21,7 +21,7 @@
 			<string>$(PRODUCT_NAME)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>iamport</string>
+				<string>Modungji</string>
 			</array>
 		</dict>
 	</array>
