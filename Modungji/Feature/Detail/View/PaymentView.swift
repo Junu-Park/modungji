@@ -71,7 +71,7 @@ final class PaymentViewController: UIViewController, WKNavigationDelegate {
     }
     
     private func setupUI() {
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = .clear
         
         view.addSubview(wkWebView)
         view.addSubview(closeButton)

@@ -161,7 +161,6 @@ final class DetailViewModel: ObservableObject {
             self.state.isProgressPayment = false
         }
         
-        
         guard let iamportResponse else {
             DispatchQueue.main.async {
                 self.state.isLoading = false
