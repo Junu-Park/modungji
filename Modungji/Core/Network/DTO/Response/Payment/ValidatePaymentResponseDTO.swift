@@ -1,5 +1,5 @@
 //
-//  ValidationPaymentResponseDTO.swift
+//  ValidatePaymentResponseDTO.swift
 //  Modungji
 //
 //  Created by 박준우 on 8/15/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ValidationPaymentResponseDTO: Decodable {
+struct ValidatePaymentResponseDTO: Decodable {
     let paymentID: String
     let orderItem: OrderItemDTO
     let createdAt: String
