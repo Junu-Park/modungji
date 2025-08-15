@@ -5,7 +5,7 @@
 //  Created by 박준우 on 8/14/25.
 //
 
-import UIKit
+import WebKit
 import SwiftUI
 
 import iamport_ios
@@ -28,8 +28,30 @@ struct PaymentView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: PaymentViewController, context: Context) { }
 }
 
-final class PaymentViewController: UIViewController {
+final class PaymentViewController: UIViewController, WKNavigationDelegate {
     let viewModel: DetailViewModel
+    
+    private lazy var wkWebView: WKWebView = {
+        var wv = WKWebView()
+        wv.backgroundColor = .clear
+        
+        return wv
+    }()
+    
+    private lazy var closeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.tintColor = .black
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.9)
+        button.layer.cornerRadius = 20
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.1
+        button.layer.shadowRadius = 4
+        button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        
+        return button
+    }()
     
     init(viewModel: DetailViewModel) {
         self.viewModel = viewModel
@@ -44,40 +66,71 @@ final class PaymentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let payment = self.viewModel.state.payment else { return }
-//        Iamport.shared.useNavigationButton(enable: true)
-        Iamport.shared.payment(viewController: self, userCode: ModungjiSecret.Iamport.userCode, payment: payment) { response in
-            guard let response else {
-                self.endPayment(errorMsg: "Iamport Response is nil")
-                
+        setupUI()
+        setupConstraints()
+    }
+    
+    private func setupUI() {
+        view.backgroundColor = UIColor.white
+        
+        view.addSubview(wkWebView)
+        view.addSubview(closeButton)
+    }
+    
+    private func setupConstraints() {
+        wkWebView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            wkWebView.topAnchor.constraint(equalTo: view.topAnchor),
+            wkWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            wkWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            wkWebView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            closeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            closeButton.widthAnchor.constraint(equalToConstant: 40),
+            closeButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    @objc private func closeButtonTapped() {
+        viewModel.action(.paymentValidation(iamportResponse: nil))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard let payment = self.viewModel.state.payment else {
+            return
+        }
+        
+        Iamport.shared.paymentWebView(webViewMode: self.wkWebView, userCode: ModungjiSecret.Iamport.userCode, payment: payment) { [weak self] response in
+            guard let self else {
                 return
             }
-            
-            if let msg = response.error_msg, let code = response.error_code {
-                self.endPayment(errorMsg: "Iamport \(code) error: \(msg)")
-                
-                return
-            }
-            
-            guard let isSuccess = response.success, isSuccess else {
-                self.endPayment(errorMsg: "Iamport is fail")
-                
-                return
-            }
-            
-            self.viewModel.action(.paymentValidation)
+            self.viewModel.action(.paymentValidation(iamportResponse: response))
         }
     }
     
-    private func endPayment(errorMsg: String? = nil) {
-        self.viewModel.state.showPayment = false
-        self.viewModel.state.isLoading = false
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
-        self.viewModel.action(.paymentValidation)
+        removeWebView()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
-        if let errorMsg {
-            self.viewModel.state.errorMessage = errorMsg
-            self.viewModel.state.showErrorAlert = true
-        }
+        Iamport.shared.close()
+    }
+    
+    private func removeWebView() {
+        view.willRemoveSubview(wkWebView)
+        wkWebView.stopLoading()
+        wkWebView.removeFromSuperview()
+        wkWebView.uiDelegate = nil
+        wkWebView.navigationDelegate = nil
     }
 }
