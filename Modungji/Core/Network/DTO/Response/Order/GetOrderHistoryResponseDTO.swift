@@ -14,7 +14,7 @@ struct GetOrderHistoryResponseDTO: Decodable {
 struct OrderDTO: Decodable {
     let orderID: String
     let orderCode: String
-    let estate: Estate
+    let estate: EstateDTO
     let paidAt: Date
     let createdAt: Date
     let updatedAt: Date
@@ -29,7 +29,7 @@ struct OrderDTO: Decodable {
     }
 }
 
-struct Estate: Decodable {
+struct EstateDTO: Decodable {
     let id: String
     let category: String
     let title: String
