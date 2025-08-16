@@ -15,7 +15,7 @@ extension EstateRouter {
         case createChatRoom(body: CreateChatRoomRequestDTO)
         case getChatRoomList
         case postChat(roomID: String, body: PostChatRequestDTO)
-        case getChatHistory(roomID: String, next: String? = nil)
+        case getChatHistory(roomID: String, next: String?)
         case postFile(roomID: String)
         
         var baseURL: URL? {
