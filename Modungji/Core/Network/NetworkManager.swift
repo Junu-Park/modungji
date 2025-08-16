@@ -9,6 +9,11 @@ import Foundation
 
 import Alamofire
 
+enum ImageExtensionType: String {
+    case png = "png"
+    case jpeg = "jpeg"
+}
+
 struct NetworkManager {
     
     // TODO: 토큰 Interceptor 기능 넣기
@@ -49,10 +54,18 @@ struct NetworkManager {
         }
     }
     
-    func requestEstateMultiPart<T: Decodable>(requestURL: APIRouter, imageData: Data, successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
+    func requestEstateMultiPartImage<T: Decodable>(requestURL: APIRouter, key: String, extensionType: ImageExtensionType, dataList: Data..., successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
         
         let multipartFormData = MultipartFormData()
-        multipartFormData.append(imageData, withName: "profileImage.png")
+        for data in dataList {
+            multipartFormData
+                .append(
+                    data,
+                    withName: key,
+                    fileName: "\(UUID()).\(extensionType.rawValue)",
+                    mimeType: "image/\(extensionType.rawValue)"
+                )
+        }
         
         let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL)
             .serializingData()
