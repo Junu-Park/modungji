@@ -11,10 +11,10 @@ import SwiftUI
 // MARK: - AuthView
 struct AuthView: View {
     @EnvironmentObject var pathModel: PathModel
-    @StateObject private var viewModel: AuthViewModel
+    @ObservedObject private var viewModel: AuthViewModel
     
     init(viewModel: AuthViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {

@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var viewModel: MainViewModel
+    @ObservedObject private var viewModel: MainViewModel
     @State private var searchQuery: String = ""
     
     init(viewModel: MainViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {

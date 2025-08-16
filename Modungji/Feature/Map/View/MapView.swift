@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct MapView: View {
-    @StateObject private var viewModel: MapViewModel
+    @ObservedObject private var viewModel: MapViewModel
     
     init(viewModel: MapViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {

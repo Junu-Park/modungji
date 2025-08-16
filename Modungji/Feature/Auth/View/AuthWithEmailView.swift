@@ -11,26 +11,26 @@ import SwiftUI
 struct AuthWithEmailView: View {
     @EnvironmentObject var pathModel: PathModel
     @EnvironmentObject var authState: AuthState
-    @StateObject private var authWithEmailViewModel: AuthWithEmailViewModel
+    @ObservedObject private var viewModel: AuthWithEmailViewModel
     
     private let authType: AuthWithEmailType
     
     init(authType: AuthWithEmailType, viewModel: AuthWithEmailViewModel) {
         self.authType = authType
-        self._authWithEmailViewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {
         VStack(alignment: .leading) {
             self.emailInputView()
             
-            if self.authWithEmailViewModel.state.authType == .signUp {
+            if self.viewModel.state.authType == .signUp {
                 self.nicknameInputView
             }
 
             self.passwordInputView()
                 
-            if self.authWithEmailViewModel.state.authType == .signUp {
+            if self.viewModel.state.authType == .signUp {
                 self.passwordCheckInputView
             }
             
@@ -42,12 +42,12 @@ struct AuthWithEmailView: View {
         .font(PDFont.body2)
         .padding(20)
         .onAppear {
-            self.authWithEmailViewModel.action(.changeAuthType(self.authType))
+            self.viewModel.action(.changeAuthType(self.authType))
         }
         .onDisappear {
-            self.authWithEmailViewModel.action(.reset)
+            self.viewModel.action(.reset)
         }
-        .alert(self.authWithEmailViewModel.state.alertMessage, isPresented: self.$authWithEmailViewModel.state.showAlert) {
+        .alert(self.viewModel.state.alertMessage, isPresented: self.$viewModel.state.showAlert) {
             Button("닫기") { }
         }
         .customOnChange(value: self.authState.isLogin) { isLogin in
@@ -62,16 +62,16 @@ struct AuthWithEmailView: View {
 extension AuthWithEmailView {
     @ViewBuilder
     func emailInputView() -> some View {
-        TextField("이메일", text: self.$authWithEmailViewModel.input.email)
+        TextField("이메일", text: self.$viewModel.input.email)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         
-        if self.authWithEmailViewModel.state.authType == .signUp {
-            Text(self.authWithEmailViewModel.state.emailValidationMessage)
-                .foregroundStyle(self.authWithEmailViewModel.state.isEmailValid ? .blue : .red)
+        if self.viewModel.state.authType == .signUp {
+            Text(self.viewModel.state.emailValidationMessage)
+                .foregroundStyle(self.viewModel.state.isEmailValid ? .blue : .red)
                 .font(PDFont.caption1)
                 .padding([.top, .leading], 8)
         }
@@ -79,29 +79,29 @@ extension AuthWithEmailView {
     
     @ViewBuilder
     var nicknameInputView: some View {
-        TextField("닉네임", text: self.$authWithEmailViewModel.input.nickname)
+        TextField("닉네임", text: self.$viewModel.input.nickname)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         Text("닉네임을 입력해주세요.")
-            .foregroundStyle(self.authWithEmailViewModel.state.isNicknameValid ? .blue : .red)
+            .foregroundStyle(self.viewModel.state.isNicknameValid ? .blue : .red)
             .font(PDFont.caption1)
             .padding([.top, .leading], 8)
     }
     
     @ViewBuilder
     func passwordInputView() -> some View {
-        PasswordTextFieldView(authWithEmailViewModel: self.authWithEmailViewModel, isPasswordCheck: false)
+        PasswordTextFieldView(authWithEmailViewModel: self.viewModel, isPasswordCheck: false)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
-        if self.authWithEmailViewModel.state.authType == .signUp {
+        if self.viewModel.state.authType == .signUp {
             Text("최소 8자 이상이며, 영문자, 숫자, 특수문자(@$!%*#?&)를 각각 1개 이상 포함")
-                .foregroundStyle(self.authWithEmailViewModel.state.isPasswordValid ? .blue : .red)
+                .foregroundStyle(self.viewModel.state.isPasswordValid ? .blue : .red)
                 .font(PDFont.caption1)
                 .padding([.top, .leading], 8)
         }
@@ -109,34 +109,34 @@ extension AuthWithEmailView {
     
     @ViewBuilder
     var passwordCheckInputView: some View {
-        PasswordTextFieldView(authWithEmailViewModel: self.authWithEmailViewModel, isPasswordCheck: true)
+        PasswordTextFieldView(authWithEmailViewModel: self.viewModel, isPasswordCheck: true)
             .padding(8)
             .frame(height: 50)
             .background(alignment: .bottom) {
                 Rectangle().foregroundStyle(.gray100).frame(height: 1)
             }
         Text("동일한 비밀번호를 입력해주세요.")
-            .foregroundStyle(self.authWithEmailViewModel.state.isMatchPassword ? .blue : .red)
+            .foregroundStyle(self.viewModel.state.isMatchPassword ? .blue : .red)
             .font(PDFont.caption1)
             .padding([.top, .leading], 8)
     }
     
     func confirmButtonView() -> some View {
         Button {
-            if self.authWithEmailViewModel.state.authType == .signUp {
-                authWithEmailViewModel.action(.signUp)
+            if self.viewModel.state.authType == .signUp {
+                viewModel.action(.signUp)
             } else {
-                authWithEmailViewModel.action(.login)
+                viewModel.action(.login)
             }
         } label: {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(lineWidth: 1)
                 .frame(height: 50)
                 .overlay {
-                    Text(self.authWithEmailViewModel.state.authType == .signUp ? "이메일로 회원가입" : "이메일로 로그인")
+                    Text(self.viewModel.state.authType == .signUp ? "이메일로 회원가입" : "이메일로 로그인")
                 }
         }
-        .disabled(!self.authWithEmailViewModel.state.canAuth)
+        .disabled(!self.viewModel.state.canAuth)
     }
 }
 

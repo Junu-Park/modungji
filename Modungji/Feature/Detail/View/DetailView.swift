@@ -9,10 +9,10 @@ import SwiftUI
 
 struct DetailView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: DetailViewModel
+    @ObservedObject private var viewModel: DetailViewModel
     
     init(viewModel: DetailViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -213,7 +213,7 @@ struct DetailView: View {
                                 .padding(.trailing, 8)
 
                                 Button {
-                                    
+                                    self.viewModel.action(.tapChat)
                                 } label: {
                                     Image(.frame)
                                         .renderingMode(.template)

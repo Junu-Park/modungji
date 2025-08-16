@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct ChatView: View {
-    @StateObject private var viewModel: ChatViewModel
+    @ObservedObject private var viewModel: ChatViewModel
     
     init(viewModel: ChatViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
     
     var body: some View {
