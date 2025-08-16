@@ -9,15 +9,18 @@ import Foundation
 
 enum TabItemType: Int, CaseIterable {
     case home = 0
-    case interestEstate = 1
-    case setting = 2
+    case map = 1
+    case chat = 2
+    case setting = 3
     
     var title: String {
         switch self {
         case .home:
             return "홈"
-        case .interestEstate:
-            return "관심매물"
+        case .map:
+            return "지도"
+        case .chat:
+            return "채팅"
         case .setting:
             return "설정"
         }
@@ -27,8 +30,10 @@ enum TabItemType: Int, CaseIterable {
         switch self {
         case .home:
             return .homeFill
-        case .interestEstate:
-            return .interestFill
+        case .map:
+            return .map
+        case .chat:
+            return .chatFill
         case .setting:
             return .settingFill
         }
@@ -38,8 +43,10 @@ enum TabItemType: Int, CaseIterable {
         switch self {
         case .home:
             return .homeEmpty
-        case .interestEstate:
-            return .interestEmpty
+        case .map:
+            return .map
+        case .chat:
+            return .chatFill
         case .setting:
             return .settingEmpty
         }
