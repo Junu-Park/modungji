@@ -56,10 +56,10 @@ final class DetailViewModel: ObservableObject {
     }
     
     enum Action {
-        case getDetailData
         case tapLike
         case tapPayment
         case paymentValidation(iamportResponse: IamportResponse?)
+        case tapChat
     }
     
     @Published var state: State = State()
@@ -78,14 +78,14 @@ final class DetailViewModel: ObservableObject {
     
     func action(_ action: Action) {
         switch action {
-        case .getDetailData:
-            self.getDetailData()
         case .tapLike:
             self.tapLike()
         case .tapPayment:
             self.tapPayment()
         case .paymentValidation(let iamportResponse):
             self.paymentValidation(iamportResponse: iamportResponse)
+        case .tapChat:
+            self.tapChat()
         }
     }
     
@@ -214,5 +214,10 @@ final class DetailViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func tapChat() {
+        let opponentID = self.state.detailData.creator.userID
+        self.pathModel.push(.chat(opponentID: opponentID))
     }
 }
