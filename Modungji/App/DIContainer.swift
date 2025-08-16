@@ -23,6 +23,7 @@ struct DIContainer {
         let mapRepository: MapRepository
         let mainRepository: MainRepository
         let detailRepository: DetailRepository
+        let chatRepository: ChatRepository
     }
     let repository: Repository
     
@@ -32,6 +33,7 @@ struct DIContainer {
         let mapService: MapService
         let mainService: MainService
         let detailService: DetailService
+        let chatService: ChatService
     }
     let service: Service
     
@@ -49,10 +51,12 @@ struct DIContainer {
         mapRepository: MapRepository? = nil,
         mainRepository: MainRepository? = nil,
         detailRepository: DetailRepository? = nil,
+        chatRepository: ChatRepository? = nil,
         authService: AuthService? = nil,
         mapService: MapService? = nil,
         mainService: MainService? = nil,
         detailService: DetailService? = nil,
+        chatService: ChatService? = nil,
         authState: AuthState? = nil
     ) {
         self.manager = Manager(
@@ -77,6 +81,9 @@ struct DIContainer {
             ),
             detailRepository: detailRepository ?? DetailRepositoryImp(
                 networkManager: self.manager.networkManager
+            ),
+            chatRepository: chatRepository ?? ChatRepositoryImp(
+                networkManager: self.manager.networkManager
             )
         )
         
@@ -92,6 +99,9 @@ struct DIContainer {
             ),
             detailService: detailService ?? DetailServiceImp(
                 repository: self.repository.detailRepository
+            ),
+            chatService: chatService ?? ChatServiceImp(
+                repository: self.repository.chatRepository
             )
         )
         
