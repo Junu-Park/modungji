@@ -27,7 +27,7 @@ struct KeychainManager {
         let query = tokenType.query
         
         guard let encodedToken = token.data(using: .utf8) else {
-            throw KeychainError.tokenEncodingFailed
+            throw KeychainError.encodingFailed
         }
         query[kSecValueData] = encodedToken
         
@@ -36,7 +36,7 @@ struct KeychainManager {
         let status = SecItemAdd(query, nil)
         
         if status != errSecSuccess {
-            throw KeychainError.saveTokenFailed
+            throw KeychainError.saveFailed
         }
     }
     
@@ -50,14 +50,14 @@ struct KeychainManager {
         
         guard status == errSecSuccess else {
             if status == errSecItemNotFound {
-                throw KeychainError.noTokenFound
+                throw KeychainError.noDataFound
             } else {
-                throw KeychainError.getTokenFailed
+                throw KeychainError.getFailed
             }
         }
         
         guard let data = result as? Data, let token = String(data: data, encoding: .utf8) else {
-            throw KeychainError.tokenEncodingFailed
+            throw KeychainError.encodingFailed
         }
         
         return token
@@ -68,7 +68,7 @@ struct KeychainManager {
         let status = SecItemDelete(query)
         
         if status != errSecSuccess {
-            throw KeychainError.deleteTokenFailed
+            throw KeychainError.deleteFailed
         }
     }
 }

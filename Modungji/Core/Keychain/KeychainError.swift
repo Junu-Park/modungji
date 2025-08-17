@@ -8,9 +8,9 @@
 import Foundation
 
 enum KeychainError: Error {
-    case tokenEncodingFailed
-    case saveTokenFailed
-    case noTokenFound
-    case getTokenFailed
-    case deleteTokenFailed
+    case encodingFailed
+    case saveFailed
+    case noDataFound
+    case getFailed
+    case deleteFailed
 }
