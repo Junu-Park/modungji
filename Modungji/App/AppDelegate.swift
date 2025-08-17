@@ -52,6 +52,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         print("🔥 FCM registration token: \(fcmToken ?? "nil")")
+        
+        if let fcmToken {
+            try? KeychainManager().save(tokenType: .deviceToken, token: fcmToken)
+        }
     }
 }
 

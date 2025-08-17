@@ -42,7 +42,9 @@ struct AuthServiceImp: AuthService {
                 throw EstateErrorResponseEntity(message: "애플 로그인 실패")
             }
             
-            var request = LoginWithAppleRequestDTO(idToken: token)
+            let deviceToken = try? self.repository.getDeviceToken()
+            
+            var request = LoginWithAppleRequestDTO(idToken: token, deviceToken: deviceToken)
             
             if let first = appleIDCredential.fullName?.givenName, let family = appleIDCredential.fullName?.familyName {
                 request.nick = "\(family) \(first)"
@@ -68,8 +70,9 @@ struct AuthServiceImp: AuthService {
     }
     
     func loginWithEmail(request: LoginWithEmailRequestEntity) async throws -> LoginResponseEntity {
+        let deviceToken = try? self.repository.getDeviceToken()
         
-        let requestDTO = LoginWithEmailRequestDTO(email: request.email, password: request.password)
+        let requestDTO = LoginWithEmailRequestDTO(email: request.email, password: request.password, deviceToken: deviceToken)
         let response = try await self.repository.loginWithEmail(request: requestDTO)
         
         try await self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
@@ -82,7 +85,9 @@ struct AuthServiceImp: AuthService {
         
         try await self.repository.signUpWithEmail(request: requestDTO)
         
-        let response = try await self.repository.loginWithEmail(request: LoginWithEmailRequestDTO(email: request.email, password: request.password))
+        let deviceToken = try? self.repository.getDeviceToken()
+        
+        let response = try await self.repository.loginWithEmail(request: LoginWithEmailRequestDTO(email: request.email, password: request.password, deviceToken: deviceToken))
         
         return response
     }

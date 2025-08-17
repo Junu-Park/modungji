@@ -17,4 +17,5 @@ protocol AuthRepository {
     func saveLoginData(accessToken: String, refreshToken: String, userID: String) async throws
     @discardableResult func signUpWithEmail(request: JoinRequestDTO) async throws -> SignUpWithEmailResponseEntity
     func authWithAuto() async throws -> RefreshResponseEntity
+    func getDeviceToken() throws -> String
 }

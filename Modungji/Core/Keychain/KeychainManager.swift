@@ -14,6 +14,7 @@ struct KeychainManager {
         case userID
         case accessToken
         case refreshToken
+        case deviceToken
         
         var query: NSMutableDictionary {
             return [

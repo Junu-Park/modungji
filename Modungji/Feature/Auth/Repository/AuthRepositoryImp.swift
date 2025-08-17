@@ -53,7 +53,9 @@ struct AuthRepositoryImp: AuthRepository {
             throw EstateErrorResponseEntity(message: "카카오 로그인 실패")
         }
         
-        let request = LoginWithKakaoRequestDTO(oauthToken: token.accessToken)
+        let deviceToken = try? self.keychainManager.get(tokenType: .deviceToken)
+        
+        let request = LoginWithKakaoRequestDTO(oauthToken: token.accessToken, deviceToken: deviceToken)
         
         let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.User.loginWithKakao(body: request), successDecodingType: LoginResponseDTO.self)
         
@@ -106,6 +108,14 @@ struct AuthRepositoryImp: AuthRepository {
             return RefreshResponseEntity(accessToken: success.accessToken, refreshToken: success.refreshToken)
         case .failure(let failure):
             throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
+    
+    func getDeviceToken() throws -> String {
+        do {
+            return try self.keychainManager.get(tokenType: .deviceToken)
+        } catch {
+            throw ErrorResponseDTO(message: error.localizedDescription)
         }
     }
 }
