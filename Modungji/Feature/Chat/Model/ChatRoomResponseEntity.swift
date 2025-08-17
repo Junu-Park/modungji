@@ -7,7 +7,11 @@
 
 import Foundation
 
-struct ChatRoomResponseEntity {
+struct ChatRoomResponseEntity: Hashable {
+    static func == (lhs: ChatRoomResponseEntity, rhs: ChatRoomResponseEntity) -> Bool {
+        return lhs.roomID == rhs.roomID
+    }
+    
     let roomID: String
     let createdAt: Date
     let updatedAt: Date
