@@ -12,12 +12,27 @@
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
 		517D982E2E51EEF800A1E9A1 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 517D982D2E51EEF800A1E9A1 /* RealmSwift */; };
 		517D983B2E52102B00A1E9A1 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 517D983A2E52102B00A1E9A1 /* SocketIO */; };
+		517D99A02E52216D00A1E9A1 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 517D982D2E51EEF800A1E9A1 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 519B08AC2DD726A000CDDF38 /* KakaoSDK */; };
 		519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */ = {isa = PBXBuildFile; productRef = 519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */; };
 		51D212652DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 51D212642DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		51D212672DFC273E0033EB89 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 51D212662DFC273E0033EB89 /* FirebaseMessaging */; };
 		51DD39792DE9A32500CCD1FE /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 51DD39782DE9A32500CCD1FE /* NMapsMap */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		517D99A12E52216D00A1E9A1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				517D99A02E52216D00A1E9A1 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		517AED4A2DCDEF36005646A1 /* Modungji.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Modungji.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,6 +108,7 @@
 				517AED472DCDEF36005646A1 /* Frameworks */,
 				519B0BFE2DD72FBC00CDDF38 /* Kakao Key Config File Script */,
 				517AED482DCDEF36005646A1 /* Resources */,
+				517D99A12E52216D00A1E9A1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
