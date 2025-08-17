@@ -38,6 +38,17 @@ struct ChatRepositoryImp: ChatRepository {
         }
     }
     
+    func getChatRoomList() async throws -> [ChatRoomResponseEntity] {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Chat.getChatRoomList, successDecodingType: GetChatRoomListResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return success.data.map { self.convertToEntity($0) }
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     private func convertToEntity(_ dto: ChatRoomResponseDTO) -> ChatRoomResponseEntity {
         return .init(
             roomID: dto.roomID,

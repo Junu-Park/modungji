@@ -21,4 +21,8 @@ struct ChatServiceImp: ChatService {
     func getChatRoomChatHistory(roomID: String, next: Date?) async throws -> [ChatResponseEntity] {
         return try await self.repository.getChatRoomChatHistory(roomID: roomID, next: next)
     }
+    
+    func getChatRoomList() async throws -> [ChatRoomResponseEntity] {
+        return try await self.repository.getChatRoomList()
+    }
 }

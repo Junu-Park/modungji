@@ -10,4 +10,5 @@ import Foundation
 protocol ChatService {
     func createChatRoom(opponentID: String) async throws -> ChatRoomResponseEntity
     func getChatRoomChatHistory(roomID: String, next: Date?) async throws -> [ChatResponseEntity]
+    func getChatRoomList() async throws -> [ChatRoomResponseEntity]
 }
