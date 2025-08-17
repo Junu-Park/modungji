@@ -16,7 +16,7 @@ struct ChatView: View {
     
     var body: some View {
         VStack {
-            Text(self.viewModel.state.selectedChatRoom.roomID)
+            Text(self.viewModel.state.chatRoomData.roomID)
         }
     }
 }
