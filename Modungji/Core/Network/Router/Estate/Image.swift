@@ -44,7 +44,7 @@ extension EstateRouter {
             let keychainManager = KeychainManager()
             
             do {
-                let token = try keychainManager.getToken(tokenType: .accessToken)
+                let token = try keychainManager.get(tokenType: .accessToken)
                 headers.add(name: "Authorization", value: token)
             } catch {
                 print(error)

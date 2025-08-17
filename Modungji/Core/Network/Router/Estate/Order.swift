@@ -53,7 +53,7 @@ extension EstateRouter {
             headers.add(name: "Content-Type", value: "application/json")
             
             do {
-                let token = try KeychainManager().getToken(tokenType: .accessToken)
+                let token = try KeychainManager().get(tokenType: .accessToken)
                 headers.add(name: "Authorization", value: token)
             } catch {
                 print(error)

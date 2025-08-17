@@ -108,7 +108,7 @@ extension EstateRouter {
             case .updateDeviceToken, .getOtherProfile, .getMyProfile,
                     .updateMyProfile:
                 do {
-                    let token = try keychainManager.getToken(tokenType: .accessToken)
+                    let token = try keychainManager.get(tokenType: .accessToken)
                     headers.add(name: "Authorization", value: token)
                 } catch {
                     // TODO: KeychainError 에러처리
@@ -116,7 +116,7 @@ extension EstateRouter {
                 }
             case .uploadProfileImage:
                 do {
-                    let token = try keychainManager.getToken(tokenType: .accessToken)
+                    let token = try keychainManager.get(tokenType: .accessToken)
                     headers.add(name: "Authorization", value: token)
                 } catch {
                     // TODO: KeychainError 에러처리
