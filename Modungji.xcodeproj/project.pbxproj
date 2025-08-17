@@ -10,6 +10,7 @@
 		5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5101A8B82DD09E4F008CF16B /* Alamofire */; };
 		517026C62E4E63AB0084EF41 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 517026C52E4E63AB0084EF41 /* iamport-ios */; };
 		517AED772DCDF0DA005646A1 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 517AED762DCDF0DA005646A1 /* .gitignore */; };
+		517D982E2E51EEF800A1E9A1 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 517D982D2E51EEF800A1E9A1 /* RealmSwift */; };
 		519B08AD2DD726A000CDDF38 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 519B08AC2DD726A000CDDF38 /* KakaoSDK */; };
 		519B0FB32DD79C6B00CDDF38 /* ModungjiSecret in Frameworks */ = {isa = PBXBuildFile; productRef = 519B0FB22DD79C6B00CDDF38 /* ModungjiSecret */; };
 		51D212652DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 51D212642DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport */; };
@@ -48,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				517D982E2E51EEF800A1E9A1 /* RealmSwift in Frameworks */,
 				51D212672DFC273E0033EB89 /* FirebaseMessaging in Frameworks */,
 				5101A8B92DD09E4F008CF16B /* Alamofire in Frameworks */,
 				51D212652DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
@@ -106,6 +108,7 @@
 				51D212642DFC273E0033EB89 /* FirebaseAnalyticsWithoutAdIdSupport */,
 				51D212662DFC273E0033EB89 /* FirebaseMessaging */,
 				517026C52E4E63AB0084EF41 /* iamport-ios */,
+				517D982D2E51EEF800A1E9A1 /* RealmSwift */,
 			);
 			productName = Modungji;
 			productReference = 517AED4A2DCDEF36005646A1 /* Modungji.app */;
@@ -142,6 +145,7 @@
 				51DD39772DE9A32500CCD1FE /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
 				51D212632DFC273E0033EB89 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				517026C42E4E63AB0084EF41 /* XCRemoteSwiftPackageReference "iamport-ios" */,
+				517D982C2E51EEF800A1E9A1 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 517AED4B2DCDEF36005646A1 /* Products */;
@@ -445,6 +449,14 @@
 				minimumVersion = 1.4.7;
 			};
 		};
+		517D982C2E51EEF800A1E9A1 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 20.0.3;
+			};
+		};
 		519B08AB2DD726A000CDDF38 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -481,6 +493,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 517026C42E4E63AB0084EF41 /* XCRemoteSwiftPackageReference "iamport-ios" */;
 			productName = "iamport-ios";
+		};
+		517D982D2E51EEF800A1E9A1 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 517D982C2E51EEF800A1E9A1 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		519B08AC2DD726A000CDDF38 /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;
