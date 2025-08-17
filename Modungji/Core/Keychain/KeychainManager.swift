@@ -11,6 +11,7 @@ import Security
 struct KeychainManager {
     
     enum TokenType: String {
+        case userID
         case accessToken
         case refreshToken
         

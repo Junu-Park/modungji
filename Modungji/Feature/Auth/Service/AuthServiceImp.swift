@@ -50,7 +50,7 @@ struct AuthServiceImp: AuthService {
             
             let response = try await self.repository.authWithApple(request: request)
             
-            try await self.repository.saveToken(accessToken: response.accessToken, refreshToken: response.refreshToken)
+            try await self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
             
             return response
             
@@ -62,7 +62,7 @@ struct AuthServiceImp: AuthService {
     func authWithKakao() async throws -> LoginResponseEntity {
         let response = try await self.repository.authWithKakao()
 
-        try await self.repository.saveToken(accessToken: response.accessToken, refreshToken: response.refreshToken)
+        try await self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
         
         return response
     }
@@ -72,7 +72,7 @@ struct AuthServiceImp: AuthService {
         let requestDTO = LoginWithEmailRequestDTO(email: request.email, password: request.password)
         let response = try await self.repository.loginWithEmail(request: requestDTO)
         
-        try await self.repository.saveToken(accessToken: response.accessToken, refreshToken: response.refreshToken)
+        try await self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
         
         return response
     }
@@ -86,7 +86,6 @@ struct AuthServiceImp: AuthService {
         
         return response
     }
-    
     
     func checkPasswordValidation(password: String) -> Bool {
         let passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/
@@ -103,8 +102,8 @@ struct AuthServiceImp: AuthService {
     
     func authWithAuto() async throws -> RefreshResponseEntity {
         let response = try await self.repository.authWithAuto()
-        
-        try await self.repository.saveToken(accessToken: response.accessToken, refreshToken: response.refreshToken)
+        let userID = try KeychainManager().get(tokenType: .userID)
+        try await self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: userID)
         
         return response
     }

@@ -77,12 +77,13 @@ struct AuthRepositoryImp: AuthRepository {
         }
     }
     
-    func saveToken(accessToken: String, refreshToken: String) async throws {
+    func saveLoginData(accessToken: String, refreshToken: String, userID: String) async throws {
         do {
             try self.keychainManager.save(tokenType: .accessToken, token: accessToken)
             try self.keychainManager.save(tokenType: .refreshToken, token: refreshToken)
+            try self.keychainManager.save(tokenType: .userID, token: userID)
         } catch {
-            throw EstateErrorResponseEntity(message: "토큰 저장 실패")
+            throw EstateErrorResponseEntity(message: "로그인 정보 저장 실패")
         }
     }
     
