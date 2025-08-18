@@ -15,6 +15,7 @@ struct ChatRoomResponseEntity: Hashable {
     let roomID: String
     let createdAt: Date
     let updatedAt: Date
-    let participants: [UserEntity]
+    let userData: UserEntity
+    let opponentUserData: UserEntity
     let lastChat: ChatResponseEntity?
 }

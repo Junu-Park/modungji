@@ -50,11 +50,17 @@ struct ChatRepositoryImp: ChatRepository {
     }
     
     private func convertToEntity(_ dto: ChatRoomResponseDTO) -> ChatRoomResponseEntity {
+        let userID = try? KeychainManager().get(tokenType: .userID)
+        
+        let userDataDTO = dto.participants.first(where: {$0.userId == userID })!
+        let opponentUserDataDTO = dto.participants.first(where: {$0.userId != userID })!
+        
         return .init(
             roomID: dto.roomID,
             createdAt: self.convertDateStringToDate(dto.createdAt),
             updatedAt: self.convertDateStringToDate(dto.updatedAt),
-            participants: dto.participants.map { self.convertToEntity($0) },
+            userData: self.convertToEntity(userDataDTO),
+            opponentUserData: self.convertToEntity(opponentUserDataDTO),
             lastChat: self.convertToEntity(dto.lastChat)
         )
     }
