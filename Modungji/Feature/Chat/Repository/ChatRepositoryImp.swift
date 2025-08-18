@@ -49,6 +49,18 @@ struct ChatRepositoryImp: ChatRepository {
         }
     }
     
+    @discardableResult func postChat(roomID: String, content: String, files: [String]) async throws -> ChatResponseEntity {
+        let body = PostChatRequestDTO(content: content, files: files)
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Chat.postChat(roomID: roomID, body: body), successDecodingType: ChatResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(success)
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     private func convertToEntity(_ dto: ChatRoomResponseDTO) -> ChatRoomResponseEntity {
         let userID = try? KeychainManager().get(tokenType: .userID)
         

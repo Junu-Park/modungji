@@ -25,4 +25,8 @@ struct ChatServiceImp: ChatService {
     func getChatRoomList() async throws -> [ChatRoomResponseEntity] {
         return try await self.repository.getChatRoomList()
     }
+    
+    @discardableResult func postChat(roomID: String, content: String, files: [String]) async throws -> ChatResponseEntity {
+        return try await self.repository.postChat(roomID: roomID, content: content, files: files)
+    }
 }
