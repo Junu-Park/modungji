@@ -12,7 +12,8 @@ import RealmSwift
 final class ChatRoomRealmDTO: Object {
     @Persisted(primaryKey: true) var id: String
     @Persisted var createdDate: Date
-    @Persisted var participantsID: List<String>
+    @Persisted var user: UserRealmDTO?
+    @Persisted var opponent: UserRealmDTO?
     @Persisted var lastChat: ChatRealmDTO?
     @Persisted var chatList: List<ChatRealmDTO> = .init()
 }

@@ -13,7 +13,7 @@ final class ChatRealmDTO: Object {
     @Persisted(primaryKey: true) var id: String
     @Persisted var content: String
     @Persisted var files: List<String> = .init()
-    @Persisted var senderID: String
+    @Persisted var sender: UserRealmDTO?
     @Persisted var date: Date
     @Persisted(originProperty: "chatList") var chatRoom: LinkingObjects<ChatRoomRealmDTO>
 }
