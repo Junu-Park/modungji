@@ -180,10 +180,13 @@ struct DetailView: View {
                                 .padding(.vertical, 8)
                             
                             HStack(spacing: 0) {
-                                URLImageView(urlString: self.viewModel.state.detailData.creator.profileImage)
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(.circle)
-                                    .padding(.trailing, 12)
+                                URLImageView(urlString: self.viewModel.state.detailData.creator.profileImage) {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .foregroundStyle(.brightCream)
+                                }
+                                .frame(width: 60, height: 60)
+                                .clipShape(.circle)
+                                .padding(.trailing, 12)
                                 
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(self.viewModel.state.detailData.creator.nick)

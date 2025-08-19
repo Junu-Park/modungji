@@ -7,13 +7,17 @@
 
 import SwiftUI
 
-struct URLImageView: View {
+struct URLImageView<Placeholder: View>: View {
     @State private var uiImage: UIImage?
     
     private let urlString: String
     
-    init(urlString: String) {
+    private let placeholder: Placeholder
+    
+    init(urlString: String, @ViewBuilder placeholder: () -> Placeholder) {
         self.urlString = urlString
+        
+        self.placeholder = placeholder()
     }
     
     var body: some View {
@@ -23,8 +27,7 @@ struct URLImageView: View {
                     Image(uiImage: uiImage)
                         .resizable()
                 } else {
-                    RoundedRectangle(cornerRadius: 4)
-                        .foregroundStyle(.brightCream)
+                    self.placeholder
                 }
             }
         }
@@ -76,8 +79,4 @@ final class ImageCacheManager {
             return nil
         }
     }
-}
-    
-#Preview {
-    URLImageView(urlString: "")
 }

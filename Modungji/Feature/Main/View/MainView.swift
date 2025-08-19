@@ -77,40 +77,43 @@ extension MainView {
     }
     
     private func estateBanner(data: EstateBannerEntity) -> some View {
-        URLImageView(urlString: data.thumbnail)
-            .scaledToFill()
-            .frame(width: UIScreen.main.bounds.width)
-            .clipped()
-            .overlay(alignment: .bottomLeading) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 2) {
-                        Image(.location)
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                        
-                        Text("\(data.address.area1) \(data.address.area3)")
-                            .font(PDFont.caption2)
-                    }
-                    .foregroundStyle(.gray15)
-                    .padding(.vertical, 2)
-                    .padding(.leading, 4)
-                    .padding(.trailing, 8)
-                    .background(.gray60.opacity(0.5))
-                    .clipShape(Capsule())
+        URLImageView(urlString: data.thumbnail) {
+            RoundedRectangle(cornerRadius: 4)
+                .foregroundStyle(.brightCream)
+        }
+        .scaledToFill()
+        .frame(width: UIScreen.main.bounds.width)
+        .clipped()
+        .overlay(alignment: .bottomLeading) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 2) {
+                    Image(.location)
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 16, height: 16)
                     
-                    Text(data.title)
-                        .foregroundStyle(.gray15)
-                        .font(YHFont.title1)
-                        .padding(.bottom, 2)
-                    
-                    Text(data.introduction)
-                        .foregroundStyle(.gray60)
-                        .font(YHFont.caption1)
+                    Text("\(data.address.area1) \(data.address.area3)")
+                        .font(PDFont.caption2)
                 }
-                .padding([.leading, .vertical], 20)
-                .padding(.bottom, 40)
+                .foregroundStyle(.gray15)
+                .padding(.vertical, 2)
+                .padding(.leading, 4)
+                .padding(.trailing, 8)
+                .background(.gray60.opacity(0.5))
+                .clipShape(Capsule())
+                
+                Text(data.title)
+                    .foregroundStyle(.gray15)
+                    .font(YHFont.title1)
+                    .padding(.bottom, 2)
+                
+                Text(data.introduction)
+                    .foregroundStyle(.gray60)
+                    .font(YHFont.caption1)
             }
+            .padding([.leading, .vertical], 20)
+            .padding(.bottom, 40)
+        }
     }
     
     private func estateFilterView() -> some View {

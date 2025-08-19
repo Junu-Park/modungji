@@ -19,8 +19,11 @@ struct ImageCarouselView: View {
     var body: some View {
         TabView(selection: self.$currentIndex) {
             ForEach(0..<imageURLs.count, id: \.self) { index in
-                URLImageView(urlString: imageURLs[index])
-                    .tag(index)
+                URLImageView(urlString: imageURLs[index]) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .foregroundStyle(.brightCream)
+                }
+                .tag(index)
             }
         }
         .tabViewStyle(.page)
