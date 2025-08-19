@@ -13,6 +13,6 @@ enum PathType: Hashable {
     case main
     case map
     case detail(estateID: String)
-    case chat(opponentID: String)
+    case chat(opponentID: String, roomData: ChatRoomResponseEntity? = nil)
     case chatRoomList
 }

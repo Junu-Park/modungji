@@ -122,27 +122,11 @@ final class PathModel: ObservableObject {
             }()
             
             DetailView(viewModel: viewModel)
-        case .chat(let opponentID):
-            /*
-            let viewModel: ChatViewModel = {
-                if let vm = self.viewModelList["ChatViewModel"] as? ChatViewModel {
-                    return vm
-                } else {
-                    let vm = ChatViewModel(
-                        opponentID: opponentID,
-                        service: self.diContainer.service.chatService,
-                        pathModel: self
-                    )
-                    self.viewModelList["ChatViewModel"] = vm
-                    
-                    return vm
-                }
-            }()
-            */
+        case .chat(let opponentID, let roomData):
             let viewModel: ChatViewModel = ChatViewModel(
                 opponentID: opponentID,
-                service: self.diContainer.service.chatService,
-                pathModel: self
+                chatRoomData: roomData,
+                service: self.diContainer.service.chatService
             )
             
             ChatView(viewModel: viewModel)

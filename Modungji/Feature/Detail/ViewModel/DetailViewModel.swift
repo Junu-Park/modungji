@@ -217,7 +217,6 @@ final class DetailViewModel: ObservableObject {
     }
     
     private func tapChat() {
-        let opponentID = self.state.detailData.creator.userID
-        self.pathModel.push(.chat(opponentID: opponentID))
+        self.pathModel.push(.chat(opponentID: self.state.detailData.creator.userID))
     }
 }
