@@ -20,21 +20,18 @@ final class ChatSocketManager: ObservableObject {
     static let shared: ChatSocketManager = .init()
     
     private var manager: SocketManager!
-    private var socket: SocketIOClient!
+    private weak var socket: SocketIOClient?
     weak var delegate: ChatSocketDelegate?
     
-    @Published var isConnected: Bool = false
-    
-    private init() { }
+    private init() {
+        self.setManager()
+    }
     
     deinit {
         self.manager.disconnect()
-        self.socket.disconnect()
-        self.manager = nil
-        self.socket = nil
     }
     
-    func setSocket(roomID: String) {
+    private func setManager() {
         guard let url = URL(string: ModungjiSecret.Estate.baseURL) else {
             return
         }
@@ -52,29 +49,28 @@ final class ChatSocketManager: ObservableObject {
                 .log(true),
                 .extraHeaders(["Authorization": accessToken, "SeSACKey": ModungjiSecret.Estate.key])
             ]
-        )
-        
+        )    }
+    
+    func setSocket(roomID: String) {
         self.socket = self.manager.socket(forNamespace: "/chats-\(roomID)")
         
         self.setSocketEvent()
     }
     
     private func setSocketEvent() {
-        socket.on(clientEvent: .connect) { [weak self] data, ack in
+        self.socket?.on(clientEvent: .connect) { [weak self] data, ack in
             guard let self else { return }
-            self.isConnected = true
             print("Chat Socket Connect")
             self.delegate?.didConnectSocket()
         }
         
-        socket.on(clientEvent: .disconnect) { [weak self] data, ack in
+        self.socket?.on(clientEvent: .disconnect) { [weak self] data, ack in
             guard let self else { return }
-            self.isConnected = false
             print("Chat Socket Disconnect")
             self.delegate?.didDisconnectSocket()
         }
         
-        socket.on("chat") { data, ack in
+        self.socket?.on("chat") { data, ack in
             print("Chat Socket Receive")
             do {
                 let chat = try self.parseChatData(data)
@@ -87,11 +83,13 @@ final class ChatSocketManager: ObservableObject {
     }
     
     func connectSocket() {
-        self.socket.connect()
+        self.socket?.connect()
     }
     
     func disconnectSocket() {
-        self.socket.disconnect()
+        self.socket?.removeAllHandlers()
+        self.socket?.disconnect()
+        self.socket = nil
     }
     
     private func parseChatData(_ data: [Any]) throws -> ChatSocketDTO {
