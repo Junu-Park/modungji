@@ -8,6 +8,7 @@
 import Foundation
 
 import Alamofire
+import KakaoSDKAuth
 
 struct AuthRepositoryImp: AuthRepository {
     
@@ -47,9 +48,7 @@ struct AuthRepositoryImp: AuthRepository {
     }
     
     func authWithKakao() async throws -> LoginResponseEntity {
-        let token = await self.kakaoManager.requestLogin()
-        
-        guard let token else {
+        guard let token = try await self.kakaoManager.requestLogin() else {
             throw EstateErrorResponseEntity(message: "카카오 로그인 실패")
         }
         
