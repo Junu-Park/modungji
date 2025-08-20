@@ -57,9 +57,13 @@ private struct ChatRoomRow: View {
     var body: some View {
         HStack(spacing: 12) {
             URLImageView(urlString: self.chatRoom.opponentUserData.profileImage) {
-                Image(systemName: "person.fill")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 20))
+                Circle()
+                    .fill(.gray45)
+                    .overlay {
+                        Image(systemName: "person.fill")
+                            .foregroundColor(.white)
+                            .font(.system(size: 20))
+                    }
             }
             .frame(width: 50, height: 50)
             .clipShape(.circle)
