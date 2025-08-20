@@ -131,7 +131,21 @@ final class PathModel: ObservableObject {
             
             ChatView(viewModel: viewModel)
         case .chatRoomList:
-            ChatRoomListView()
+            let viewModel: ChatRoomListViewModel = {
+                if let vm = self.viewModelList["ChatRoomListViewModel"] as? ChatRoomListViewModel {
+                    return vm
+                } else {
+                    let vm = ChatRoomListViewModel(
+                        service: self.diContainer.service.chatService,
+                        pathModel: self
+                    )
+                    self.viewModelList["ChatRoomListViewModel"] = vm
+                    
+                    return vm
+                }
+            }()
+            
+            ChatRoomListView(viewModel: viewModel)
         }
     }
 }
