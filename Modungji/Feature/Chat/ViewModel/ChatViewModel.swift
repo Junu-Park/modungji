@@ -101,14 +101,12 @@ final class ChatViewModel: ObservableObject {
                     allChats.append(contentsOf: self.tempServerChatDataList)
                     allChats.append(contentsOf: self.tempSocketChatDataList)
                     
-                    // 중복 제거 및 시간순 정렬
                     let uniqueChats = Dictionary(grouping: allChats, by: \.chatID)
                         .compactMap { $0.value.first }
                         .sorted { $0.createdAt < $1.createdAt }
                     
                     self.state.chatDataList = uniqueChats
                     
-                    // 새로운 채팅만 저장
                     let newChats = self.tempServerChatDataList + self.tempSocketChatDataList
                     if !newChats.isEmpty {
                         Task {
@@ -244,7 +242,6 @@ final class ChatViewModel: ObservableObject {
         let realm = try! Realm()
         
         try! realm.write {
-            // 1. 채팅룸 처리
             let roomDTO: ChatRoomRealmDTO
             if let existingRoom = realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: self.state.chatRoomData.roomID) {
                 roomDTO = existingRoom
@@ -257,7 +254,6 @@ final class ChatViewModel: ObservableObject {
                 realm.add(roomDTO)
             }
             
-            // 2. 각 채팅 처리
             for chatEntity in entity {
                 if realm.object(ofType: ChatRealmDTO.self, forPrimaryKey: chatEntity.chatID) == nil {
                     let chatDTO = ChatRealmDTO()
@@ -267,16 +263,10 @@ final class ChatViewModel: ObservableObject {
                     chatDTO.sender = self.getOrCreateUser(entity: chatEntity.sender, in: realm)
                     chatDTO.files.append(objectsIn: chatEntity.files)
                     
-                    // 중요: 채팅룸의 chatList에 추가
                     roomDTO.chatList.append(chatDTO)
+                    
                     realm.add(chatDTO)
                 }
-            }
-            
-            // lastChat 업데이트
-            if let lastChat = entity.max(by: { $0.createdAt < $1.createdAt }),
-               let lastChatDTO = realm.object(ofType: ChatRealmDTO.self, forPrimaryKey: lastChat.chatID) {
-                roomDTO.lastChat = lastChatDTO
             }
         }
     }
@@ -286,8 +276,16 @@ final class ChatViewModel: ObservableObject {
         let realm = try! Realm()
         
         try! realm.write {
-            guard let roomDTO = realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: self.state.chatRoomData.roomID) else {
-                return
+            let roomDTO: ChatRoomRealmDTO
+            if let existingRoom = realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: self.state.chatRoomData.roomID) {
+                roomDTO = existingRoom
+            } else {
+                roomDTO = ChatRoomRealmDTO()
+                roomDTO.id = self.state.chatRoomData.roomID
+                roomDTO.createdDate = self.state.chatRoomData.createdAt
+                roomDTO.user = self.getOrCreateUser(entity: self.state.chatRoomData.opponentUserData, in: realm)
+                roomDTO.opponent = self.getOrCreateUser(entity: self.state.chatRoomData.userData, in: realm)
+                realm.add(roomDTO)
             }
             
             if realm.object(ofType: ChatRealmDTO.self, forPrimaryKey: entity.chatID) == nil {
@@ -299,7 +297,6 @@ final class ChatViewModel: ObservableObject {
                 chatDTO.files.append(objectsIn: entity.files)
                 
                 roomDTO.chatList.append(chatDTO)
-                roomDTO.lastChat = chatDTO
                 
                 realm.add(chatDTO)
             }
@@ -328,7 +325,7 @@ final class ChatViewModel: ObservableObject {
     @MainActor
     private func getLastChatDateFromRealm(roomID: String) -> Date? {
         let realm = try! Realm()
-        return realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: roomID)?.lastChat?.date
+        return realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: roomID)?.updatedDate
     }
     
     // MARK: - convert
