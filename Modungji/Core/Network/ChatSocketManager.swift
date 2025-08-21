@@ -49,7 +49,8 @@ final class ChatSocketManager: ObservableObject {
                 .log(true),
                 .extraHeaders(["Authorization": accessToken, "SeSACKey": ModungjiSecret.Estate.key])
             ]
-        )    }
+        )
+    }
     
     func setSocket(roomID: String) {
         self.socket = self.manager.socket(forNamespace: "/chats-\(roomID)")
@@ -87,9 +88,8 @@ final class ChatSocketManager: ObservableObject {
     }
     
     func disconnectSocket() {
-        self.socket?.removeAllHandlers()
-        self.socket?.disconnect()
         self.socket = nil
+        self.manager.disconnect()
     }
     
     private func parseChatData(_ data: [Any]) throws -> ChatSocketDTO {
