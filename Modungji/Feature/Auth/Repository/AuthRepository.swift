@@ -14,8 +14,9 @@ protocol AuthRepository {
     func authWithApple(request: LoginWithAppleRequestDTO) async throws -> LoginResponseEntity
     func authWithKakao() async throws -> LoginResponseEntity
     func loginWithEmail(request: LoginWithEmailRequestDTO) async throws -> LoginResponseEntity
-    func saveLoginData(accessToken: String, refreshToken: String, userID: String) async throws
+    func saveLoginData(accessToken: String, refreshToken: String, userID: String) throws
     @discardableResult func signUpWithEmail(request: JoinRequestDTO) async throws -> SignUpWithEmailResponseEntity
     func authWithAuto() async throws -> RefreshResponseEntity
     func getDeviceToken() throws -> String
+    func updateDeviceToken(body: UpdateDeviceTokenRequestDTO) async throws
 }

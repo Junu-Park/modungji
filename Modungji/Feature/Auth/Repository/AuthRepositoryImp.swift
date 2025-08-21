@@ -78,7 +78,7 @@ struct AuthRepositoryImp: AuthRepository {
         }
     }
     
-    func saveLoginData(accessToken: String, refreshToken: String, userID: String) async throws {
+    func saveLoginData(accessToken: String, refreshToken: String, userID: String) throws {
         do {
             try self.keychainManager.save(tokenType: .accessToken, token: accessToken)
             try self.keychainManager.save(tokenType: .refreshToken, token: refreshToken)
@@ -115,6 +115,17 @@ struct AuthRepositoryImp: AuthRepository {
             return try self.keychainManager.get(tokenType: .deviceToken)
         } catch {
             throw ErrorResponseDTO(message: error.localizedDescription)
+        }
+    }
+    
+    func updateDeviceToken(body: UpdateDeviceTokenRequestDTO) async throws {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.User.updateDeviceToken(body: body))
+        
+        switch response {
+        case .success:
+            return
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
         }
     }
 }
