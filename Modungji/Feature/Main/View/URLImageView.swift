@@ -32,7 +32,7 @@ struct URLImageView<Placeholder: View>: View {
             }
         }
         .task {
-            if self.uiImage == nil {
+            if !self.urlString.isEmpty, self.uiImage == nil {
                 self.uiImage = await ImageCacheManager.shared.getImage(urlString: urlString)
             }
         }
