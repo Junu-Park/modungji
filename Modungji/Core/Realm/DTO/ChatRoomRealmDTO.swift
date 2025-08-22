@@ -14,6 +14,13 @@ final class ChatRoomRealmDTO: Object {
     @Persisted var createdDate: Date
     @Persisted var user: UserRealmDTO?
     @Persisted var opponent: UserRealmDTO?
-    @Persisted var lastChat: ChatRealmDTO?
     @Persisted var chatList: List<ChatRealmDTO> = .init()
+    
+    var lastChat: ChatRealmDTO? {
+        return self.chatList.sorted { $0.date > $1.date }.first
+    }
+    
+    var updatedDate: Date {
+        return self.lastChat?.date ?? self.createdDate
+    }
 }
