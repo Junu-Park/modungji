@@ -119,7 +119,7 @@ struct AuthRepositoryImp: AuthRepository {
     }
     
     func updateDeviceToken(body: UpdateDeviceTokenRequestDTO) async throws {
-        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.User.updateDeviceToken(body: body))
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.User.updateDeviceToken(body: body), isNoResponse: true)
         
         switch response {
         case .success:

@@ -101,7 +101,7 @@ struct NetworkManager {
         }
     }
     
-    func requestEstate(requestURL: APIRouter) async throws -> Result<Data, ErrorResponseDTO> {
+    func requestEstate(requestURL: APIRouter, isNoResponse: Bool = false) async throws -> Result<Data, ErrorResponseDTO> {
         
         let response = await AF.request(requestURL)
             .serializingData()
@@ -113,6 +113,10 @@ struct NetworkManager {
         
         do {
             if (200...299).contains(statusCode) {
+                if isNoResponse {
+                    return .success(Data())
+                }
+                
                 guard let data = response.data else {
                     let errorResponse = ErrorResponseDTO(message: "Empty Data")
                     NetworkLog.failure(url: requestURL.path, statusCode: 0, data: errorResponse)
