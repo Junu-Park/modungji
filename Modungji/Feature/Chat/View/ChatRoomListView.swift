@@ -27,9 +27,6 @@ struct ChatRoomListView: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
-        .onAppear {
-            self.viewModel.action(.fetchChatRoomList)
-        }
         .refreshable {
             self.viewModel.action(.fetchChatRoomList)
         }
@@ -37,6 +34,9 @@ struct ChatRoomListView: View {
             if value == .active {
                 self.viewModel.action(.fetchChatRoomList)
             }
+        }
+        .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
+            Button("닫기") { }
         }
     }
 }
