@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-final class PathModel: ObservableObject {
+final class PathModel: NSObject, ObservableObject {
     @Published var path: NavigationPath = .init()
     
     private let diContainer: DIContainer
@@ -16,6 +16,10 @@ final class PathModel: ObservableObject {
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
+        
+        super.init()
+        
+        UNUserNotificationCenter.current().delegate = self
     }
     
     func push(_ path: PathType) {
@@ -146,6 +150,34 @@ final class PathModel: ObservableObject {
             }()
             
             ChatRoomListView(viewModel: viewModel)
+        }
+    }
+}
+
+extension PathModel: UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        guard notification.request.content.userInfo["room_id"] as? String != nil else {
+            return []
+        }
+        
+        guard let vm = self.viewModelList["ChatRoomListViewModel"] as? ChatRoomListViewModel else {
+            return []
+        }
+        
+        vm.action(.fetchChatRoomList)
+        
+        return [.badge, .banner, .list, .sound]
+    }
+    
+    @MainActor
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        guard let roomID = response.notification.request.content.userInfo["room_id"] as? String else {
+            return
+        }
+        
+        await MainActor.run {
+            self.push(.chat(opponentID: "", roomID: roomID))
         }
     }
 }

@@ -31,13 +31,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         
         Messaging.messaging().delegate = self
         
-        UNUserNotificationCenter.current().delegate = self
-        
         return true
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // 영문 입력 상태에서 Option + Shift + K 누르면 애플 로고 나온당!
+        
         print(" APNs device token: \(deviceToken.map { String(format: "%02x", $0) }.joined())")
         Messaging.messaging().apnsToken = deviceToken
     }
@@ -56,16 +54,5 @@ extension AppDelegate: MessagingDelegate {
         if let fcmToken {
             try? KeychainManager().save(tokenType: .deviceToken, token: fcmToken)
         }
-    }
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        
-        return [.badge, .banner, .list, .sound]
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
     }
 }
