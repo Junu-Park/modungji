@@ -27,6 +27,9 @@ struct ChatRoomListView: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
+        .onAppear {
+            self.viewModel.action(.fetchChatRoomList)
+        }
         .refreshable {
             self.viewModel.action(.fetchChatRoomList)
         }
