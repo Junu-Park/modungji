@@ -19,7 +19,7 @@ final class ChatRoomListViewModel: ObservableObject {
     
     enum Action {
         case fetchChatRoomList
-        case tapChatRoom(opponentID: String, roomData: ChatRoomResponseEntity)
+        case tapChatRoom(opponentID: String, roomID: String)
     }
     
     @Published var state: State = State()
@@ -35,8 +35,8 @@ final class ChatRoomListViewModel: ObservableObject {
     
     func action(_ action: Action) {
         switch action {
-        case .tapChatRoom(let opponentID, let roomData):
-            self.pathModel.push(.chat(opponentID: opponentID, roomData: roomData))
+        case .tapChatRoom(let opponentID, let roomID):
+            self.pathModel.push(.chat(opponentID: opponentID, roomID: roomID))
         case .fetchChatRoomList:
             self.fetchChatRoomList()
         }

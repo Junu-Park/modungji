@@ -21,7 +21,7 @@ struct ChatRoomListView: View {
     var body: some View {
         List(self.viewModel.state.chatRoomList, id: \.roomID) { chatRoom in
             Button {
-                self.viewModel.action(.tapChatRoom(opponentID: chatRoom.opponentUserData.userID, roomData: chatRoom))
+                self.viewModel.action(.tapChatRoom(opponentID: chatRoom.opponentUserData.userID, roomID: chatRoom.roomID))
             } label: {
                 ChatRoomRow(chatRoom: chatRoom)
             }

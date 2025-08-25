@@ -59,27 +59,10 @@ final class ChatViewModel: ObservableObject {
     private var tempServerChatDataList: [ChatResponseEntity] = []
     private var cancellables: Set<AnyCancellable> = .init()
     
-    init(opponentID: String, chatRoomData: ChatRoomResponseEntity? = nil, service: ChatService) {
+    init(opponentID: String = "", roomID: String = "", service: ChatService) {
         self.service = service
         self.opponentID = opponentID
-        self.state.chatRoomData = chatRoomData ?? .init(
-            roomID: "",
-            createdAt: .now,
-            updatedAt: .now,
-            userData: .init(
-                userID: "",
-                nick: "",
-                introduction: "",
-                profileImage: ""
-            ),
-            opponentUserData: .init(
-                userID: "",
-                nick: "",
-                introduction: "",
-                profileImage: ""
-            ),
-            lastChat: nil
-        )
+        self.roomID = roomID
         
         self.transform()
         
@@ -139,16 +122,18 @@ final class ChatViewModel: ObservableObject {
     private func initView() {
         Task {
             do {
-                let roomID: String
-                
-                if self.state.chatRoomData.roomID != "" {
-                    roomID = self.state.chatRoomData.roomID
-                } else {
-                    let createChatRoomResponse = try await self.service.createChatRoom(opponentID: self.opponentID)
+                if self.roomID != "", let roomResponse = try await self.service.getChatRoomList().first(where: { $0.roomID == self.roomID }) {
                     await MainActor.run {
-                        self.state.chatRoomData = createChatRoomResponse
+                        self.state.chatRoomData = roomResponse
                     }
-                    roomID = createChatRoomResponse.roomID
+                } else if self.opponentID != "" {
+                    let roomResponse = try await self.service.createChatRoom(opponentID: self.opponentID)
+                    await MainActor.run {
+                        self.state.chatRoomData = roomResponse
+                    }
+                    roomID = roomResponse.roomID
+                } else {
+                    throw EstateErrorResponseEntity(message: "채팅방/상대방을 찾을 수 없습니다.")
                 }
                 
                 await MainActor.run {

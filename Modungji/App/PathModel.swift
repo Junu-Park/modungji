@@ -126,10 +126,10 @@ final class PathModel: NSObject, ObservableObject {
             }()
             
             DetailView(viewModel: viewModel)
-        case .chat(let opponentID, let roomData):
+        case .chat(let opponentID, let roomID):
             let viewModel: ChatViewModel = ChatViewModel(
                 opponentID: opponentID,
-                chatRoomData: roomData,
+                roomID: roomID,
                 service: self.diContainer.service.chatService
             )
             
