@@ -51,7 +51,8 @@ final class ChatViewModel: ObservableObject {
     
     @Published var state: State = State()
     
-    private let opponentID: String
+    private var opponentID: String
+    private var roomID: String
     private let service: ChatService
     private let chatSocketManager: ChatSocketManager = .shared
     private var tempRealmChatDataList: [ChatResponseEntity] = []
