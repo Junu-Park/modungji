@@ -88,6 +88,8 @@ final class ChatSocketManager: ObservableObject {
     }
     
     func disconnectSocket() {
+        self.socket?.disconnect()
+        self.socket?.removeAllHandlers()
         self.socket = nil
         self.manager.disconnect()
     }
