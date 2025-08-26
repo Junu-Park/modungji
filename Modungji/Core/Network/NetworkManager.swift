@@ -189,7 +189,7 @@ extension NetworkManager: RequestInterceptor {
             let isRefreshed = await self.tokenRefreshManager.requestRefreshToken()
             
             if !isRefreshed {
-                NotificationCenter.default.post(name: .expiredToken, object: nil)
+                NotificationCenter.default.post(name: .expiredRefreshToken, object: nil)
             }
             completion(isRefreshed ? .retry : .doNotRetry)
         }
@@ -197,7 +197,7 @@ extension NetworkManager: RequestInterceptor {
 }
 
 extension Notification.Name {
-    static let expiredToken = Self("expiredToken")
+    static let expiredRefreshToken = Self("expiredRefreshToken")
 }
 
 #if DEBUG
