@@ -33,7 +33,7 @@ struct ChatRoomListView: View {
         .refreshable {
             self.viewModel.action(.fetchChatRoomList)
         }
-        .onChange(of: self.scenePhase) { value in
+        .customOnChange(value: self.scenePhase) { value in
             if value == .active {
                 self.viewModel.action(.fetchChatRoomList)
             }
