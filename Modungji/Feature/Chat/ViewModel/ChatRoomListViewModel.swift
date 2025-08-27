@@ -81,7 +81,13 @@ final class ChatRoomListViewModel: ObservableObject {
         
         try! realm.write {
             for entity in entities {
-                if realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: entity.roomID) == nil {
+                if realm.object(ofType: ChatRoomRealmDTO.self, forPrimaryKey: entity.roomID) != nil {
+                    let userDTO = convertEntityToRealmDTO(entity.userData)
+                    let opponentDTO = convertEntityToRealmDTO(entity.opponentUserData)
+                                    
+                    realm.add(userDTO, update: .modified)
+                    realm.add(opponentDTO, update: .modified)
+                } else {
                     realm.add(self.convertEntityToRealmDTO(entity), update: .modified)
                 }
             }
