@@ -55,11 +55,11 @@ struct ChatView: View {
                     .padding(.vertical, 8)
                     .id("LazyVStack")
                 }
-                .onAppear {
-                    self.scrollToBottom(proxy: proxy)
+                .customOnChange(value: self.viewModel.state.didInitData) { _ in
+                    self.scrollToBottom(proxy: proxy, isInit: true)
                 }
                 .customOnChange(value: self.viewModel.state.chatDataList) { _ in
-                    if self.isScrollBottom {
+                    if self.isScrollBottom && self.viewModel.state.didInitData {
                         self.scrollToBottom(proxy: proxy)
                     }
                 }
@@ -93,9 +93,15 @@ struct ChatView: View {
         }
     }
     
-    private func scrollToBottom(proxy: ScrollViewProxy) {
-        withAnimation(.easeOut(duration: 0.3)) {
-            proxy.scrollTo("LazyVStack", anchor: .bottom)
+    private func scrollToBottom(proxy: ScrollViewProxy, isInit: Bool = false) {
+        if isInit {
+            DispatchQueue.main.async {
+                proxy.scrollTo("LazyVStack", anchor: .bottom)
+            }
+        } else {
+            withAnimation(.easeOut(duration: 0.3)) {
+                proxy.scrollTo("LazyVStack", anchor: .bottom)
+            }
         }
     }
     

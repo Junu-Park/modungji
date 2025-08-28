@@ -13,6 +13,7 @@ import RealmSwift
 final class ChatViewModel: ObservableObject {
     struct State {
         var isLoadingData: Bool = false
+        var didInitData: Bool = false
         
         var chatRoomData: ChatRoomResponseEntity = .init(
             roomID: "",
@@ -43,7 +44,6 @@ final class ChatViewModel: ObservableObject {
     }
     
     enum Action {
-        case initView
         case sendChat
         case appendImage
         case disconnectSocket
@@ -67,7 +67,7 @@ final class ChatViewModel: ObservableObject {
         
         self.transform()
         
-        self.initView()
+        self.initData()
         
         self.chatSocketManager.delegate = self
     }
@@ -91,6 +91,10 @@ final class ChatViewModel: ObservableObject {
                     
                     self.state.chatDataList = uniqueChats
                     
+                    if !self.state.didInitData {
+                        self.state.didInitData = true
+                    }
+                    
                     let newChats = self.tempServerChatDataList + self.tempSocketChatDataList
                     if !newChats.isEmpty {
                         Task {
@@ -109,8 +113,6 @@ final class ChatViewModel: ObservableObject {
     // MARK: - Action
     func action(_ action: Action) {
         switch action {
-        case .initView:
-            self.initView()
         case .sendChat:
             self.sendChat()
         case .appendImage:
@@ -120,7 +122,7 @@ final class ChatViewModel: ObservableObject {
         }
     }
     
-    private func initView() {
+    private func initData() {
         Task {
             do {
                 if self.roomID != "", let roomResponse = try await self.service.getChatRoomList().first(where: { $0.roomID == self.roomID }) {
