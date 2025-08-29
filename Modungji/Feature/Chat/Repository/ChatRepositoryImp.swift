@@ -62,6 +62,20 @@ struct ChatRepositoryImp: ChatRepository {
         }
     }
     
+    func uploadFiles(roomID: String, entity: [UploadFilesRequestEntity]) async throws ->  UploadFilesResponseEntity {
+        
+        let dto = entity.map { UploadFilesRequestDTO(data: $0.data, key: $0.key, name: $0.name, type: $0.type.typeString) }
+        
+        let response = try await self.networkManager.requestEstateMultipartFiles(requestURL: EstateRouter.Chat.uploadFiles(roomID: roomID), dto: dto, successDecodingType: UploadFilesResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(success)
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
+    
     private func convertToEntity(_ dto: ChatRoomResponseDTO) -> ChatRoomResponseEntity {
         let userID = try? KeychainManager().get(tokenType: .userID)
         
@@ -111,6 +125,10 @@ struct ChatRepositoryImp: ChatRepository {
             introduction: dto.introduction ?? "",
             profileImage: dto.profileImage ?? ""
         )
+    }
+    
+    private func convertToEntity(_ dto: UploadFilesResponseDTO) -> UploadFilesResponseEntity {
+        return .init(files: dto.files)
     }
     
     private func convertDateStringToDate(_ dateString: String) -> Date {

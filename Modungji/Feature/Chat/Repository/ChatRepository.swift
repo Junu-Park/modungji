@@ -12,4 +12,5 @@ protocol ChatRepository {
     func getChatRoomChatHistory(roomID: String, next: Date?) async throws -> [ChatResponseEntity]
     func getChatRoomList() async throws -> [ChatRoomResponseEntity]
     @discardableResult func postChat(roomID: String, content: String, files: [String]) async throws -> ChatResponseEntity
+    func uploadFiles(roomID: String, entity: [UploadFilesRequestEntity]) async throws ->  UploadFilesResponseEntity
 }
