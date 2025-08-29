@@ -10,9 +10,24 @@ import Foundation
 import Alamofire
 import ModungjiSecret
 
-enum ImageExtensionType: String {
+enum MultipartType: String {
     case png = "png"
     case jpeg = "jpeg"
+    case gif = "gif"
+    case pdf = "pdf"
+    
+    private var category: String {
+        switch self {
+        case .png, .jpeg, .gif:
+            "image"
+        case .pdf:
+            "application"
+        }
+    }
+    
+    var typeString: String {
+        return "\(self.category)/\(self.rawValue)"
+    }
 }
 
 struct NetworkManager {
@@ -61,20 +76,21 @@ struct NetworkManager {
         }
     }
     
-    func requestEstateMultiPartImage<T: Decodable>(requestURL: APIRouter, key: String, extensionType: ImageExtensionType, dataList: Data..., successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
+    func requestEstateMultipartFiles<T: Decodable>(requestURL: APIRouter, dto: [UploadFilesRequestDTO], successDecodingType: T.Type) async throws -> Result<T, ErrorResponseDTO> {
         
         let multipartFormData = MultipartFormData()
-        for data in dataList {
+        
+        for i in dto {
             multipartFormData
                 .append(
-                    data,
-                    withName: key,
-                    fileName: "\(UUID()).\(extensionType.rawValue)",
-                    mimeType: "image/\(extensionType.rawValue)"
+                    i.data,
+                    withName: i.key,
+                    fileName: i.name,
+                    mimeType: i.type
                 )
         }
         
-        let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL, interceptor: self)
+        let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL)
             .validate({ req, res, data in
                 if res.statusCode == 419 {
                     return .failure(ErrorResponseDTO(message: "AccessToken is expired"))
