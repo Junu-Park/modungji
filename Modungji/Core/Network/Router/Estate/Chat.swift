@@ -16,7 +16,7 @@ extension EstateRouter {
         case getChatRoomList
         case postChat(roomID: String, body: PostChatRequestDTO)
         case getChatHistory(roomID: String, next: String?)
-        case postFile(roomID: String)
+        case uploadFiles(roomID: String)
         
         var baseURL: URL? {
             return URL(string: EstateRouter.baseURL)?.appendingPathComponent("v1/chats")
@@ -32,7 +32,7 @@ extension EstateRouter {
                 return "\(roomID)"
             case .getChatHistory(let roomID, _):
                 return "\(roomID)"
-            case .postFile(let roomID):
+            case .uploadFiles(let roomID):
                 return "\(roomID)/files"
             }
         }
@@ -47,7 +47,7 @@ extension EstateRouter {
                 return .post
             case .getChatHistory:
                 return .get
-            case .postFile:
+            case .uploadFiles:
                 return .post
             }
         }
@@ -81,7 +81,7 @@ extension EstateRouter {
             headers.add(name: "SeSACKey", value: ModungjiSecret.Estate.key)
             
             switch self {
-            case .postFile:
+            case .uploadFiles:
                 headers.add(name: "Content-Type", value: "multipart/form-data")
             default:
                 headers.add(name: "Content-Type", value: "application/json")
