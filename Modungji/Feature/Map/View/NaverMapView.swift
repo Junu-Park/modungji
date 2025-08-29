@@ -145,7 +145,7 @@ extension NaverMapView {
             
             Task {
                 do {
-                    let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.Image.image(urlString: key.entity.thumbnail))
+                    let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.File.file(urlString: key.entity.thumbnail))
                     
                     switch response {
                     case .success(let success):

@@ -64,7 +64,7 @@ final class ImageCacheManager {
     }
     
     private func getImageFromURL(urlString: String) async throws -> UIImage? {
-        let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.Image.image(urlString: urlString))
+        let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.File.file(urlString: urlString))
         
         switch response {
         case .success(let data):

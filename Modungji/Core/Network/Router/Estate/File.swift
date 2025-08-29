@@ -1,5 +1,5 @@
 //
-//  Image.swift
+//  File.swift
 //  Modungji
 //
 //  Created by 박준우 on 7/25/25.
@@ -11,8 +11,8 @@ import Alamofire
 import ModungjiSecret
 
 extension EstateRouter {
-    enum Image: APIRouter {
-        case image(urlString: String)
+    enum File: APIRouter {
+        case file(urlString: String)
         
         var baseURL: URL? {
             return URL(string: EstateRouter.baseURL)?.appendingPathComponent("v1")
@@ -20,7 +20,7 @@ extension EstateRouter {
         
         var path: String {
             switch self {
-            case .image(let urlString):
+            case .file(let urlString):
                 return urlString
             }
         }
