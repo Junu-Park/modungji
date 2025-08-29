@@ -43,7 +43,7 @@ struct EstateOptionEntity {
 }
 
 struct UserEntity: Hashable {
-    let userID: String
+    var userID: String
     let nick: String
     let introduction: String
     let profileImage: String
