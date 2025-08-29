@@ -11,6 +11,7 @@ import AuthenticationServices
 final class AuthViewModel: ObservableObject {
     
     struct State {
+        var isAutoLogin: Bool = false
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -75,17 +76,25 @@ final class AuthViewModel: ObservableObject {
     private func authWithAuto() {
         Task {
             do {
+                await MainActor.run {
+                    self.state.isAutoLogin = true
+                }
+                
                 let result = try await self.service.authWithAuto()
                 
                 await MainActor.run {
                     self.authState.login(accessToken: result.accessToken, refreshToken: result.refreshToken)
+                    self.state.isAutoLogin = false
                 }
             } catch let error as EstateErrorResponseEntity {
-                if let statusCode = error.statusCode, statusCode == 418 {
-                    await MainActor.run {
-                        self.state.errorMessage = error.message
-                        self.state.showErrorAlert = true
-                    }
+                await MainActor.run {
+                    self.state.isAutoLogin = false
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    self.state.isAutoLogin = false
                 }
             }
         }

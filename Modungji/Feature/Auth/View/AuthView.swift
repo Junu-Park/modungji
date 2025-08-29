@@ -19,16 +19,23 @@ struct AuthView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Group {
-                self.kakaoLoginButton
+            if self.viewModel.state.isAutoLogin {
+                ProgressView()
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    .tint(.deepCoast)
+                    .background(.gray45)
+            } else {
+                Group {
+                    self.kakaoLoginButton
+                    
+                    self.appleLoginButton
+                    
+                    self.emailLoginButton
+                }
+                .frame(height: 50)
                 
-                self.appleLoginButton
-                
-                self.emailLoginButton
+                self.emailSignUpButton
             }
-            .frame(height: 50)
-            
-            self.emailSignUpButton
         }
         .onAppear {
             self.viewModel.action(.authWithAuto)
