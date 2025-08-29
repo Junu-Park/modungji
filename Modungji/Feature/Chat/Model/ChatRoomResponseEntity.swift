@@ -12,10 +12,10 @@ struct ChatRoomResponseEntity: Hashable {
         return lhs.roomID == rhs.roomID
     }
     
-    let roomID: String
+    var roomID: String
     let createdAt: Date
     let updatedAt: Date
     let userData: UserEntity
-    let opponentUserData: UserEntity
+    var opponentUserData: UserEntity
     let lastChat: ChatResponseEntity?
 }
