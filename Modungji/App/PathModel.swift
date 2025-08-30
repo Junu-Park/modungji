@@ -140,7 +140,8 @@ final class PathModel: NSObject, ObservableObject {
             let viewModel: ChatViewModel = ChatViewModel(
                 opponentID: opponentID,
                 roomID: roomID,
-                service: self.diContainer.service.chatService
+                service: self.diContainer.service.chatService,
+                pathModel: self
             )
             
             ChatView(viewModel: viewModel)

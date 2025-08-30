@@ -46,6 +46,7 @@ final class ChatViewModel: ObservableObject {
     enum Action {
         case sendChat
         case appendImage
+        case tapBackButton
         case disconnectSocket
     }
     
@@ -119,6 +120,8 @@ final class ChatViewModel: ObservableObject {
             print("appendImage")
         case .disconnectSocket:
             self.disconnectSocket()
+        case .tapBackButton:
+            self.tapBackButton()
         }
     }
     
@@ -203,6 +206,10 @@ final class ChatViewModel: ObservableObject {
     
     private func disconnectSocket() {
         self.chatSocketManager.disconnectSocket()
+    }
+    
+    private func tapBackButton() {
+        self.pathModel.pop()
     }
     
     @MainActor
