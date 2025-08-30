@@ -14,6 +14,8 @@ final class PathModel: NSObject, ObservableObject {
     
     private var viewModelList: [String: any ObservableObject] = [:]
     
+    private var selectedChatRoomID: String?
+    
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
         
@@ -23,13 +25,21 @@ final class PathModel: NSObject, ObservableObject {
     }
     
     func push(_ path: PathType) {
+        if case .chat(_, let roomID) = path {
+            self.selectedChatRoomID = roomID
+        }
+        
         self.path.append(path)
     }
     
     func pop() {
-        if !self.path.isEmpty {
-            self.path.removeLast()
+        if self.path.isEmpty { return }
+        
+        if self.selectedChatRoomID != nil {
+            self.selectedChatRoomID = nil
         }
+        
+        self.path.removeLast()
     }
     
     func root() {
@@ -157,7 +167,7 @@ final class PathModel: NSObject, ObservableObject {
 extension PathModel: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        guard notification.request.content.userInfo["room_id"] as? String != nil else {
+        guard let roomID = notification.request.content.userInfo["room_id"] as? String, self.selectedChatRoomID != roomID else {
             return []
         }
         
@@ -172,12 +182,16 @@ extension PathModel: UNUserNotificationCenterDelegate {
     
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        guard let roomID = response.notification.request.content.userInfo["room_id"] as? String else {
+        guard let roomID = response.notification.request.content.userInfo["room_id"] as? String, self.selectedChatRoomID != roomID else {
             return
         }
         
-        await MainActor.run {
-            self.push(.chat(opponentID: "", roomID: roomID))
+        // 앱이 완전히 로드될 때까지 대기
+        try? await Task.sleep(for: .seconds(0.3))
+        
+        if self.selectedChatRoomID != nil {
+            self.pop()
         }
+        self.push(.chat(opponentID: "", roomID: roomID))
     }
 }
