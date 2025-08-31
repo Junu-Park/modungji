@@ -5,7 +5,7 @@
 //  Created by 박준우 on 8/31/25.
 //
 
-import Foundation
+import UIKit
 
 enum DeviceType {
     case iPhone8, iPhone8Plus
@@ -21,70 +21,84 @@ enum DeviceType {
     case unknown
     
     var keyboardHeight: CGFloat {
+        let height: CGFloat
+        
         switch self {
             // iPhone with Home Button
         case .iPhone8, .iPhoneSE2, .iPhoneSE3:
-            return 216
+            height = 216
         case .iPhone8Plus:
-            return 226
+            height = 226
             
             // iPhone X Series (Face ID)
         case .iPhoneX, .iPhoneXS, .iPhone11Pro:
-            return 291
+            height = 291
         case .iPhoneXR, .iPhone11:
-            return 291
+            height = 291
         case .iPhoneXSMax, .iPhone11ProMax:
-            return 301
+            height = 301
             
             // iPhone 12 Series
         case .iPhone12Mini:
-            return 291
+            height = 291
         case .iPhone12, .iPhone12Pro:
-            return 291
+            height = 291
         case .iPhone12ProMax:
-            return 301
+            height = 301
             
             // iPhone 13 Series
         case .iPhone13Mini:
-            return 291
+            height = 291
         case .iPhone13, .iPhone13Pro:
-            return 291
+            height = 291
         case .iPhone13ProMax:
-            return 301
+            height = 301
             
             // iPhone 14 Series
         case .iPhone14:
-            return 291
+            height = 291
         case .iPhone14Plus:
-            return 301
+            height = 301
         case .iPhone14Pro:
-            return 291
+            height = 291
         case .iPhone14ProMax:
-            return 301
+            height = 301
             
             // iPhone 15 Series
         case .iPhone15:
-            return 291
+            height = 291
         case .iPhone15Plus:
-            return 301
+            height = 301
         case .iPhone15Pro:
-            return 291
+            height = 291
         case .iPhone15ProMax:
-            return 301
+            height = 301
             
             // iPhone 16 Series
         case .iPhone16:
-            return 291
+            height = 291
         case .iPhone16Plus:
-            return 301
+            height = 301
         case .iPhone16Pro:
-            return 291
+            height = 291
         case .iPhone16ProMax:
-            return 301
+            height = 301
             
         case .unknown:
-            return 291 // Default fallback
+            height = 291 // Default fallback
         }
+        
+        return height - self.getBottomSafeArea()
+    }
+    
+    private func getBottomSafeArea() -> CGFloat {
+        var safeAreaBottom: CGFloat = 0
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
+            safeAreaBottom = window.safeAreaInsets.bottom
+        }
+        
+        return safeAreaBottom
     }
     
     private static func getDeviceModelName() -> String {
