@@ -8,7 +8,13 @@
 import SwiftUI
 
 final class PathModel: NSObject, ObservableObject {
-    @Published var path: NavigationPath = .init()
+    @Published var path: NavigationPath = .init() {
+        didSet {
+            if self.selectedChatRoomID == nil || oldValue.count <= self.path.count { return }
+            
+            self.selectedChatRoomID = nil
+        }
+    }
     
     private let diContainer: DIContainer
     
@@ -34,10 +40,6 @@ final class PathModel: NSObject, ObservableObject {
     
     func pop() {
         if self.path.isEmpty { return }
-        
-        if self.selectedChatRoomID != nil {
-            self.selectedChatRoomID = nil
-        }
         
         self.path.removeLast()
     }
