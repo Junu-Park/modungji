@@ -1,5 +1,5 @@
 //
-//  PDFView.swift
+//  PDFPreviewView.swift
 //  Modungji
 //
 //  Created by 박준우 on 9/1/25.
@@ -8,7 +8,7 @@
 import SwiftUI
 import PDFKit
 
-struct PDFView: View {
+struct PDFPreviewView: View {
     let url: String
     @Environment(\.dismiss) private var dismiss
     
