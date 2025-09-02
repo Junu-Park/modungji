@@ -5,14 +5,23 @@
 //  Created by 박준우 on 8/16/25.
 //
 
+import PDFKit
 import PhotosUI
 import SwiftUI
 
 struct ChatView: View {
+    @Namespace var topID
+    @Namespace var bottomID
+    
     @ObservedObject private var viewModel: ChatViewModel
     
-    @State private var keyboardHeight: CGFloat = 0
+    @State private var keyboardHeight: CGFloat = DeviceType.getDeviceType().keyboardHeight
     @State private var isScrollBottom: Bool = false
+    @State private var showFileTypeSelector: Bool = false
+    @State private var showFilePicker: Bool = false
+    @State private var showPhotoPicker: Bool = false
+    
+    @FocusState private var showKeyboard: Bool
     
     init(viewModel: ChatViewModel) {
         self.viewModel = viewModel
@@ -23,8 +32,8 @@ struct ChatView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        Spacer(minLength: keyboardHeight == 0 ? 0.1 : keyboardHeight)
-                            .id("Top")
+                        Spacer(minLength: self.showKeyboard || self.showFileTypeSelector ? keyboardHeight : 0.1)
+                            .id(topID)
 
                         ForEach(Array(self.viewModel.state.chatDataList.enumerated()), id: \.element.chatID) { index, chat in
                             VStack(spacing: 8) {
@@ -49,26 +58,82 @@ struct ChatView: View {
                             .onDisappear {
                                 self.isScrollBottom = false
                             }
-                            .id("Bottom")
+                            .id(bottomID)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .id("LazyVStack")
-                }
-                .customOnChange(value: self.viewModel.state.didInitData) { _ in
-                    self.scrollToBottom(proxy: proxy, isInit: true)
                 }
                 .customOnChange(value: self.viewModel.state.chatDataList) { _ in
-                    if self.isScrollBottom && self.viewModel.state.didInitData {
-                        self.scrollToBottom(proxy: proxy)
+                    if !self.isScrollBottom { return }
+                    
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(self.bottomID, anchor: .bottom)
                     }
                 }
             }
             .onTapGesture {
                 self.hideKeyboard()
+                self.showFileTypeSelector = false
             }
             
-            ChatMessageInputView(viewModel: self.viewModel)
+            self.buildChatInputView()
+        }
+        .overlay {
+            if self.viewModel.state.showLoading {
+                ProgressView()
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    .tint(.deepCoast)
+                    .background(.gray45)
+            }
+        }
+        .photosPicker(isPresented: self.$showPhotoPicker, selection: self.$viewModel.state.photoSelection, maxSelectionCount: 5)
+        .fileImporter(isPresented: self.$showFilePicker, allowedContentTypes: [.jpeg, .png, .jpeg, .gif, .pdf], allowsMultipleSelection: true) { result in
+            switch result {
+            case .success(let urls):
+                self.viewModel.action(.appendFile(urls: urls))
+            case .failure(let failure):
+                print(failure)
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if self.showFileTypeSelector {
+                HStack(spacing: 32) {
+                    Button {
+                        self.showPhotoPicker.toggle()
+                    } label: {
+                        Text("사진")
+                            .padding(16)
+                            .background {
+                                Circle()
+                                    .stroke(Color.gray45, lineWidth: 1)
+                            }
+                    }
+                    
+                    Button {
+                        self.showFilePicker.toggle()
+                    } label: {
+                        Text("파일")
+                            .padding(16)
+                            .background {
+                                Circle()
+                                    .stroke(Color.gray45, lineWidth: 1)
+                            }
+                    }
+                }
+                .frame(height: self.keyboardHeight)
+                .offset(y: self.showKeyboard || self.showFileTypeSelector ? self.keyboardHeight : 0)
+            }
+        }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    self.viewModel.action(.tapBackButton)
+                } label: {
+                    Image(.chevron)
+                        .foregroundStyle(.gray100)
+                }
+            }
         }
         .navigationTitle(self.viewModel.state.chatRoomData.opponentUserData.nick)
         .onDisappear {
@@ -77,9 +142,13 @@ struct ChatView: View {
         .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
             Button("닫기") { }
         }
-        .offset(y: -self.keyboardHeight)
+        .offset(y: self.showKeyboard || self.showFileTypeSelector ? -self.keyboardHeight : 0)
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .animation(.easeInOut(duration: 0.3), value: self.keyboardHeight)
+        .customOnChange(value: self.showKeyboard) { value in
+            if value {
+                self.showFileTypeSelector = false
+            }
+        }
         .onKeyboardNotification { height in
             var safeAreaBottom: CGFloat = 0
             
@@ -88,21 +157,7 @@ struct ChatView: View {
             }
             
             self.keyboardHeight = height - safeAreaBottom
-        } hideCallback: {
-            self.keyboardHeight = 0
-        }
-    }
-    
-    private func scrollToBottom(proxy: ScrollViewProxy, isInit: Bool = false) {
-        if isInit {
-            DispatchQueue.main.async {
-                proxy.scrollTo("LazyVStack", anchor: .bottom)
-            }
-        } else {
-            withAnimation(.easeOut(duration: 0.3)) {
-                proxy.scrollTo("LazyVStack", anchor: .bottom)
-            }
-        }
+        } hideCallback: { }
     }
     
     private func isShowDateSeparator(chat: ChatResponseEntity, index: Int) -> Bool {
@@ -113,6 +168,109 @@ struct ChatView: View {
             let curChatDate = Calendar.current.startOfDay(for: chat.createdAt)
             
             return preChatDate != curChatDate
+        }
+    }
+    
+    @ViewBuilder
+    private func buildChatInputView() -> some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            // 선택된 사진 썸네일 표시
+            if !self.viewModel.state.selectedPhoto.isEmpty || !self.viewModel.state.fileSelection.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(Array(self.viewModel.state.selectedPhoto.enumerated()), id: \.element) { index, image in
+                            ZStack(alignment: .topTrailing) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                
+                                Button {
+                                    self.viewModel.action(.removePhoto(index: index))
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .background(Circle().fill(.black.opacity(0.6)))
+                                }
+                                .offset(x: -1, y: 1)
+                            }
+                        }
+                        
+                        ForEach(Array(self.viewModel.state.fileSelection.enumerated()), id: \.element) { index, file in
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "document")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                
+                                Button {
+                                    self.viewModel.action(.removeFile(index: index))
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .background(Circle().fill(.black.opacity(0.6)))
+                                }
+                                .offset(x: -1, y: 1)
+                            }
+                        }
+                        
+                        Button {
+                            self.viewModel.action(.removePhoto(index: nil))
+                            self.viewModel.action(.removeFile(index: nil))
+                        } label: {
+                            Image(systemName: "trash.circle")
+                                .font(.title)
+                                .foregroundStyle(.gray60)
+                        }
+
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .padding(.vertical, 8)
+            }
+            
+            HStack(spacing: 16){
+                // 전송 파일 타입 선택
+                Button {
+                    withAnimation(nil) {
+                        if showFileTypeSelector {
+                            showFileTypeSelector = false
+                            showKeyboard = true
+                        } else {
+                            showFileTypeSelector = true
+                            showKeyboard = false
+                        }
+                    }
+                } label: {
+                    Image(systemName: "plus.circle")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                }
+                
+                // 채팅 입력
+                TextField("메시지 입력", text: self.$viewModel.state.content, axis: .vertical)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(1...5)
+                    .focused(self.$showKeyboard)
+                
+                // 채팅 전송
+                Button {
+                    self.viewModel.action(.sendChat)
+                } label: {
+                    Image(systemName: "paperplane.fill")
+                        .font(.title2)
+                        .foregroundColor(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : .blue)
+                }
+                .disabled(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
     }
 }
@@ -162,6 +320,49 @@ private struct ChatRow: View {
     let chat: ChatResponseEntity
     let isOpponentUser: Bool
     
+    @State private var showImageViewer: Bool = false
+    @State private var selectedIndex: Int = 0
+    @State private var showPDFViewer: Bool = false
+    @State private var selectedPDF: String = ""
+    
+    private var photoURLs: [String] {
+        
+        return chat.files.filter { url in
+            guard let pointIndex = url.lastIndex(of: ".") else {
+                return false
+            }
+            
+            let startIndex = url.index(after: pointIndex)
+            
+            if startIndex >= url.endIndex {
+                return false
+            }
+            
+            let extensionString = String(url[startIndex...]).lowercased()
+            
+            return ["jpeg", "jpg", "gif", "png"].contains(extensionString)
+        }
+    }
+    
+    private var fileURLs: [String] {
+        
+        return chat.files.filter { url in
+            guard let pointIndex = url.lastIndex(of: ".") else {
+                return false
+            }
+            
+            let startIndex = url.index(after: pointIndex)
+            
+            if startIndex >= url.endIndex {
+                return false
+            }
+            
+            let extensionString = String(url[startIndex...])
+            
+            return "pdf" == extensionString
+        }
+    }
+    
     var formattedTimeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -191,7 +392,7 @@ private struct ChatRow: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            messageContent
+                            self.buildContentView()
                             
                             Text(self.formattedTimeString)
                                 .font(.caption2)
@@ -204,7 +405,7 @@ private struct ChatRow: View {
                 Spacer(minLength: 100)
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    messageContent
+                    self.buildContentView()
                     
                     Text(self.formattedTimeString)
                         .font(.caption2)
@@ -214,106 +415,107 @@ private struct ChatRow: View {
         }
     }
     
-    private var messageContent: some View {
+    @ViewBuilder
+    private func buildContentView() -> some View {
+        let cols = Array(repeating: GridItem(.fixed(50), spacing: 8), count: chat.files.count < 3 ? chat.files.count : 3)
+        
         VStack(alignment: isOpponentUser ? .leading : .trailing, spacing: 8) {
-            // 텍스트 메시지
-            Text(chat.content)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+            // 채팅
+            if !chat.content.isEmpty {
+                Text(chat.content)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(isOpponentUser ? .gray30 : .deepCoast)
+                    )
+                    .foregroundColor(isOpponentUser ? .gray100 : .gray0)
+            }
+            
+            // 사진
+            if !self.photoURLs.isEmpty {
+                LazyVGrid(columns: cols, spacing: 8) {
+                    ForEach(Array(self.photoURLs.enumerated()), id: \.element) { index, photoURL in
+                        Button {
+                            selectedIndex = index
+                            showImageViewer.toggle()
+                        } label: {
+                            URLImageView(urlString: photoURL) {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.gray45)
+                                    .overlay {
+                                        Image(systemName: "photo")
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 20))
+                                    }
+                            }
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+                .fixedSize()
+                .padding(8)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(isOpponentUser ? .gray30 : .deepCoast)
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.gray30)
                 )
-                .foregroundColor(isOpponentUser ? .gray100 : .gray0)
+                .fullScreenCover(isPresented: self.$showImageViewer) {
+                    ZoomInImageView(
+                        imageURLs: self.chat.files,
+                        selectedIndex: self.selectedIndex,
+                        isPresented: self.$showImageViewer
+                    )
+                }
+            }
             
-            // 파일 첨부
-            if !chat.files.isEmpty {
-                ForEach(chat.files, id: \.self) { fileName in
-                    FileAttachmentView(fileName: fileName)
+            // 파일
+            if !self.fileURLs.isEmpty {
+                ForEach(self.fileURLs, id: \.self) { fileURL in
+                    Button {
+                        self.selectedPDF = fileURL
+                        self.showPDFViewer.toggle()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "doc.text.image")
+                                .font(.title3)
+                                .foregroundStyle(.gray60)
+                                .padding(8)
+                                .background(Circle().foregroundStyle(.white))
+                            
+                            HStack(spacing: 0) {
+                                Text(self.extractFileName(url: fileURL))
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                
+                                Text(".\(self.extractFileExtension(url: fileURL))")
+                                    .layoutPriority(1)
+                            }
+                        }
+                    }
+                    .padding(8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.gray30)
+                    )
+                    .fullScreenCover(isPresented: self.$showPDFViewer) {
+                        PDFPreviewView(url: fileURL)
+                    }
                 }
             }
         }
-    }
-}
-
-struct FileAttachmentView: View {
-    let fileName: String
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: fileIcon)
-                .foregroundColor(.blue)
-            
-            Text(fileName)
-                .font(.caption)
-                .lineLimit(1)
-            
-            Spacer()
-            
-            Button {
-                
-            } label: {
-                Image(systemName: "arrow.down.circle")
-                    .foregroundColor(.blue)
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(.systemGray6))
-        )
-        .frame(maxWidth: 200)
+        // iOS 17.x 버전에서는 onChange 모디파이어 없으니 fullScreenCover 작동 안 함(시뮬, 실기기 동일)
+        .onChange(of: showImageViewer) { _ in }
+        .onChange(of: showPDFViewer) { _ in }
     }
     
-    private var fileIcon: String {
-        let fileExtension = (fileName as NSString).pathExtension.lowercased()
-        switch fileExtension {
-        case "jpg", "jpeg", "png", "gif":
-            return "photo"
-        case "pdf":
-            return "doc.text"
-        case "mp4", "mov":
-            return "video"
-        case "mp3", "wav":
-            return "music.note"
-        default:
-            return "doc"
-        }
+    private func extractFileName(url: String) -> String {
+        let fullName = String(url.split(separator: "/").last!)
+        
+        return String(fullName.split(separator: ".").first!)
     }
-}
-
-// MARK: - 채팅 입력 뷰
-private struct ChatMessageInputView: View {
-    @ObservedObject var viewModel: ChatViewModel
     
-    var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-            
-            HStack(spacing: 12) {
-                PhotosPicker(selection: self.$viewModel.state.selectedPhotos, maxSelectionCount: 5) {
-                    Image(systemName: "plus.circle")
-                        .font(.title2)
-                        .foregroundColor(.gray)
-                }
-                
-                TextField("메시지 입력", text: self.$viewModel.state.content, axis: .vertical)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(1...5)
-                
-                Button {
-                    self.viewModel.action(.sendChat)
-                } label: {
-                    Image(systemName: "paperplane.fill")
-                        .font(.title2)
-                        .foregroundColor(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : .blue)
-                }
-                .disabled(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-        }
-        .background(.gray0)
+    private func extractFileExtension(url: String) -> String {
+        return String(url.split(separator: ".").last!)
     }
 }
