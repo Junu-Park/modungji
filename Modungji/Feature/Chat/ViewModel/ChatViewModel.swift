@@ -6,14 +6,13 @@
 //
 
 import Combine
-import Foundation
+import _PhotosUI_SwiftUI
 
 import RealmSwift
 
 final class ChatViewModel: ObservableObject {
     struct State {
-        var isLoadingData: Bool = false
-        var didInitData: Bool = false
+        var showLoading: Bool = false
         
         var chatRoomData: ChatRoomResponseEntity = .init(
             roomID: "",
@@ -35,78 +34,113 @@ final class ChatViewModel: ObservableObject {
         )
         
         var content: String = ""
-        var files: [String] = []
         
         var chatDataList: [ChatResponseEntity] = []
         
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
+        
+        var photoSelection: [PhotosPickerItem] = []
+        var selectedPhoto: [UIImage] = []
+        var fileSelection: [URL] = []
     }
     
     enum Action {
         case sendChat
-        case appendImage
+        case removePhoto(index: Int?)
+        case appendFile(urls: [URL])
+        case removeFile(index: Int?)
         case tapBackButton
         case disconnectSocket
+        case completeInitView
     }
     
     @Published var state: State = State()
     
-    private var opponentID: String
-    private var roomID: String
+    private var opponentID: String = ""
+    private var roomID: String = ""
     private let service: ChatService
+    private let pathModel: PathModel
     private let chatSocketManager: ChatSocketManager = .shared
+    private let monitorManager: NetworkMonitorManager = .shared
     private var tempRealmChatDataList: [ChatResponseEntity] = []
     private var tempSocketChatDataList: [ChatResponseEntity] = []
     private var tempServerChatDataList: [ChatResponseEntity] = []
+    private let isCompleteFetchChatData: CurrentValueSubject<Bool, Never> = .init(false)
     private var cancellables: Set<AnyCancellable> = .init()
     
-    init(opponentID: String = "", roomID: String = "", service: ChatService) {
+    init(opponentID: String = "", roomID: String = "", service: ChatService, pathModel: PathModel) {
         self.service = service
+        self.pathModel = pathModel
         self.opponentID = opponentID
+        self.state.chatRoomData.opponentUserData.userID = opponentID
         self.roomID = roomID
+        self.state.chatRoomData.roomID = roomID
+        
+        self.chatSocketManager.delegate = self
+        
+        self.monitorManager.startMonitor()
         
         self.transform()
         
-        self.initData()
-        
-        self.chatSocketManager.delegate = self
+        self.fetchChatData()
     }
     
     private func transform() {
-        self.$state.map(\.isLoadingData)
+        self.isCompleteFetchChatData
+            .dropFirst()
+            .filter({ $0 })
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                
+                var result: [ChatResponseEntity] = []
+                result.append(contentsOf: self.tempRealmChatDataList)
+                result.append(contentsOf: self.tempServerChatDataList)
+                result.append(contentsOf: self.tempSocketChatDataList)
+                
+                self.state.chatDataList.append(contentsOf: result)
+                self.state.chatDataList.sort(by: { $0.createdAt < $1.createdAt })
+                
+                Task {
+                    try await Task.sleep(for: .seconds(0.3))
+                    
+                    await MainActor.run {
+                        self.state.showLoading = false
+                    }
+                }
+                
+                let tempResult = self.tempServerChatDataList + self.tempSocketChatDataList
+                
+                if !tempResult.isEmpty {
+                    Task {
+                        await self.saveChatToRealm(entity: tempResult)
+                    }
+                }
+                
+                self.tempRealmChatDataList.removeAll()
+                self.tempServerChatDataList.removeAll()
+                self.tempSocketChatDataList.removeAll()
+            }
+            .store(in: &self.cancellables)
+        
+        // PhotoPicker 선택 변경 감지
+        self.$state.map(\.photoSelection)
+            .dropFirst()
+            .removeDuplicates { $0.count == $1.count }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.appendPhoto()
+            }
+            .store(in: &self.cancellables)
+        
+        // 네트워크 연결 해제 감지
+        self.monitorManager.$isConnected
             .dropFirst()
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self else { return }
-                if !value {
-                    var allChats: [ChatResponseEntity] = []
-                    allChats.append(contentsOf: self.tempRealmChatDataList)
-                    allChats.append(contentsOf: self.tempServerChatDataList)
-                    allChats.append(contentsOf: self.tempSocketChatDataList)
-                    
-                    let uniqueChats = Dictionary(grouping: allChats, by: \.chatID)
-                        .compactMap { $0.value.first }
-                        .sorted { $0.createdAt < $1.createdAt }
-                    
-                    self.state.chatDataList = uniqueChats
-                    
-                    if !self.state.didInitData {
-                        self.state.didInitData = true
-                    }
-                    
-                    let newChats = self.tempServerChatDataList + self.tempSocketChatDataList
-                    if !newChats.isEmpty {
-                        Task {
-                            await self.saveChatToRealm(entity: newChats)
-                        }
-                    }
-                    
-                    self.tempRealmChatDataList.removeAll()
-                    self.tempServerChatDataList.removeAll()
-                    self.tempSocketChatDataList.removeAll()
-                }
+            .filter({ $0 })
+            .sink { [weak self] _ in
+                self?.fetchChatData()
             }
             .store(in: &self.cancellables)
     }
@@ -116,18 +150,28 @@ final class ChatViewModel: ObservableObject {
         switch action {
         case .sendChat:
             self.sendChat()
-        case .appendImage:
-            print("appendImage")
+        case .removePhoto(let index):
+            self.removePhoto(at: index)
+        case .appendFile(let urls):
+            self.state.fileSelection = urls
+        case .removeFile(index: let index):
+            self.removeFile(at: index)
         case .disconnectSocket:
             self.disconnectSocket()
         case .tapBackButton:
             self.tapBackButton()
+        case .completeInitView:
+            self.state.showLoading = false
         }
     }
     
-    private func initData() {
+    private func fetchChatData() {
         Task {
             do {
+                await MainActor.run {
+                    self.state.showLoading = true
+                }
+                
                 if self.roomID != "", let roomResponse = try await self.service.getChatRoomList().first(where: { $0.roomID == self.roomID }) {
                     await MainActor.run {
                         self.state.chatRoomData = roomResponse
@@ -142,10 +186,6 @@ final class ChatViewModel: ObservableObject {
                     throw EstateErrorResponseEntity(message: "채팅방/상대방을 찾을 수 없습니다.")
                 }
                 
-                await MainActor.run {
-                    self.state.isLoadingData = true
-                }
-                
                 self.tempRealmChatDataList = await self.getChatFromRealm(roomID: roomID)
                 
                 self.chatSocketManager.setSocket(roomID: roomID)
@@ -157,18 +197,19 @@ final class ChatViewModel: ObservableObject {
                 )
                 
                 self.tempServerChatDataList.append(contentsOf: getChatRoomChatHistoryResponse)
-                await MainActor.run {
-                    self.state.isLoadingData = false
-                }
+                
+                self.isCompleteFetchChatData.send(true)
                 
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
-                    self.state.isLoadingData = false
+                    self.isCompleteFetchChatData.send(true)
                     self.handleError(error)
                 }
             } catch {
                 await MainActor.run {
-                    self.state.isLoadingData = false
+                    self.tempRealmChatDataList = self.getChatFromRealm(roomID: roomID)
+                    
+                    self.isCompleteFetchChatData.send(true)
                 }
                 await self.handleError(EstateErrorResponseEntity(message: "네트워크를 확인해주세요."))
             }
@@ -177,6 +218,7 @@ final class ChatViewModel: ObservableObject {
     
     private func sendChat() {
         let tempContent = self.state.content
+        
         Task {
             do {
                 if self.state.chatRoomData.roomID == "" {
@@ -187,7 +229,10 @@ final class ChatViewModel: ObservableObject {
                     self.state.content = ""
                 }
                 
-                try await self.service.postChat(roomID: self.state.chatRoomData.roomID, content: tempContent, files: [])
+                try await self.service.postChat(roomID: self.state.chatRoomData.roomID, content: tempContent, photos: self.state.selectedPhoto, files: self.state.fileSelection)
+                
+                self.removePhoto(at: nil)
+                
             } catch let error as EstateErrorResponseEntity {
                 
                 await self.handleError(error)
@@ -204,11 +249,74 @@ final class ChatViewModel: ObservableObject {
         }
     }
     
+    private func appendPhoto() {
+        Task {
+            do {
+                let uiImageList = try await withThrowingTaskGroup(of: UIImage.self) { group in
+                    for photo in self.state.photoSelection {
+                        group.addTask {
+                            if let data = try await photo.loadTransferable(type: Data.self), let uiImage = UIImage(data: data) {
+                                return uiImage
+                            } else {
+                                throw ErrorResponseDTO(message: "")
+                            }
+                        }
+                    }
+                    
+                    var result: [UIImage] = []
+                    
+                    for try await uiImage in group {
+                        result.append(uiImage)
+                    }
+                    
+                    return result
+                }
+                
+                await MainActor.run {
+                    self.state.selectedPhoto.removeAll()
+                    self.state.selectedPhoto.append(contentsOf: uiImageList)
+                }
+                
+            } catch {
+                await handleError(.init(message: "사진 첨부 실패"))
+            }
+        }
+    }
+    
+    private func removePhoto(at index: Int?) {
+        Task {
+            await MainActor.run {
+                if let index {
+                    guard index < self.state.selectedPhoto.count else { return }
+                    self.state.selectedPhoto.remove(at: index)
+                    self.state.photoSelection.remove(at: index)
+                } else {
+                    self.state.selectedPhoto.removeAll()
+                    self.state.photoSelection.removeAll()
+                }
+            }
+        }
+    }
+    
+    private func appendFile(urls: [URL]) {
+        self.state.fileSelection = urls
+    }
+    
+    private func removeFile(at index: Int?) {
+        if let index {
+            guard index < self.state.fileSelection.count else { return }
+            self.state.fileSelection.remove(at: index)
+        } else {
+            self.state.fileSelection.removeAll()
+        }
+    }
+    
     private func disconnectSocket() {
         self.chatSocketManager.disconnectSocket()
     }
     
     private func tapBackButton() {
+        self.monitorManager.endMonitor()
         self.pathModel.pop()
     }
     
@@ -227,9 +335,11 @@ final class ChatViewModel: ObservableObject {
             return []
         }
         
-        return chatRoom.chatList
-            .sorted(by: \.date)
-            .map { self.convertRealmDTOToEntity($0) }
+        if let last = self.state.chatDataList.last {
+            return chatRoom.chatList.filter({ $0.date > last.createdAt }).sorted(by: { $0.date > $1.date }).map { self.convertRealmDTOToEntity($0) }
+        } else {
+            return chatRoom.chatList.sorted(by: \.date).map { self.convertRealmDTOToEntity($0) }
+        }
     }
     
     @MainActor
@@ -409,13 +519,13 @@ extension ChatViewModel: ChatSocketDelegate {
     func didReceiveChat(chatData: ChatSocketDTO) {
         let entity = self.convertSocketDTOToEntity(chatData)
         
-        if self.state.isLoadingData {
-            self.tempSocketChatDataList.append(entity)
-        } else {
+        if self.isCompleteFetchChatData.value {
             Task { @MainActor in
                 self.state.chatDataList.append(entity)
                 self.saveChatToRealm(entity: entity)
             }
+        } else {
+            self.tempSocketChatDataList.append(entity)
         }
     }
 }
