@@ -23,6 +23,7 @@ final class NetworkMonitorManager: ObservableObject {
     
     private func transform() {
         self.status
+            .dropFirst()
             .removeDuplicates()
             .map { $0 == .satisfied }
             .receive(on: DispatchQueue.main)
@@ -35,15 +36,13 @@ final class NetworkMonitorManager: ObservableObject {
     }
     
     func startMonitor() {
-        self.monitor.start(queue: .global())
-        
-        self.status.send(self.monitor.currentPath.status)
-        
         self.monitor.pathUpdateHandler = { [weak self] path in
             guard let self else { return }
             
             self.status.send(path.status)
         }
+        
+        self.monitor.start(queue: .global())
     }
     
     func endMonitor() {

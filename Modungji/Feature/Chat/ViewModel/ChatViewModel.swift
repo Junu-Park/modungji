@@ -79,9 +79,9 @@ final class ChatViewModel: ObservableObject {
         
         self.chatSocketManager.delegate = self
         
-        self.monitorManager.startMonitor()
-        
         self.transform()
+        
+        self.monitorManager.startMonitor()
         
         self.fetchChatData()
     }
