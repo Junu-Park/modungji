@@ -52,7 +52,6 @@ final class ChatViewModel: ObservableObject {
         case removeFile(index: Int?)
         case tapBackButton
         case disconnectSocket
-        case completeInitView
     }
     
     @Published var state: State = State()
@@ -160,8 +159,6 @@ final class ChatViewModel: ObservableObject {
             self.disconnectSocket()
         case .tapBackButton:
             self.tapBackButton()
-        case .completeInitView:
-            self.state.showLoading = false
         }
     }
     
