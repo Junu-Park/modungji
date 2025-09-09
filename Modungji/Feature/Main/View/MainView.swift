@@ -237,8 +237,8 @@ extension MainView {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(0..<6) { _ in
-                        self.hotEstateCard()
+                    ForEach(self.viewModel.state.hotEstateList, id: \.estateID) { estate in
+                        self.hotEstateCard(estate: estate)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -246,18 +246,20 @@ extension MainView {
         }
     }
     
-    private func hotEstateCard() -> some View {
+    private func hotEstateCard(estate: HotEstateResponseEntity) -> some View {
         HStack(spacing: 24) {
             VStack(alignment: .leading) {
-                Image(.fire)
-                    .renderingMode(.template)
-                    .resizable()
-                    .frame(width: 18, height: 20)
-                    .foregroundStyle(.gray0)
+                if estate.isRecommended {
+                    Image(.fire)
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 18, height: 20)
+                        .foregroundStyle(.gray0)
+                }
                 
                 Spacer()
                 
-                Text("34명이 함께 보는중")
+                Text("\(estate.likeCount)명이 함께 보는중")
                     .font(PDFont.caption3)
                     .foregroundStyle(.gray0)
                     .padding(.vertical, 2)
@@ -266,14 +268,14 @@ extension MainView {
             }
             
             VStack(alignment: .trailing, spacing: 0) {
-                Text("고즈넉 매물, 여기가 천국")
+                Text(estate.title)
                     .font(YHFont.caption1)
                     .foregroundStyle(.gray0)
-                Text("월세 7,000/120")
+                Text("월세 \(self.convertPriceToString(estate.deposit))/\(self.convertPriceToString(estate.monthlyRent))")
                     .font(PDFont.body1)
                     .foregroundStyle(.gray0)
                 
-                Text("문래동 152.4㎡")
+                Text("\(estate.address) \(String(format: "%0.1f",estate.area))㎡")
                     .font(PDFont.caption2)
                     .foregroundStyle(.gray45)
                     .padding(.top, 16)
@@ -281,10 +283,12 @@ extension MainView {
         }
         .padding(10)
         .background {
-            Image(systemName: "photo")
-                .resizable()
-                .scaledToFill()
-                .background(.brightCoast)
+            URLImageView(urlString: estate.thumbnail){
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFill()
+            }
+            .scaledToFill()
         }
         .clipShape(.rect(cornerRadius: 12))
     }
@@ -361,5 +365,18 @@ extension MainView {
             Divider()
         }
         .padding(.horizontal, 20)
+    }
+    
+    private func convertPriceToString(_ price: Int) -> String {
+        if price >= 1000000000000 {
+            return String(price / 1000000000000) + "조"
+        }
+        else if price >= 100000000 {
+            return String(price / 100000000) + "억"
+        } else if price >= 10000 {
+            return String(price / 10000) + "만"
+        } else {
+            return "1만↓"
+        }
     }
 }
