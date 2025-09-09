@@ -25,6 +25,17 @@ struct MainRepositoryImp: MainRepository {
         }
     }
     
+    func getHotEstate() async throws -> [HotEstateResponseEntity] {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Estate.getHotEstate, successDecodingType: GetHotEstateResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return success.data.map { self.convertToEntity($0) }
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity {
         let response = try await self.networkManager.requestEstate(requestURL: NaverRouter.Map.reverseGeocoding(coords: coords), successDecodingType: ReverseGeocodingDTO.self)
         
@@ -39,6 +50,22 @@ struct MainRepositoryImp: MainRepository {
     private func convertToEntity(_ dto: EstateBannerDTO) -> EstateBannerResponseEntity {
         
         return EstateBannerResponseEntity(estateId: dto.estateId, title: dto.title, introduction: dto.introduction, thumbnails: dto.thumbnails.first ?? "", geolocation: GeolocationEntity(latitude: dto.geolocation.latitude, longitude: dto.geolocation.longitude))
+    }
+    
+    private func convertToEntity(_ dto: HotEstateDTO) -> HotEstateResponseEntity {
+        
+        return .init(
+            estateID: dto.estateId,
+            title: dto.title,
+            introduction: dto.introduction,
+            thumbnail: dto.thumbnails.first ?? "",
+            geolocation: .init(latitude: dto.geolocation.latitude, longitude: dto.geolocation.longitude),
+            deposit: dto.deposit,
+            monthlyRent: dto.monthlyRent,
+            area: dto.area,
+            likeCount: dto.likeCount,
+            isRecommended: dto.isRecommended
+        )
     }
     
     private func convertToEntity(_ dto: ReverseGeocodingDTO) -> ReverseGeocodingResponseEntity {

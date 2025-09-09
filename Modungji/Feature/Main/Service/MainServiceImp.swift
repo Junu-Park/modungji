@@ -45,4 +45,31 @@ struct MainServiceImp: MainService {
             return result.compactMap { $0 }
         }
     }
+    
+    func getHotEstate() async throws -> [HotEstateResponseEntity] {
+        let response = try await self.repository.getHotEstate()
+        
+        return try await withThrowingTaskGroup(of: (Int, HotEstateResponseEntity).self) { group in
+            for (index, estate) in response.enumerated() {
+                group.addTask {
+                    let address = try await self.repository.getAddress(
+                        coords: "\(estate.geolocation.longitude),\(estate.geolocation.latitude)"
+                    )
+                    
+                    var entity = estate
+                    entity.address = address.area3
+                    
+                    return (index, entity)
+                }
+            }
+            
+            var result = Array<HotEstateResponseEntity?>(repeating: nil, count: response.count)
+            
+            for try await (index, entity) in group {
+                result[index] = entity
+            }
+            
+            return result.compactMap { $0 }
+        }
+    }
 }
