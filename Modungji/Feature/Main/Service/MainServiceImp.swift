@@ -72,4 +72,8 @@ struct MainServiceImp: MainService {
             return result.compactMap { $0 }
         }
     }
+    
+    func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity] {
+        return try await self.repository.getTodayEstateTopic()
+    }
 }

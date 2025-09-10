@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - GetTodayEstateTopicResponseDTO
 struct GetTodayEstateTopicResponseDTO: Decodable {
-    let data: [TodayTopicDTO]
+    let data: [TodayEstateTopicDTO]
 }
 
-// MARK: - TodayTopicDTO
-struct TodayTopicDTO: Decodable {
+// MARK: - TodayEstateTopicDTO
+struct TodayEstateTopicDTO: Decodable {
     let title: String
     let content: String
     let date: String

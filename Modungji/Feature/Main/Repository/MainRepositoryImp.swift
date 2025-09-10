@@ -36,6 +36,17 @@ struct MainRepositoryImp: MainRepository {
         }
     }
     
+    func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity] {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Estate.getTodayEstateTopic, successDecodingType: GetTodayEstateTopicResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return success.data.map { self.convertToEntity($0) }
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity {
         let response = try await self.networkManager.requestEstate(requestURL: NaverRouter.Map.reverseGeocoding(coords: coords), successDecodingType: ReverseGeocodingDTO.self)
         
@@ -65,6 +76,16 @@ struct MainRepositoryImp: MainRepository {
             area: dto.area,
             likeCount: dto.likeCount,
             isRecommended: dto.isRecommended
+        )
+    }
+    
+    private func convertToEntity(_ dto: TodayEstateTopicDTO) -> TodayEstateTopicResponseEntity {
+        
+        return .init(
+            title: dto.title,
+            content: dto.content,
+            date: dto.date,
+            link: dto.link ?? ""
         )
     }
     
