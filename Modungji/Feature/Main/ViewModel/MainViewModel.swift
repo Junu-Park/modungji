@@ -11,6 +11,7 @@ final class MainViewModel: ObservableObject {
     struct State {
         var EstateBannerList: [EstateBannerEntity] = []
         var hotEstateList: [HotEstateResponseEntity] = []
+        var todayEstateTopicList: [TodayEstateTopicResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -43,12 +44,14 @@ final class MainViewModel: ObservableObject {
             do {
                 async let bannerResult = self.service.getEstateBanner()
                 async let hotResult = self.service.getHotEstate()
+                async let topicResult = self.service.getTodayEstateTopic()
                 
-                let (bannerResponse, hotResponse) = try await (bannerResult, hotResult)
+                let (bannerResponse, hotResponse, topicResponse) = try await (bannerResult, hotResult, topicResult)
                 
                 await MainActor.run {
                     self.state.EstateBannerList = bannerResponse
                     self.state.hotEstateList = hotResponse
+                    self.state.todayEstateTopicList = topicResponse
                 }
             } catch let error as EstateErrorResponseEntity {
                 await MainActor.run {
