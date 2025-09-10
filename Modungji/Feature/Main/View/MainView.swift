@@ -334,16 +334,16 @@ extension MainView {
         .padding(.horizontal, 20)
     }
     
-    private func todayEstateAdRow(_ topic: TodayEstateTopicResponseEntity) -> some View {
+    private func todayEstateBannerRow(_ banner: BannerResponseEntity) -> some View {
         VStack(alignment: .leading) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(topic.title)
+                    Text("광고")
                         .font(PDFont.body2)
                         .bold()
                         .foregroundStyle(.gray75)
                     
-                    Text(topic.content)
+                    Text(banner.name)
                         .font(PDFont.caption2)
                         .foregroundStyle(.gray45)
                 }
@@ -352,7 +352,11 @@ extension MainView {
             }
             .padding(.vertical, 16)
             .padding(.leading, 32)
-            .background(.gray15)
+            .background {
+                URLImageView(urlString: banner.imageUrl) {
+                    Color.gray15
+                }
+            }
             .clipShape(.rect(cornerRadius: 5))
             
             Divider()
