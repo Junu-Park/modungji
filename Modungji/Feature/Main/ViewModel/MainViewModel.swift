@@ -26,6 +26,8 @@ final class MainViewModel: ObservableObject {
     
     init(service: MainService) {
         self.service = service
+        
+        self.initView()
     }
     
     private func transform() {

@@ -46,9 +46,6 @@ struct MainView: View {
                 Spacer()
             }
         }
-        .onAppear {
-            self.viewModel.action(.initView)
-        }
     }
 }
 
