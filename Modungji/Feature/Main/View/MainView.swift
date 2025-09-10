@@ -304,33 +304,29 @@ extension MainView {
             
             
             LazyVStack {
-                ForEach(1..<10) { index in
-                    if index % 3 == 0 {
-                        self.todayEstateAdRow()
-                    } else {
-                        self.todayEstateTopicRow()
-                    }
+                ForEach(self.viewModel.state.todayEstateTopicList, id: \.title) { topic in
+                    self.todayEstateTopicRow(topic)
                 }
             }
             .background(.gray0)
         }
     }
     
-    private func todayEstateTopicRow() -> some View {
+    private func todayEstateTopicRow(_ topic: TodayEstateTopicResponseEntity) -> some View {
         VStack {
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("4월 분양소식")
+                    Text(topic.title)
                         .bold()
                         .foregroundStyle(.gray90)
                     
-                    Text("오늘 4월 4일, 전국 2만 3,720세대 분양 예정")
+                    Text(topic.content)
                         .foregroundStyle(.gray60)
                 }
                 
                 Spacer()
                 
-                Text("25. 4. 4")
+                Text(topic.date)
                     .foregroundStyle(.gray75)
             }
             .font(PDFont.body2)
@@ -341,16 +337,16 @@ extension MainView {
         .padding(.horizontal, 20)
     }
     
-    private func todayEstateAdRow() -> some View {
+    private func todayEstateAdRow(_ topic: TodayEstateTopicResponseEntity) -> some View {
         VStack(alignment: .leading) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("신혼집에는 새 설렘을!")
+                    Text(topic.title)
                         .font(PDFont.body2)
                         .bold()
                         .foregroundStyle(.gray75)
                     
-                    Text("필요한 알뜰 가구 모아보기")
+                    Text(topic.content)
                         .font(PDFont.caption2)
                         .foregroundStyle(.gray45)
                 }
