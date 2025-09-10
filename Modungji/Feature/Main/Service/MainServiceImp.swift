@@ -76,4 +76,8 @@ struct MainServiceImp: MainService {
     func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity] {
         return try await self.repository.getTodayEstateTopic()
     }
+    
+    func getBanner() async throws -> [BannerResponseEntity] {
+        return try await self.repository.getBanner()
+    }
 }

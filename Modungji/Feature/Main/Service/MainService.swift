@@ -11,4 +11,5 @@ protocol MainService {
     func getEstateBanner() async throws -> [EstateBannerEntity]
     func getHotEstate() async throws -> [HotEstateResponseEntity]
     func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity]
+    func getBanner() async throws -> [BannerResponseEntity]
 }
