@@ -1,5 +1,5 @@
 //
-//  GetTodayTopicResponseDTO.swift
+//  GetTodayEstateTopicResponseDTO.swift
 //  Modungji
 //
 //  Created by 박준우 on 6/3/25.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-// MARK: - GetTodayTopicResponseDTO
-struct GetTodayTopicResponseDTO: Decodable {
+// MARK: - GetTodayEstateTopicResponseDTO
+struct GetTodayEstateTopicResponseDTO: Decodable {
     let data: [TodayTopicDTO]
 }
 

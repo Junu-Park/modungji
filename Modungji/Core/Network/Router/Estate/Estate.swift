@@ -19,7 +19,7 @@ extension EstateRouter {
         case getEstateBanner
         case getHotEstate
         case getSimilarEstate
-        case getTodayTopic
+        case getTodayEstateTopic
         
         var baseURL: URL? {
             return URL(string: EstateRouter.baseURL)?.appendingPathComponent("v1/estates")
@@ -41,7 +41,7 @@ extension EstateRouter {
                 return "hot-estates"
             case .getSimilarEstate:
                 return "similar-estates"
-            case .getTodayTopic:
+            case .getTodayEstateTopic:
                 return "today-topic"
             }
         }
