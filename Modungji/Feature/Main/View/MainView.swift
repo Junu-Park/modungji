@@ -301,7 +301,10 @@ extension MainView {
             
             
             LazyVStack {
-                ForEach(self.viewModel.state.todayEstateTopicList, id: \.title) { topic in
+                ForEach(Array(self.viewModel.state.todayEstateTopicList.enumerated()), id: \.element.title) { index, topic in
+                    if index % 3 == 0, (index / 3) <= (self.viewModel.state.todayEstateBannerList.count - 1) {
+                        self.todayEstateBannerRow(self.viewModel.state.todayEstateBannerList[index / 3])
+                    }
                     self.todayEstateTopicRow(topic)
                 }
             }
@@ -335,33 +338,20 @@ extension MainView {
     }
     
     private func todayEstateBannerRow(_ banner: BannerResponseEntity) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("광고")
-                        .font(PDFont.body2)
-                        .bold()
-                        .foregroundStyle(.gray75)
-                    
-                    Text(banner.name)
-                        .font(PDFont.caption2)
-                        .foregroundStyle(.gray45)
-                }
-                
-                Spacer()
-            }
-            .padding(.vertical, 16)
-            .padding(.leading, 32)
-            .background {
+        Button {
+            
+        } label: {
+            VStack(alignment: .leading) {
                 URLImageView(urlString: banner.imageUrl) {
                     Color.gray15
                 }
+                .frame(height: 75)
+                .clipShape(.rect(cornerRadius: 5))
+                
+                Divider()
             }
-            .clipShape(.rect(cornerRadius: 5))
-            
-            Divider()
+            .padding(.horizontal, 20)
         }
-        .padding(.horizontal, 20)
     }
     
     private func convertPriceToString(_ price: Int) -> String {
