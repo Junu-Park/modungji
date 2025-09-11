@@ -46,6 +46,12 @@ struct MainView: View {
                 Spacer()
             }
         }
+        .sheet(isPresented: self.$viewModel.state.showWebView) {
+            WebView(viewModel: self.viewModel)
+        }
+        .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
+            Button("확인", action: { })
+        }
     }
 }
 
@@ -339,7 +345,7 @@ extension MainView {
     
     private func todayEstateBannerRow(_ banner: BannerResponseEntity) -> some View {
         Button {
-            
+            self.viewModel.action(.tapBanner)
         } label: {
             VStack(alignment: .leading) {
                 URLImageView(urlString: banner.imageUrl) {

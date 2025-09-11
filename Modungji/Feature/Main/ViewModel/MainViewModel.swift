@@ -6,27 +6,34 @@
 //
 
 import Combine
+import WebKit
 
-final class MainViewModel: ObservableObject {
+final class MainViewModel: NSObject, ObservableObject {
     struct State {
         var EstateBannerList: [EstateBannerEntity] = []
         var hotEstateList: [HotEstateResponseEntity] = []
         var todayEstateTopicList: [TodayEstateTopicResponseEntity] = []
         var todayEstateBannerList: [BannerResponseEntity] = []
+        var showWebView: Bool = false
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
     
     enum Action {
         case initView
+        case tapBanner
+        case enrollWebView(webView: WKWebView)
     }
     
     @Published var state: State = State()
     private var cancellables: Set<AnyCancellable> = []
     private let service: MainService
+    private weak var webView: WKWebView? = nil
     
     init(service: MainService) {
         self.service = service
+        
+        super.init()
         
         self.initView()
     }
@@ -39,6 +46,10 @@ final class MainViewModel: ObservableObject {
         switch action {
         case .initView:
             self.initView()
+        case .tapBanner:
+            self.state.showWebView = true
+        case .enrollWebView(let webView):
+            self.webView = webView
         }
     }
     
@@ -64,6 +75,28 @@ final class MainViewModel: ObservableObject {
                     self.state.showErrorAlert = true
                 }
             }
+        }
+    }
+}
+
+extension MainViewModel: WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        
+        switch message.name {
+        case "click_attendance_button":
+            let accessToken = try! KeychainManager().get(tokenType: .accessToken)
+            self.webView?.evaluateJavaScript ("requestAttendance('\(accessToken)')")
+        case "complete_attendance":
+            self.state.showWebView = false
+            self.webView = nil
+            
+            Task {
+                let msgList = String(describing: message.body).split(separator: " ").map({ String($0) })
+                self.state.errorMessage = "\(msgList.last ?? "?")회차 출석체크가\n완료되었습니다!"
+                self.state.showErrorAlert = true
+            }
+        default:
+            break
         }
     }
 }
