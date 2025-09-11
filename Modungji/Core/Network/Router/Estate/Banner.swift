@@ -13,15 +13,23 @@ import ModungjiSecret
 extension EstateRouter {
     enum Banner: APIRouter {
         case banner
+        case webView
         
         var baseURL: URL? {
-            return URL(string: EstateRouter.baseURL)?.appendingPathComponent("v1")
+            switch self {
+            case .banner:
+                return URL(string: EstateRouter.baseURL)?.appendingPathComponent("v1")
+            case .webView:
+                return URL(string: EstateRouter.baseURL)
+            }
         }
         
         var path: String {
             switch self {
             case .banner:
                 return "banners/main"
+            case .webView:
+                return "event-application"
             }
         }
         
