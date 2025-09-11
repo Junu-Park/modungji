@@ -53,6 +53,8 @@ struct MainView: View {
         }
         .sheet(isPresented: self.$viewModel.state.showWebView) {
             WebView(viewModel: self.viewModel)
+                .presentationDragIndicator(.visible)
+                .ignoresSafeArea()
         }
         .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
             Button("확인", action: { })
