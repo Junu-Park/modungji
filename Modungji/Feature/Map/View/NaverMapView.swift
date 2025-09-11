@@ -78,26 +78,29 @@ struct NaverMapView: UIViewRepresentable {
 }
 
 extension NaverMapView {
-    final class Coordinator: NSObject, NMFMapViewCameraDelegate, NMCClusterMarkerUpdater, NMCLeafMarkerUpdater, NMCThresholdStrategy {
+    // MARK: - Coordinator
+    final class Coordinator: NSObject, NMFMapViewCameraDelegate {
 
         var cluster: NMCClusterer<MapClusterKey> = .init()
         
         private var viewModel: MapViewModel
         private var updateWorkItem: DispatchWorkItem?
-        private var defaultLeafMarkerImage: NMFOverlayImage = NMFOverlayImage(
-            image: DefaultMapLeafMakerView().converToUIImage(),
-            reuseIdentifier: "DefaultMapLeafMakerImage"
-        )
+        private var clusterMarkerUpdater: ClusterMarkerUpdater
+        private var leafMarkerUpdater: LeafMarkerUpdater
+        private var thresholdStrategy: ThresholdStrategy
         
         init(viewModel: MapViewModel) {
             self.viewModel = viewModel
+            self.clusterMarkerUpdater = ClusterMarkerUpdater()
+            self.leafMarkerUpdater = LeafMarkerUpdater(viewModel: viewModel)
+            self.thresholdStrategy = ThresholdStrategy()
             
             super.init()
             
             let clusterBuilder = NMCComplexBuilder<MapClusterKey>()
-            clusterBuilder.clusterMarkerUpdater = self
-            clusterBuilder.leafMarkerUpdater = self
-            clusterBuilder.thresholdStrategy = self
+            clusterBuilder.clusterMarkerUpdater = self.clusterMarkerUpdater
+            clusterBuilder.leafMarkerUpdater = self.leafMarkerUpdater
+            clusterBuilder.thresholdStrategy = self.thresholdStrategy
             clusterBuilder.minClusteringZoom = 10
             clusterBuilder.maxClusteringZoom = 18
             self.cluster = clusterBuilder.build()
@@ -126,11 +129,29 @@ extension NaverMapView {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: updateWorkItem)
         }
         
+    }
+    
+    // MARK: - ClusterMarkerUpdater
+    final class ClusterMarkerUpdater: NSObject, NMCClusterMarkerUpdater {
         func updateClusterMarker(_ info: NMCClusterMarkerInfo, _ marker: NMFMarker) {
             marker.iconImage = NMFOverlayImage(image: MapClusterMarkerView(count: info.size).converToUIImage())
             marker.touchHandler = { overlay in
                 return true
             }
+        }
+    }
+    
+    // MARK: - LeafMarkerUpdater
+    final class LeafMarkerUpdater: NSObject, NMCLeafMarkerUpdater {
+        private weak var viewModel: MapViewModel?
+        private var defaultLeafMarkerImage: NMFOverlayImage = NMFOverlayImage(
+            image: DefaultMapLeafMakerView().converToUIImage(),
+            reuseIdentifier: "DefaultMapLeafMakerImage"
+        )
+        
+        init(viewModel: MapViewModel) {
+            self.viewModel = viewModel
+            super.init()
         }
         
         func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
@@ -138,8 +159,8 @@ extension NaverMapView {
             
             marker.iconImage = self.defaultLeafMarkerImage
             
-            marker.touchHandler = { overlay in
-                self.viewModel.action(.tapEstate(estateID: key.entity.estateId))
+            marker.touchHandler = { [weak self] overlay in
+                self?.viewModel?.action(.tapEstate(estateID: key.entity.estateId))
                 return true
             }
             
@@ -169,7 +190,10 @@ extension NaverMapView {
                 }
             }
         }
-        
+    }
+    
+    // MARK: - ThresholdStrategy
+    final class ThresholdStrategy: NSObject, NMCThresholdStrategy {
         func getThreshold(_ zoom: Int) -> Double {
             switch zoom {
             case ...10:
