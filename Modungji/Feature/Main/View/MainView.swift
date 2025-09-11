@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainView: View {
     @ObservedObject private var viewModel: MainViewModel
-    @State private var searchQuery: String = ""
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -42,7 +41,11 @@ struct MainView: View {
             
             // searchBar가 상단 SafeArea에 겹치는 걸 방지하기 위한 ScrollView와 분리
             VStack {
-                self.searchBar
+                Button {
+                    self.viewModel.action(.tapSearchBar)
+                } label: {
+                    self.searchBar
+                }
                 Spacer()
             }
         }
@@ -61,7 +64,9 @@ extension MainView {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
-            TextField("검색어를 입력해주세요.", text: self.$searchQuery)
+            Text("지도에 매물 찾으러 가기")
+                .foregroundStyle(.gray60)
+                .font(PDFont.body2)
             Spacer()
         }
         .padding(16)

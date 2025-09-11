@@ -21,6 +21,7 @@ final class MainViewModel: NSObject, ObservableObject {
     
     enum Action {
         case initView
+        case tapSearchBar
         case tapBanner
         case enrollWebView(webView: WKWebView)
     }
@@ -28,10 +29,12 @@ final class MainViewModel: NSObject, ObservableObject {
     @Published var state: State = State()
     private var cancellables: Set<AnyCancellable> = []
     private let service: MainService
+    private weak var pathModel: PathModel?
     private weak var webView: WKWebView? = nil
     
-    init(service: MainService) {
+    init(service: MainService, pathModel: PathModel) {
         self.service = service
+        self.pathModel = pathModel
         
         super.init()
         
@@ -46,6 +49,8 @@ final class MainViewModel: NSObject, ObservableObject {
         switch action {
         case .initView:
             self.initView()
+        case .tapSearchBar:
+            self.pathModel?.push(.map)
         case .tapBanner:
             self.state.showWebView = true
         case .enrollWebView(let webView):

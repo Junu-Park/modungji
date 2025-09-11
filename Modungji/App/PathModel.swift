@@ -96,7 +96,8 @@ final class PathModel: NSObject, ObservableObject {
                     return vm
                 } else {
                     let vm = MainViewModel(
-                        service: self.diContainer.service.mainService
+                        service: self.diContainer.service.mainService,
+                        pathModel: self
                     )
                     self.viewModelList["MainViewModel"] = vm
                     
