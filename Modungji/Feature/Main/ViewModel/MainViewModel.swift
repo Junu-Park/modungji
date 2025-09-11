@@ -11,6 +11,7 @@ import WebKit
 final class MainViewModel: NSObject, ObservableObject {
     struct State {
         var EstateBannerList: [EstateBannerEntity] = []
+        var recentSearchList: [String] = []
         var hotEstateList: [HotEstateResponseEntity] = []
         var todayEstateTopicList: [TodayEstateTopicResponseEntity] = []
         var todayEstateBannerList: [BannerResponseEntity] = []

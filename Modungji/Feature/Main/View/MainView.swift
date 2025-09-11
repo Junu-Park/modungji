@@ -27,7 +27,9 @@ struct MainView: View {
                         Group {
                             self.estateFilterView()
                             
-                            self.recentSearchEstateView()
+                            if !self.viewModel.state.recentSearchList.isEmpty {
+                                self.recentSearchEstateView()
+                            }
                             
                             self.hotEstateView()
                         }
