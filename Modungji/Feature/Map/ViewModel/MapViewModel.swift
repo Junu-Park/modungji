@@ -48,7 +48,8 @@ final class MapViewModel: ObservableObject {
         .dropFirst()
         .removeDuplicates(by: ==)
         .debounce(for: .seconds(0.7), scheduler: RunLoop.main)
-        .sink { category, centerLocation, maxDistance  in
+        .sink { [weak self] category, centerLocation, maxDistance  in
+            guard let self else { return }
             Task {
                 do {
                     let entity = GetEstateWithGeoRequestEntity(
