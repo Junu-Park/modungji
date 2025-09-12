@@ -12,6 +12,7 @@ import NMapsMap
 final class MapViewModel: ObservableObject {
     
     struct State {
+        var searchQuery: String = ""
         var category: Category?
         var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
         var maxDistance: Int?
@@ -22,9 +23,11 @@ final class MapViewModel: ObservableObject {
     }
     
     enum Action {
+        case inputSearchQuery(query: String)
         case moveCamera(entity: NaverMapEntity)
         case tapCurrentLocationButton
         case tapEstate(estateID: String)
+        case tapBackbutton
     }
     
     @Published var state: State = State()
@@ -77,12 +80,16 @@ final class MapViewModel: ObservableObject {
     
     func action(_ action: Action) {
         switch action {
+        case .inputSearchQuery(let query):
+            self.state.searchQuery = query
         case .moveCamera(let entity):
             self.moveCamera(entity: entity)
         case .tapCurrentLocationButton:
             self.tapCurrentLocationButton()
         case .tapEstate(let estateID):
             self.tapEstate(estateID: estateID)
+        case .tapBackbutton:
+            self.pathModel.pop()
         }
     }
     
