@@ -26,7 +26,7 @@ struct MapLeafMarkerView: ClusterMarkerViewProtocol {
                         .aspectRatio(1, contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                     
-                    Text("\(self.convertPriceToString(deposit)) / \(self.convertPriceToString(monthlyRent))")
+                    Text("\(deposit.convertPriceToString()) / \(monthlyRent.convertPriceToString())")
                         .font(PDFont.caption2.bold())
                         .foregroundStyle(.gray60)
                         .lineLimit(1)
@@ -34,18 +34,5 @@ struct MapLeafMarkerView: ClusterMarkerViewProtocol {
                 }
                 .padding([.top, .horizontal], 4)
             }
-    }
-    
-    private func convertPriceToString(_ price: Int) -> String {
-        if price >= 1000000000000 {
-            return String(price / 1000000000000) + "조"
-        }
-        else if price >= 100000000 {
-            return String(price / 100000000) + "억"
-        } else if price >= 10000 {
-            return String(price / 10000) + "만"
-        } else {
-            return "1만↓"
-        }
     }
 }

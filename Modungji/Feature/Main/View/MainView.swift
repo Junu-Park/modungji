@@ -291,7 +291,7 @@ extension MainView {
                 Text(estate.title)
                     .font(YHFont.caption1)
                     .foregroundStyle(.gray0)
-                Text("월세 \(self.convertPriceToString(estate.deposit))/\(self.convertPriceToString(estate.monthlyRent))")
+                Text("월세 \(estate.deposit.convertPriceToString())/\(estate.monthlyRent.convertPriceToString())")
                     .font(PDFont.body1)
                     .foregroundStyle(.gray0)
                 
@@ -374,19 +374,6 @@ extension MainView {
                 Divider()
             }
             .padding(.horizontal, 20)
-        }
-    }
-    
-    private func convertPriceToString(_ price: Int) -> String {
-        if price >= 1000000000000 {
-            return String(price / 1000000000000) + "조"
-        }
-        else if price >= 100000000 {
-            return String(price / 100000000) + "억"
-        } else if price >= 10000 {
-            return String(price / 10000) + "만"
-        } else {
-            return "1만↓"
         }
     }
 }

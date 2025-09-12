@@ -63,12 +63,12 @@ struct DetailView: View {
                                         .foregroundStyle(.gray75)
                                         .font(YHFont.title1)
                                     
-                                    Text("\(self.viewModel.state.detailData.deposit / 1000)/\(self.viewModel.state.detailData.monthlyRent / 1000)")
+                                    Text("\(self.viewModel.state.detailData.deposit.convertPriceToString())/\(self.viewModel.state.detailData.monthlyRent.convertPriceToString())")
                                         .foregroundStyle(.gray90)
                                         .font(PDFont.title1)
                                 }
                                 
-                                Text("관리비 \(self.viewModel.state.detailData.maintenanceFee / 1000)만원 • \(String(format: "%.1f", self.viewModel.state.detailData.area))㎡")
+                                Text("관리비 \(self.viewModel.state.detailData.maintenanceFee.convertPriceToString()) • \(String(format: "%.1f", self.viewModel.state.detailData.area))㎡")
                             }
                             .foregroundStyle(.gray60)
                             .font(PDFont.body2)
