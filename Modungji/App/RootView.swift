@@ -30,23 +30,17 @@ struct RootView: View {
                             }
                             .tag(0)
                         
-                        self.pathModel.build(.map)
-                            .tabItem {
-                                self.tabItem(.map)
-                            }
-                            .tag(1)
-                        
                         self.pathModel.build(.chatRoomList)
                             .tabItem {
                                 self.tabItem(.chat)
                             }
-                            .tag(2)
+                            .tag(1)
                         
                         Text("설정")
                             .tabItem {
                                 self.tabItem(.setting)
                             }
-                            .tag(3)
+                            .tag(2)
                     }
                 } else {
                     self.pathModel.build(.auth)

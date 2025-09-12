@@ -106,20 +106,12 @@ final class PathModel: NSObject, ObservableObject {
             }()
             
             MainView(viewModel: viewModel)
-        case .map:
-            let viewModel: MapViewModel = {
-                if let vm = self.viewModelList["MapViewModel"] as? MapViewModel {
-                    return vm
-                } else {
-                    let vm = MapViewModel(
-                        service: self.diContainer.service.mapService,
-                        pathModel: self
-                    )
-                    self.viewModelList["MapViewModel"] = vm
-                    
-                    return vm
-                }
-            }()
+        case .map(let category):
+            let viewModel = MapViewModel(
+                service: self.diContainer.service.mapService,
+                pathModel: self,
+                selectedCategory: category
+            )
             
             MapView(viewModel: viewModel)
         case .detail(let estateID):

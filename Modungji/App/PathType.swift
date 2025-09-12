@@ -11,7 +11,7 @@ enum PathType: Hashable {
     case auth
     case authWithEmail(authType: AuthWithEmailType)
     case main
-    case map
+    case map(category: EstateCategory?)
     case detail(estateID: String)
     case chat(opponentID: String = "", roomID: String = "")
     case chatRoomList
