@@ -79,9 +79,32 @@ struct MapView: View {
             self.searchBar
             
             NaverMapView(viewModel: self.viewModel)
-                .overlay(alignment: .bottomTrailing) {
-                    self.currentLocationButton
+                .overlay {
+                    VStack {
+                        HStack(spacing: 4) {
+                            ForEach(MapOptionType.allCases, id: \.self) { option in
+                                self.buildOption(option)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        if self.viewModel.state.selectedOptionType != nil {
+                            self.buildOptionView()
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 20)
+                        }
+                        
+                        Spacer()
+                        
+                        HStack {
+                            Spacer()
+                            
+                            self.currentLocationButton
+                        }
                         .padding(self.safeAreaBottomPadding)
+                    }
                 }
         }
         .ignoresSafeArea(edges: .bottom)
@@ -122,6 +145,94 @@ struct MapView: View {
         }
         .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
             Button("닫기") { }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildOption(_ option: MapOptionType) -> some View {
+        let isSelected = self.viewModel.state.selectedOptionType == option
+        let title: String? = {
+            switch option {
+            case .category:
+                return self.viewModel.state.selectedCategory?.rawValue
+            case .area:
+                return nil
+            case .monthlyRent:
+                return nil
+            case .deposit:
+                return nil
+            }
+        }()
+        
+        Button {
+            withAnimation {
+                self.viewModel.action(.tapOption(option: isSelected ? nil : option))
+            }
+        } label: {
+            Text(title ?? "\(option.rawValue) 선택")
+                .font(PDFont.body2)
+                .bold(isSelected)
+                .foregroundStyle(isSelected ? .brightWood : .gray75)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 20), backgroundColor: .gray0, borderColor: isSelected ? .brightWood : .gray45)
+        }
+    }
+    
+    @ViewBuilder
+    private func buildOptionView() -> some View {
+        self.buildOptionControl()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .white, borderColor: .gray45, shadowRadius: 5)
+    }
+    
+    @ViewBuilder
+    private func buildOptionControl() -> some View {
+        switch self.viewModel.state.selectedOptionType {
+        case .category:
+            self.buildCategoryOption()
+        case .area:
+            EmptyView()
+        case .monthlyRent:
+            EmptyView()
+        case .deposit:
+            EmptyView()
+        case .none:
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    private func buildCategoryOption() -> some View {
+        HStack(spacing: 16) {
+            ForEach(EstateCategory.allCases, id: \.self) { type in
+                self.buildCategoryButton(type: type)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildCategoryButton(type: EstateCategory) -> some View {
+        let isSelected = self.viewModel.state.selectedCategory == type
+        
+        Button {
+            withAnimation {
+                self.viewModel.action(.selectCategory(category: isSelected ? nil : type))
+            }
+        } label: {
+            VStack(spacing: 4) {
+                Image(type.image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .padding(12)
+                    .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .gray0, borderColor: isSelected ? .brightWood : .gray30)
+                Text(type.rawValue)
+                    .foregroundStyle(isSelected ? .brightWood : .gray75)
+                    .font(PDFont.body3)
+                    .bold(isSelected)
+            }
         }
     }
 }

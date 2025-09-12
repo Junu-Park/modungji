@@ -13,7 +13,8 @@ final class MapViewModel: ObservableObject {
     
     struct State {
         var searchQuery: String = ""
-        var category: Category?
+        var selectedOptionType: MapOptionType?
+        var selectedCategory: EstateCategory?
         var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
         var maxDistance: Int?
         var showCurrentLocationMarker: Bool = false
@@ -24,6 +25,8 @@ final class MapViewModel: ObservableObject {
     
     enum Action {
         case inputSearchQuery(query: String)
+        case tapOption(option: MapOptionType?)
+        case selectCategory(category: EstateCategory?)
         case moveCamera(entity: NaverMapEntity)
         case tapCurrentLocationButton
         case tapEstate(estateID: String)
@@ -35,16 +38,17 @@ final class MapViewModel: ObservableObject {
     private let service: MapService
     private let pathModel: PathModel
     
-    init(service: MapService, pathModel: PathModel) {
+    init(service: MapService, pathModel: PathModel, selectedCategory: EstateCategory? = nil) {
         self.service = service
         self.pathModel = pathModel
+        self.state.selectedCategory = selectedCategory
         
         self.transform()
     }
     
     func transform() {
         Publishers.CombineLatest3(
-            self.$state.map(\.category),
+            self.$state.map(\.selectedCategory),
             self.$state.map(\.centerLocation),
             self.$state.map(\.maxDistance)
         )
@@ -56,7 +60,7 @@ final class MapViewModel: ObservableObject {
             Task {
                 do {
                     let entity = GetEstateWithGeoRequestEntity(
-                        category: nil,
+                        category: category,
                         longitude: centerLocation.longitude,
                         latitude: centerLocation.latitude,
                         maxDistance: maxDistance
@@ -82,6 +86,10 @@ final class MapViewModel: ObservableObject {
         switch action {
         case .inputSearchQuery(let query):
             self.state.searchQuery = query
+        case .tapOption(let option):
+            self.state.selectedOptionType = option
+        case .selectCategory(let category):
+            self.state.selectedCategory = category
         case .moveCamera(let entity):
             self.moveCamera(entity: entity)
         case .tapCurrentLocationButton:
