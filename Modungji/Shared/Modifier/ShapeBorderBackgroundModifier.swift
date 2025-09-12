@@ -12,11 +12,16 @@ private struct ShapeBorderBackgroundModifier<T: InsettableShape>: ViewModifier {
     let backgroundColor: Color
     let borderColor: Color
     let borderWidth: CGFloat
+    let shadowRadius: CGFloat
     
     func body(content: Content) -> some View {
         content
             .background(self.borderColor, in: shape.stroke(lineWidth: self.borderWidth))
-            .background(self.backgroundColor, in: shape)
+            .background {
+                shape
+                    .foregroundStyle(self.backgroundColor)
+                    .shadow(radius: shadowRadius)
+            }
     }
 }
 
@@ -25,14 +30,16 @@ extension View {
         shape: T,
         backgroundColor: Color,
         borderColor: Color,
-        borderWidth: CGFloat = 1
+        borderWidth: CGFloat = 1,
+        shadowRadius: CGFloat = 0
     ) -> some View {
         modifier(
             ShapeBorderBackgroundModifier(
                 shape: shape,
                 backgroundColor: backgroundColor,
                 borderColor: borderColor,
-                borderWidth: borderWidth
+                borderWidth: borderWidth,
+                shadowRadius: shadowRadius
             )
         )
     }
