@@ -25,6 +25,7 @@ final class MainViewModel: NSObject, ObservableObject {
         case tapEstate(estateID: String)
         case tapSearchBar
         case tapBanner
+        case tapCategory(category: EstateCategory)
         case enrollWebView(webView: WKWebView)
     }
     
@@ -54,9 +55,11 @@ final class MainViewModel: NSObject, ObservableObject {
         case .tapEstate(let estateID):
             self.pathModel?.push(.detail(estateID: estateID))
         case .tapSearchBar:
-            self.pathModel?.push(.map)
+            self.pathModel?.push(.map(category: nil))
         case .tapBanner:
             self.state.showWebView = true
+        case .tapCategory(let category):
+            self.pathModel?.push(.map(category: category))
         case .enrollWebView(let webView):
             self.webView = webView
         }
