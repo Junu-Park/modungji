@@ -81,7 +81,11 @@ extension MainView {
     private func estateBannerView(data: [EstateBannerEntity]) -> some View {
         TabView {
             ForEach(data, id: \.id) { entity in
-                self.estateBanner(data: entity)
+                Button {
+                    self.viewModel.action(.tapEstate(estateID: entity.id))
+                } label: {
+                    self.estateBanner(data: entity)
+                }
             }
         }
         .tabViewStyle(.page)
@@ -139,7 +143,7 @@ extension MainView {
     
     private func estateFilterButton(type: EstateCategory) -> some View {
         Button {
-            
+            self.viewModel.action(.tapCategory(category: type))
         } label: {
             VStack(spacing: 4) {
                 Image(type.image)
@@ -250,7 +254,11 @@ extension MainView {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(self.viewModel.state.hotEstateList, id: \.estateID) { estate in
-                        self.hotEstateCard(estate: estate)
+                        Button {
+                            self.viewModel.action(.tapEstate(estateID: estate.estateID))
+                        } label: {
+                            self.hotEstateCard(estate: estate)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)

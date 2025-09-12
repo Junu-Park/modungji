@@ -22,6 +22,7 @@ final class MainViewModel: NSObject, ObservableObject {
     
     enum Action {
         case initView
+        case tapEstate(estateID: String)
         case tapSearchBar
         case tapBanner
         case enrollWebView(webView: WKWebView)
@@ -50,6 +51,8 @@ final class MainViewModel: NSObject, ObservableObject {
         switch action {
         case .initView:
             self.initView()
+        case .tapEstate(let estateID):
+            self.pathModel?.push(.detail(estateID: estateID))
         case .tapSearchBar:
             self.pathModel?.push(.map)
         case .tapBanner:
