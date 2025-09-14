@@ -34,6 +34,17 @@ struct MapRepositoryImp: MapRepository {
         }
     }
     
+    func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity {
+        let response = try await self.networkManager.requestEstate(requestURL: NaverRouter.Map.reverseGeocoding(coords: coords), successDecodingType: ReverseGeocodingDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return self.convertToEntity(success)
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     func getAuthorizationState() -> CLAuthorizationStatus {
         return self.locationManager.getAuthorizationState()
     }
@@ -62,5 +73,36 @@ struct MapRepositoryImp: MapRepository {
             ),
             distance: dto.distance
         )
+    }
+    
+    private func convertToEntity(_ dto: ReverseGeocodingDTO) -> ReverseGeocodingResponseEntity {
+        let admcodes = dto.results.filter({ $0.name == "admcode" })
+        let roadaddrs = dto.results.filter({ $0.name == "roadaddr" })
+        
+        guard let admcode = admcodes.first else {
+            return ReverseGeocodingResponseEntity(isExistRoadAddr: false, area1: "알 수 없음", area1Alias: "알 수 없음", area2: "알 수 없음", area3: "알 수 없음", roadName: "알 수 없음", roadNumber: "")
+        }
+        
+        if let roadaddr = roadaddrs.first, let roadName = roadaddr.land?.name, let roadNumber = roadaddr.land?.number {
+            return .init(
+                isExistRoadAddr: true,
+                area1: admcode.region.area1.name,
+                area1Alias: admcode.region.area1.alias ?? admcode.region.area1.name,
+                area2: admcode.region.area2.name,
+                area3: admcode.region.area3.name,
+                roadName: roadName,
+                roadNumber: roadNumber
+            )
+        } else {
+            return .init(
+                isExistRoadAddr: false,
+                area1: admcode.region.area1.name,
+                area1Alias: admcode.region.area1.alias ?? admcode.region.area1.name,
+                area2: admcode.region.area2.name,
+                area3: admcode.region.area3.name,
+                roadName: "",
+                roadNumber: ""
+            )
+        }
     }
 }

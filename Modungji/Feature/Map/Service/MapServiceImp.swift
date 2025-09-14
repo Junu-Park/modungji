@@ -16,7 +16,35 @@ struct MapServiceImp: MapService {
     }
     
     func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity] {
-        return try await self.repository.getEstateWithGeo(entity: entity)
+        let estateResponse = try await self.repository.getEstateWithGeo(entity: entity)
+        
+        return try await withThrowingTaskGroup(of: (Int, GetEstateWithGeoResponseEntity).self) { group in
+            for (index, estate) in estateResponse.enumerated() {
+                group.addTask {
+                    let address = try await self.repository.getAddress(
+                        coords: "\(estate.geolocation.longitude),\(estate.geolocation.latitude)"
+                    )
+                    
+                    var entity = estate
+                    if address.isExistRoadAddr {
+                        entity.address = "\(address.area1Alias) \(address.area2) \(address.roadName) \(address.roadNumber)"
+                    } else {
+                        entity.address = "\(address.area1Alias) \(address.area2) \(address.area3)"
+                    }
+                    entity.address = address.area3
+                    
+                    return (index, entity)
+                }
+            }
+            
+            var result = Array<GetEstateWithGeoResponseEntity?>(repeating: nil, count: estateResponse.count)
+            
+            for try await (index, entity) in group {
+                result[index] = entity
+            }
+            
+            return result.compactMap { $0 }
+        }
     }
     
     func getUserLocation() async throws -> Bool {
