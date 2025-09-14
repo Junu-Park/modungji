@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetEstateWithGeoResponseEntity {
+struct GetEstateWithGeoResponseEntity: Equatable {
     let estateId: String
     let category: String
     let title: String
@@ -18,4 +18,5 @@ struct GetEstateWithGeoResponseEntity {
     let floors: Int
     let geolocation: GeolocationEntity
     let distance: Double?
+    var address: String = ""
 }
