@@ -11,7 +11,7 @@ import AuthenticationServices
 final class AuthViewModel: ObservableObject {
     
     struct State {
-        var isAutoLogin: Bool = false
+        var isAutoLogin: Bool = true
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
