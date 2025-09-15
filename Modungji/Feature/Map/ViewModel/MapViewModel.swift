@@ -54,7 +54,7 @@ final class MapViewModel: ObservableObject {
         )
         .dropFirst()
         .removeDuplicates(by: ==)
-        .debounce(for: .seconds(0.7), scheduler: RunLoop.main)
+        .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
         .sink { [weak self] category, centerLocation, maxDistance  in
             guard let self else { return }
             Task {
@@ -102,6 +102,10 @@ final class MapViewModel: ObservableObject {
     }
     
     private func moveCamera(entity: NaverMapEntity) {
+        if !self.state.estateList.isEmpty {
+            self.state.estateList.removeAll()
+        }
+        
         self.state.centerLocation = entity.centerLocation
         
         let maxDistance = entity.centerLocation.getMeterDistance(with: entity.southLocation)
