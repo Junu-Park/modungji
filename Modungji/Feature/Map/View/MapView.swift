@@ -98,14 +98,22 @@ struct MapView: View {
                         
                         Spacer()
                         
-                        HStack {
-                            Spacer()
+                        VStack(alignment: .trailing, spacing: 12) {
+                            HStack {
+                                Spacer()
+                                
+                                self.currentLocationButton
+                            }
+                            .padding(.trailing, 20)
                             
-                            self.currentLocationButton
+                            if !self.viewModel.state.estateList.isEmpty {
+                                self.buildEstateInfoList()
+                            }
                         }
-                        .padding(self.safeAreaBottomPadding)
+                        .padding(.bottom, self.safeAreaBottomPadding)
                     }
                 }
+                .animation(.default, value: self.viewModel.state.estateList)
         }
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden()
@@ -184,7 +192,7 @@ struct MapView: View {
         self.buildOptionControl()
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .white, borderColor: .gray45, shadowRadius: 5)
+            .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .white, borderColor: .clear, shadowRadius: 5)
     }
     
     @ViewBuilder
@@ -234,5 +242,53 @@ struct MapView: View {
                     .bold(isSelected)
             }
         }
+    }
+    
+    @ViewBuilder
+    private func buildEstateInfoList() -> some View {
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: 12) {
+                ForEach(self.viewModel.state.estateList, id: \.estateId) { estate in
+                    Button {
+                        self.viewModel.action(.tapEstate(estateID: estate.estateId))
+                    } label:{
+                        self.buildEstateInfo(estate)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .fixedSize()
+        }
+        .scrollIndicators(.never)
+    }
+    
+    @ViewBuilder
+    private func buildEstateInfo(_ estate: GetEstateWithGeoResponseEntity) -> some View {
+        HStack(spacing: 20) {
+            URLImageView(urlString: estate.thumbnail) {
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+            }
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text("\(estate.title)")
+                    .font(PDFont.body3.bold())
+                    .foregroundStyle(.gray75)
+                Text("월세 \(estate.deposit.convertPriceToString())/\(estate.monthlyRent.convertPriceToString())")
+                    .font(PDFont.title1.bold())
+                    .foregroundStyle(.gray90)
+                Text("\(String(format: "%0.1f", estate.area))㎡ • \(estate.floors)층")
+                    .font(PDFont.caption1)
+                    .foregroundStyle(.gray60)
+                Text(estate.address)
+                    .font(PDFont.caption1)
+                    .foregroundStyle(.gray60)
+            }
+        }
+        .padding(16)
+        .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .gray0, borderColor: .clear, shadowRadius: 5)
     }
 }
