@@ -10,9 +10,13 @@ import SwiftUI
 final class PathModel: NSObject, ObservableObject {
     @Published var path: NavigationPath = .init() {
         didSet {
-            if self.selectedChatRoomID == nil || oldValue.count <= self.path.count { return }
+            if oldValue.count <= self.path.count { return }
             
-            self.selectedChatRoomID = nil
+            if self.selectedChatRoomID != nil {
+                self.selectedChatRoomID = nil
+            }
+            
+            self.pathStack.removeLast()
         }
     }
     @Published var selectedTab: Int = 0
@@ -20,6 +24,8 @@ final class PathModel: NSObject, ObservableObject {
     private let diContainer: DIContainer
     
     private var viewModelList: [String: any ObservableObject] = [:]
+    
+    private var pathStack: [PathType] = []
     
     private var selectedChatRoomID: String?
     
@@ -37,10 +43,15 @@ final class PathModel: NSObject, ObservableObject {
         }
         
         self.path.append(path)
+        self.pathStack.append(path)
     }
     
     func pop() {
         if self.path.isEmpty { return }
+        
+        if let last = self.pathStack.last, case .map(let category) = last {
+            self.viewModelList.removeValue(forKey: "MapViewModel")
+        }
         
         self.path.removeLast()
     }
@@ -108,11 +119,20 @@ final class PathModel: NSObject, ObservableObject {
             
             MainView(viewModel: viewModel)
         case .map(let category):
-            let viewModel = MapViewModel(
-                service: self.diContainer.service.mapService,
-                pathModel: self,
-                selectedCategory: category
-            )
+            let viewModel: MapViewModel = {
+                if let vm = self.viewModelList["MapViewModel"] as? MapViewModel {
+                    return vm
+                } else {
+                    let vm = MapViewModel(
+                        service: self.diContainer.service.mapService,
+                        pathModel: self,
+                        selectedCategory: category
+                    )
+                    self.viewModelList["MapViewModel"] = vm
+                    
+                    return vm
+                }
+            }()
             
             MapView(viewModel: viewModel)
         case .detail(let estateID):
