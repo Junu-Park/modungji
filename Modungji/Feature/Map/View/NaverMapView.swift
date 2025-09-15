@@ -107,6 +107,8 @@ extension NaverMapView {
         
         func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
             
+            self.dismissKeyboard()
+
             if !self.cluster.empty {
                 self.cluster.clear()
             }
@@ -119,6 +121,10 @@ extension NaverMapView {
                 zoomLevel: mapView.zoomLevel
             )
             self.viewModel.action(.moveCamera(entity: entity))
+        }
+        
+        private func dismissKeyboard() {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
     
