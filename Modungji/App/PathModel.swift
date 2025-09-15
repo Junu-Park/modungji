@@ -16,6 +16,10 @@ final class PathModel: NSObject, ObservableObject {
                 self.selectedChatRoomID = nil
             }
             
+            if let last = self.pathStack.last, case .map(_) = last {
+                self.viewModelList.removeValue(forKey: "MapViewModel")
+            }
+            
             self.pathStack.removeLast()
         }
     }
@@ -48,10 +52,6 @@ final class PathModel: NSObject, ObservableObject {
     
     func pop() {
         if self.path.isEmpty { return }
-        
-        if let last = self.pathStack.last, case .map(let category) = last {
-            self.viewModelList.removeValue(forKey: "MapViewModel")
-        }
         
         self.path.removeLast()
     }
