@@ -27,8 +27,11 @@ struct WebView: UIViewRepresentable {
     }
     
     func updateUIView(_ webView: WKWebView, context: Context) {
-        let request = try! EstateRouter.Banner.webView.asURLRequest()
-        
-        webView.load(request)
+        if let urlString = self.viewModel.state.selectedTopic, let url = URL(string: urlString) {
+            webView.load(URLRequest(url: url))
+        } else {
+            let request = try! EstateRouter.Banner.webView.asURLRequest()
+            webView.load(request)
+        }
     }
 }

@@ -52,6 +52,8 @@ struct MainView: View {
             }
         }
         .sheet(isPresented: self.$viewModel.state.showWebView) {
+            self.viewModel.action(.closeWebView)
+        } content: {
             WebView(viewModel: self.viewModel)
                 .presentationDragIndicator(.visible)
                 .ignoresSafeArea()
@@ -336,28 +338,33 @@ extension MainView {
     }
     
     private func todayEstateTopicRow(_ topic: TodayEstateTopicResponseEntity) -> some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(topic.title)
-                        .bold()
-                        .foregroundStyle(.gray90)
+        Button {
+            self.viewModel.action(.tapTopic(url: topic.link))
+        } label: {
+            VStack {
+                HStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(topic.title)
+                            .bold()
+                            .foregroundStyle(.gray90)
+                        
+                        Text(topic.content)
+                            .foregroundStyle(.gray60)
+                    }
                     
-                    Text(topic.content)
-                        .foregroundStyle(.gray60)
+                    Spacer()
+                    
+                    Text(topic.date)
+                        .foregroundStyle(.gray75)
                 }
+                .font(PDFont.body2)
+                .padding(.vertical, 12)
                 
-                Spacer()
-                
-                Text(topic.date)
-                    .foregroundStyle(.gray75)
+                Divider()
             }
-            .font(PDFont.body2)
-            .padding(.vertical, 12)
-            
-            Divider()
+            .padding(.horizontal, 20)
+            .multilineTextAlignment(.leading)
         }
-        .padding(.horizontal, 20)
     }
     
     private func todayEstateBannerRow(_ banner: BannerResponseEntity) -> some View {

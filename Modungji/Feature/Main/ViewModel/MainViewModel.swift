@@ -15,6 +15,7 @@ final class MainViewModel: NSObject, ObservableObject {
         var hotEstateList: [HotEstateResponseEntity] = []
         var todayEstateTopicList: [TodayEstateTopicResponseEntity] = []
         var todayEstateBannerList: [BannerResponseEntity] = []
+        var selectedTopic: String? = nil
         var showWebView: Bool = false
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
@@ -24,7 +25,9 @@ final class MainViewModel: NSObject, ObservableObject {
         case initView
         case tapEstate(estateID: String)
         case tapSearchBar
+        case tapTopic(url: String)
         case tapBanner
+        case closeWebView
         case tapCategory(category: EstateCategory)
         case enrollWebView(webView: WKWebView)
     }
@@ -56,8 +59,13 @@ final class MainViewModel: NSObject, ObservableObject {
             self.pathModel?.push(.detail(estateID: estateID))
         case .tapSearchBar:
             self.pathModel?.push(.map(category: nil))
+        case .tapTopic(let url):
+            self.state.selectedTopic = url
+            self.state.showWebView = true
         case .tapBanner:
             self.state.showWebView = true
+        case .closeWebView:
+            self.state.selectedTopic = nil
         case .tapCategory(let category):
             self.pathModel?.push(.map(category: category))
         case .enrollWebView(let webView):
