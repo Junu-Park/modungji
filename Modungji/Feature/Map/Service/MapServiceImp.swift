@@ -31,7 +31,6 @@ struct MapServiceImp: MapService {
                     } else {
                         entity.address = "\(address.area1Alias) \(address.area2) \(address.area3)"
                     }
-                    entity.address = address.area3
                     
                     return (index, entity)
                 }
