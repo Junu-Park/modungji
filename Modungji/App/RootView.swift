@@ -13,8 +13,6 @@ struct RootView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var pathModel: PathModel
     
-    @State private var selectedTab: Int = 0
-    
     init() {
         setTabBarAppearance()
     }
@@ -23,7 +21,7 @@ struct RootView: View {
         NavigationStack(path: self.$pathModel.path) {
             Group {
                 if self.authState.isLogin {
-                    TabView(selection: $selectedTab) {
+                    TabView(selection: self.$pathModel.selectedTab) {
                         self.pathModel.build(.main)
                             .tabItem {
                                 self.tabItem(.home)
@@ -93,7 +91,7 @@ struct RootView: View {
 extension RootView {
     @ViewBuilder
     private func tabItem(_ type: TabItemType) -> some View {
-        Image(self.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
+        Image(self.pathModel.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
             .renderingMode(.template)
             .padding(.top, 16)
         

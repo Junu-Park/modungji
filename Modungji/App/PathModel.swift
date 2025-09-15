@@ -15,6 +15,7 @@ final class PathModel: NSObject, ObservableObject {
             self.selectedChatRoomID = nil
         }
     }
+    @Published var selectedTab: Int = 0
     
     private let diContainer: DIContainer
     
@@ -184,6 +185,8 @@ extension PathModel: UNUserNotificationCenterDelegate {
         
         // 앱이 완전히 로드될 때까지 대기
         try? await Task.sleep(for: .seconds(0.3))
+        
+        self.selectedTab = 1
         
         if self.selectedChatRoomID != nil {
             self.pop()
