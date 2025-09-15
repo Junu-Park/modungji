@@ -43,7 +43,9 @@ struct ChatView: View {
                                 
                                 ChatRow(
                                     chat: chat,
-                                    isOpponentUser: chat.sender.userID == self.viewModel.state.chatRoomData.opponentUserData.userID
+                                    isOpponentUser: chat.sender.userID == self.viewModel.state.chatRoomData.opponentUserData.userID,
+                                    showTime: checkShowTime(chat: chat, index: index),
+                                    showProfile: checkShowProfile(chat: chat, index: index)
                                 )
                             }
                             .id(chat.chatID)
@@ -166,9 +168,41 @@ struct ChatView: View {
         } else {
             let preChatDate = Calendar.current.startOfDay(for: self.viewModel.state.chatDataList[index - 1].createdAt)
             let curChatDate = Calendar.current.startOfDay(for: chat.createdAt)
-            
+
             return preChatDate != curChatDate
         }
+    }
+
+    private func checkShowTime(chat: ChatResponseEntity, index: Int) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+
+        let currentTimeString = formatter.string(from: chat.createdAt)
+
+        if index == self.viewModel.state.chatDataList.count - 1 {
+            return true
+        }
+
+        let nextChat = self.viewModel.state.chatDataList[index + 1]
+        let nextTimeString = formatter.string(from: nextChat.createdAt)
+
+        return currentTimeString != nextTimeString || chat.sender.userID != nextChat.sender.userID
+    }
+
+    private func checkShowProfile(chat: ChatResponseEntity, index: Int) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+
+        let currentTimeString = formatter.string(from: chat.createdAt)
+
+        if index == 0 {
+            return true
+        }
+
+        let previousChat = self.viewModel.state.chatDataList[index - 1]
+        let previousTimeString = formatter.string(from: previousChat.createdAt)
+
+        return currentTimeString != previousTimeString || chat.sender.userID != previousChat.sender.userID
     }
     
     @ViewBuilder
@@ -319,6 +353,8 @@ private struct DateSeparator: View {
 private struct ChatRow: View {
     let chat: ChatResponseEntity
     let isOpponentUser: Bool
+    let showTime: Bool
+    let showProfile: Bool
     
     @State private var showImageViewer: Bool = false
     @State private var selectedIndex: Int = 0
@@ -375,28 +411,37 @@ private struct ChatRow: View {
             if isOpponentUser {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .top, spacing: 8) {
-                        URLImageView(urlString: chat.sender.profileImage) {
-                            Circle()
-                                .fill(.gray45)
-                                .overlay {
-                                    Image(systemName: "person.fill")
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 16))
-                                }
+                        if showProfile {
+                            URLImageView(urlString: chat.sender.profileImage) {
+                                Circle()
+                                    .fill(.gray45)
+                                    .overlay {
+                                        Image(systemName: "person.fill")
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 16))
+                                    }
+                            }
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                        } else {
+                            Spacer()
+                                .frame(width: 40, height: 40)
                         }
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(chat.sender.nick)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
+                            if showProfile {
+                                Text(chat.sender.nick)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
                             self.buildContentView()
-                            
-                            Text(self.formattedTimeString)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
+
+                            if showTime {
+                                Text(self.formattedTimeString)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }
@@ -406,10 +451,12 @@ private struct ChatRow: View {
                 
                 VStack(alignment: .trailing, spacing: 4) {
                     self.buildContentView()
-                    
-                    Text(self.formattedTimeString)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+
+                    if showTime {
+                        Text(self.formattedTimeString)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
         }
