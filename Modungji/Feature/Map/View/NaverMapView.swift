@@ -84,7 +84,6 @@ extension NaverMapView {
         var cluster: NMCClusterer<MapClusterKey> = .init()
         
         private var viewModel: MapViewModel
-        private var updateWorkItem: DispatchWorkItem?
         private var clusterMarkerUpdater: ClusterMarkerUpdater
         private var leafMarkerUpdater: LeafMarkerUpdater
         private var thresholdStrategy: ThresholdStrategy
@@ -107,28 +106,20 @@ extension NaverMapView {
         }
         
         func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
-            self.updateWorkItem?.cancel()
             
-            self.cluster.clear()
-            
-            self.updateWorkItem = DispatchWorkItem { [weak self] in
-                guard let self else { return }
-                
-                let centerLocation = GeolocationEntity(latitude: mapView.latitude, longitude: mapView.longitude)
-                let southLocation = GeolocationEntity(latitude: mapView.contentBounds.southWestLat, longitude: mapView.longitude)
-                let entity = NaverMapEntity(
-                    centerLocation: centerLocation,
-                    southLocation: southLocation,
-                    zoomLevel: mapView.zoomLevel
-                )
-                self.viewModel.action(.moveCamera(entity: entity))
+            if !self.cluster.empty {
+                self.cluster.clear()
             }
             
-            guard let updateWorkItem else { return }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: updateWorkItem)
+            let centerLocation = GeolocationEntity(latitude: mapView.latitude, longitude: mapView.longitude)
+            let southLocation = GeolocationEntity(latitude: mapView.contentBounds.southWestLat, longitude: mapView.longitude)
+            let entity = NaverMapEntity(
+                centerLocation: centerLocation,
+                southLocation: southLocation,
+                zoomLevel: mapView.zoomLevel
+            )
+            self.viewModel.action(.moveCamera(entity: entity))
         }
-        
     }
     
     // MARK: - ClusterMarkerUpdater
