@@ -51,6 +51,10 @@ struct MapServiceImp: MapService {
         return result
     }
     
+    func getCoordinator(query: String) async throws -> GeocodingResponseEntity {
+        return try await self.repository.getCoordinator(query: query)
+    }
+    
     func getUserLocation() async throws -> Bool {
         let state = self.repository.getAuthorizationState()
         

@@ -45,6 +45,17 @@ struct MapRepositoryImp: MapRepository {
         }
     }
     
+    func getCoordinator(query: String) async throws -> GeocodingResponseEntity {
+        let response = try await self.networkManager.requestEstate(requestURL: NaverRouter.Map.geocoding(query: query), successDecodingType: GeocodingDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return try self.convertToEntity(success)
+        case .failure(let failure):
+            throw failure
+        }
+    }
+    
     func getAuthorizationState() -> CLAuthorizationStatus {
         return self.locationManager.getAuthorizationState()
     }
@@ -104,5 +115,19 @@ struct MapRepositoryImp: MapRepository {
                 roadNumber: ""
             )
         }
+    }
+    
+    private func convertToEntity(_ dto: GeocodingDTO) throws -> GeocodingResponseEntity {
+        guard let last = dto.addresses.last else {
+            throw EstateErrorResponseEntity(message: "검색 결과가 없습니다.")
+        }
+        
+        return .init(
+            address: last.roadAddress,
+            geolocation: .init(
+                latitude: Double(last.latitude)!,
+                longitude: Double(last.longitude)!
+            )
+        )
     }
 }
