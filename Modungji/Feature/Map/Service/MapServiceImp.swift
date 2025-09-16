@@ -21,16 +21,8 @@ struct MapServiceImp: MapService {
         return try await withThrowingTaskGroup(of: (Int, GetEstateWithGeoResponseEntity).self) { group in
             for (index, estate) in estateResponse.enumerated() {
                 group.addTask {
-                    let address = try await self.repository.getAddress(
-                        coords: "\(estate.geolocation.longitude),\(estate.geolocation.latitude)"
-                    )
-                    
                     var entity = estate
-                    if address.isExistRoadAddr {
-                        entity.address = "\(address.area1Alias) \(address.area2) \(address.roadName) \(address.roadNumber)"
-                    } else {
-                        entity.address = "\(address.area1Alias) \(address.area2) \(address.area3)"
-                    }
+                    entity.address = try await self.getAddress(coords: estate.geolocation)
                     
                     return (index, entity)
                 }
@@ -44,6 +36,19 @@ struct MapServiceImp: MapService {
             
             return result.compactMap { $0 }
         }
+    }
+    
+    func getAddress(coords: GeolocationEntity) async throws -> String {
+        let address = try await self.repository.getAddress(coords: "\(coords.longitude),\(coords.latitude)")
+        
+        let result: String
+        if address.isExistRoadAddr {
+            result = "\(address.area1Alias) \(address.area2) \(address.roadName) \(address.roadNumber)"
+        } else {
+            result = "\(address.area1Alias) \(address.area2) \(address.area3)"
+        }
+        
+        return result
     }
     
     func getUserLocation() async throws -> Bool {
