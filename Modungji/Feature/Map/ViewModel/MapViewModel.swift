@@ -32,6 +32,7 @@ final class MapViewModel: ObservableObject {
         case tapCurrentLocationButton
         case tapEstate(estateID: String)
         case tapBackbutton
+        case search
     }
     
     @Published var state: State = State()
@@ -103,6 +104,8 @@ final class MapViewModel: ObservableObject {
             self.tapEstate(estateID: estateID)
         case .tapBackbutton:
             self.pathModel.pop()
+        case .search:
+            self.search()
         }
     }
     
@@ -141,5 +144,34 @@ final class MapViewModel: ObservableObject {
     
     private func tapEstate(estateID: String) {
         self.pathModel.push(.detail(estateID: estateID))
+    }
+    
+    private func search() {
+        if self.state.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.state.errorMessage = "올바른 검색어를 입력해주세요."
+            self.state.showErrorAlert = true
+
+            return
+        }
+
+        Task {
+            do {
+                let coord = try await self.service.getCoordinator(query: self.state.searchQuery)
+                await MainActor.run {
+                    self.state.centerLocation = coord.geolocation
+                    self.state.shouldMoveCamera = true
+                }
+            } catch let error as EstateErrorResponseEntity {
+                await MainActor.run {
+                    self.state.errorMessage = error.message
+                    self.state.showErrorAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    self.state.errorMessage = error.localizedDescription
+                    self.state.showErrorAlert = true
+                }
+            }
+        }
     }
 }

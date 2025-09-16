@@ -62,7 +62,7 @@ struct MapView: View {
             .tint(.gray60)
             .submitLabel(.search)
             .onSubmit {
-                
+                self.viewModel.action(.search)
             }
         }
         .foregroundStyle(.gray60)
