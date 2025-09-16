@@ -16,7 +16,7 @@ struct GeocodingDTO: Decodable {
 
 struct MetaDTO: Decodable {
     let totalCount: Int
-    let page: Int
+    let page: Int?
     let count: Int
 }
 
