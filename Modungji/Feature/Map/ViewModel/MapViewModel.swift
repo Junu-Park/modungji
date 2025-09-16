@@ -12,6 +12,7 @@ import NMapsMap
 final class MapViewModel: ObservableObject {
     
     struct State {
+        var currentAddress: String = ""
         var searchQuery: String = ""
         var selectedOptionType: MapOptionType?
         var selectedCategory: EstateCategory?
@@ -66,10 +67,14 @@ final class MapViewModel: ObservableObject {
                         maxDistance: maxDistance
                     )
                     
-                    let result = try await self.service.getEstateWithGeo(entity: entity)
+                    async let listResponse = try await self.service.getEstateWithGeo(entity: entity)
+                    async let addressResponse = try await self.service.getAddress(coords: centerLocation)
+                    
+                    let (list, address) = try await (listResponse, addressResponse)
                     
                     await MainActor.run {
-                        self.state.estateList = result
+                        self.state.estateList = list
+                        self.state.currentAddress = address
                     }
                 } catch let error as EstateErrorResponseEntity {
                     await MainActor.run {

@@ -135,7 +135,7 @@ struct MapView: View {
                         .renderingMode(.template)
                         .frame(width: 24, height: 24)
                     
-                    Text(self.viewModel.state.searchQuery)
+                    Text(self.viewModel.state.currentAddress)
                         .font(PDFont.body1.bold())
                 }
                 .foregroundStyle(.gray75)
