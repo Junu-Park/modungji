@@ -22,6 +22,7 @@ final class MapViewModel: ObservableObject {
         var estateList: [GetEstateWithGeoResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
+        var shouldMoveCamera: Bool = false
     }
     
     enum Action {
@@ -31,7 +32,7 @@ final class MapViewModel: ObservableObject {
         case moveCamera(entity: NaverMapEntity)
         case tapCurrentLocationButton
         case tapEstate(estateID: String)
-        case tapBackbutton
+        case tapBackButton
         case search
     }
     
@@ -95,18 +96,23 @@ final class MapViewModel: ObservableObject {
         case .tapOption(let option):
             self.state.selectedOptionType = option
         case .selectCategory(let category):
-            self.state.selectedCategory = category
+            self.selectCategory(category)
         case .moveCamera(let entity):
             self.moveCamera(entity: entity)
         case .tapCurrentLocationButton:
             self.tapCurrentLocationButton()
         case .tapEstate(let estateID):
             self.tapEstate(estateID: estateID)
-        case .tapBackbutton:
-            self.pathModel.pop()
+        case .tapBackButton:
+            self.tapBackButton()
         case .search:
             self.search()
         }
+    }
+    
+    private func selectCategory(_ category: EstateCategory?) {
+        self.state.selectedCategory = category
+        self.state.shouldMoveCamera = true
     }
     
     private func moveCamera(entity: NaverMapEntity) {
@@ -173,5 +179,11 @@ final class MapViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func tapBackButton() {
+        self.state.estateList.removeAll()
+        self.state.shouldMoveCamera = true
+        self.pathModel.pop()
     }
 }

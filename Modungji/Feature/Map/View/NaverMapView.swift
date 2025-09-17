@@ -8,7 +8,13 @@
 import SwiftUI
 
 import NMapsMap
-
+/*
+ 화면 이동 시,
+ Coordinator -> ViewModel -> NaverMapView
+ 
+ 데이터 변경 시,
+ 부모 뷰 -> ViewModel -> NaverMapView -> Coordinator
+ */
 struct NaverMapView: UIViewRepresentable {
     @ObservedObject var viewModel: MapViewModel
     
@@ -41,14 +47,18 @@ struct NaverMapView: UIViewRepresentable {
                 }
             }
         }
-        
-        var markerList: [MapClusterKey: NSNull] = [:]
-        
-        for entity in self.viewModel.state.estateList {
-            markerList[MapClusterKey(entity: entity)] = NSNull()
+
+        if self.viewModel.state.shouldMoveCamera {
+            self.moveCamera(
+                view: uiView.mapView,
+                latitude: self.viewModel.state.centerLocation.latitude,
+                longitude: self.viewModel.state.centerLocation.longitude
+            )
+
+            self.viewModel.state.shouldMoveCamera = false
         }
-        
-        context.coordinator.cluster.addAll(markerList)
+
+        context.coordinator.setMarkerList()
     }
     
     private func getNaverMapView() -> NMFNaverMapView {
@@ -77,137 +87,143 @@ struct NaverMapView: UIViewRepresentable {
     }
 }
 
-extension NaverMapView {
-    // MARK: - Coordinator
-    final class Coordinator: NSObject, NMFMapViewCameraDelegate {
-
-        var cluster: NMCClusterer<MapClusterKey> = .init()
+// MARK: - Coordinator
+final class Coordinator: NSObject, NMFMapViewCameraDelegate {
+    
+    var cluster: NMCClusterer<MapClusterKey>
+    private weak var viewModel: MapViewModel?
+    private var clusterMarkerUpdater: NMCClusterMarkerUpdater
+    private var leafMarkerUpdater: NMCLeafMarkerUpdater
+    private var thresholdStrategy: NMCThresholdStrategy
+    
+    init(viewModel: MapViewModel) {
+        self.viewModel = viewModel
+        self.clusterMarkerUpdater = ClusterMarkerUpdater()
+        self.leafMarkerUpdater = LeafMarkerUpdater(viewModel: viewModel)
+        self.thresholdStrategy = ThresholdStrategy()
         
-        private var viewModel: MapViewModel
-        private var clusterMarkerUpdater: ClusterMarkerUpdater
-        private var leafMarkerUpdater: LeafMarkerUpdater
-        private var thresholdStrategy: ThresholdStrategy
+        let clusterBuilder = NMCComplexBuilder<MapClusterKey>()
+        clusterBuilder.clusterMarkerUpdater = self.clusterMarkerUpdater
+        clusterBuilder.leafMarkerUpdater = self.leafMarkerUpdater
+        clusterBuilder.thresholdStrategy = self.thresholdStrategy
+        clusterBuilder.minClusteringZoom = 10
+        clusterBuilder.maxClusteringZoom = 18
+        self.cluster = clusterBuilder.build()
         
-        init(viewModel: MapViewModel) {
-            self.viewModel = viewModel
-            self.clusterMarkerUpdater = ClusterMarkerUpdater()
-            self.leafMarkerUpdater = LeafMarkerUpdater(viewModel: viewModel)
-            self.thresholdStrategy = ThresholdStrategy()
-            
-            super.init()
-            
-            let clusterBuilder = NMCComplexBuilder<MapClusterKey>()
-            clusterBuilder.clusterMarkerUpdater = self.clusterMarkerUpdater
-            clusterBuilder.leafMarkerUpdater = self.leafMarkerUpdater
-            clusterBuilder.thresholdStrategy = self.thresholdStrategy
-            clusterBuilder.minClusteringZoom = 10
-            clusterBuilder.maxClusteringZoom = 18
-            self.cluster = clusterBuilder.build()
-        }
-        
-        func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
-            
-            self.dismissKeyboard()
-
-            if !self.cluster.empty {
-                self.cluster.clear()
-            }
-            
-            let centerLocation = GeolocationEntity(latitude: mapView.latitude, longitude: mapView.longitude)
-            let southLocation = GeolocationEntity(latitude: mapView.contentBounds.southWestLat, longitude: mapView.longitude)
-            let entity = NaverMapEntity(
-                centerLocation: centerLocation,
-                southLocation: southLocation,
-                zoomLevel: mapView.zoomLevel
-            )
-            self.viewModel.action(.moveCamera(entity: entity))
-        }
-        
-        private func dismissKeyboard() {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
+        super.init()
     }
     
-    // MARK: - ClusterMarkerUpdater
-    final class ClusterMarkerUpdater: NSObject, NMCClusterMarkerUpdater {
-        func updateClusterMarker(_ info: NMCClusterMarkerInfo, _ marker: NMFMarker) {
-            marker.iconImage = NMFOverlayImage(image: MapClusterMarkerView(count: info.size).converToUIImage())
-            marker.touchHandler = { overlay in
-                return true
-            }
+    func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
+        
+        self.dismissKeyboard()
+        
+        if !self.cluster.empty {
+            self.cluster.clear()
         }
-    }
-    
-    // MARK: - LeafMarkerUpdater
-    final class LeafMarkerUpdater: NSObject, NMCLeafMarkerUpdater {
-        private weak var viewModel: MapViewModel?
-        private var defaultLeafMarkerImage: NMFOverlayImage = NMFOverlayImage(
-            image: DefaultMapLeafMakerView().converToUIImage(),
-            reuseIdentifier: "DefaultMapLeafMakerImage"
+        
+        let centerLocation = GeolocationEntity(latitude: mapView.latitude, longitude: mapView.longitude)
+        let southLocation = GeolocationEntity(latitude: mapView.contentBounds.southWestLat, longitude: mapView.longitude)
+        let entity = NaverMapEntity(
+            centerLocation: centerLocation,
+            southLocation: southLocation,
+            zoomLevel: mapView.zoomLevel
         )
-        
-        init(viewModel: MapViewModel) {
-            self.viewModel = viewModel
-            super.init()
+        self.viewModel?.action(.moveCamera(entity: entity))
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    func setMarkerList() {
+        var list: [MapClusterKey: NSNull] = [:]
+        for entity in self.viewModel?.state.estateList ?? [] {
+            list[MapClusterKey(entity: entity)] = NSNull()
         }
         
-        func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
-            guard let key = info.key as? MapClusterKey else { return }
-            
-            marker.iconImage = self.defaultLeafMarkerImage
-            
-            marker.touchHandler = { [weak self] overlay in
-                self?.viewModel?.action(.tapEstate(estateID: key.entity.estateId))
-                return true
-            }
-            
-            Task {
-                do {
-                    let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.File.file(urlString: key.entity.thumbnail))
-                    
-                    switch response {
-                    case .success(let success):
-                        if let loadedImage = UIImage(data: success) {
-                            await MainActor.run {
-                                marker.iconImage = NMFOverlayImage(
-                                    image: MapLeafMarkerView(
-                                        image: loadedImage,
-                                        deposit: key.entity.deposit,
-                                        monthlyRent: key.entity.monthlyRent
-                                    ).converToUIImage(),
-                                    reuseIdentifier: key.entity.estateId
-                                )
-                            }
+        self.cluster.addAll(list)
+    }
+}
+
+// MARK: - ClusterMarkerUpdater
+final class ClusterMarkerUpdater: NSObject, NMCClusterMarkerUpdater {
+    func updateClusterMarker(_ info: NMCClusterMarkerInfo, _ marker: NMFMarker) {
+        marker.iconImage = NMFOverlayImage(image: MapClusterMarkerView(count: info.size).converToUIImage())
+        marker.touchHandler = { overlay in
+            return true
+        }
+    }
+}
+
+// MARK: - LeafMarkerUpdater
+final class LeafMarkerUpdater: NSObject, NMCLeafMarkerUpdater {
+    private weak var viewModel: MapViewModel?
+    private var defaultLeafMarkerImage: NMFOverlayImage = NMFOverlayImage(
+        image: DefaultMapLeafMakerView().converToUIImage(),
+        reuseIdentifier: "DefaultMapLeafMakerImage"
+    )
+    
+    init(viewModel: MapViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
+    func updateLeafMarker(_ info: NMCLeafMarkerInfo, _ marker: NMFMarker) {
+        guard let key = info.key as? MapClusterKey else { return }
+        
+        marker.iconImage = self.defaultLeafMarkerImage
+        
+        marker.touchHandler = { [weak self] overlay in
+            self?.viewModel?.action(.tapEstate(estateID: key.entity.estateId))
+            return true
+        }
+        
+        Task {
+            do {
+                let response = try await NetworkManager().requestEstate(requestURL: EstateRouter.File.file(urlString: key.entity.thumbnail))
+                
+                switch response {
+                case .success(let success):
+                    if let loadedImage = UIImage(data: success) {
+                        await MainActor.run {
+                            marker.iconImage = NMFOverlayImage(
+                                image: MapLeafMarkerView(
+                                    image: loadedImage,
+                                    deposit: key.entity.deposit,
+                                    monthlyRent: key.entity.monthlyRent
+                                ).converToUIImage(),
+                                reuseIdentifier: key.entity.estateId
+                            )
                         }
-                    case .failure:
-                        break
                     }
-                } catch {
-                    print(error)
+                case .failure:
+                    break
                 }
+            } catch {
+                print(error)
             }
         }
     }
-    
-    // MARK: - ThresholdStrategy
-    final class ThresholdStrategy: NSObject, NMCThresholdStrategy {
-        func getThreshold(_ zoom: Int) -> Double {
-            switch zoom {
-            case ...10:
-                return 75
-            case 11...12:
-                return 80
-            case 13...14:
-                return 85
-            case 15...16:
-                return 90
-            case 17...18:
-                return 95
-            case 19...:
-                return 100
-            default:
-                return 70
-            }
+}
+
+// MARK: - ThresholdStrategy
+final class ThresholdStrategy: NSObject, NMCThresholdStrategy {
+    func getThreshold(_ zoom: Int) -> Double {
+        switch zoom {
+        case ...10:
+            return 75
+        case 11...12:
+            return 80
+        case 13...14:
+            return 85
+        case 15...16:
+            return 90
+        case 17...18:
+            return 95
+        case 19...:
+            return 100
+        default:
+            return 70
         }
     }
 }
