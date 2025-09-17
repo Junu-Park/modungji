@@ -120,7 +120,7 @@ struct MapView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    self.viewModel.action(.tapBackbutton)
+                    self.viewModel.action(.tapBackButton)
                 } label: {
                     Image(.chevron)
                         .renderingMode(.template)
