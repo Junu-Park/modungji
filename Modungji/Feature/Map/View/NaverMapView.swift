@@ -55,7 +55,9 @@ struct NaverMapView: UIViewRepresentable {
                 longitude: self.viewModel.state.centerLocation.longitude
             )
 
-            self.viewModel.state.shouldMoveCamera = false
+            DispatchQueue.main.async {
+                self.viewModel.state.shouldMoveCamera = false
+            }
         }
 
         context.coordinator.setMarkerList()
