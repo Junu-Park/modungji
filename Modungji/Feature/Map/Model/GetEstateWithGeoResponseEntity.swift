@@ -19,4 +19,8 @@ struct GetEstateWithGeoResponseEntity: Equatable {
     let geolocation: GeolocationEntity
     let distance: Double?
     var address: String = ""
+    
+    var squareMeter: Double {
+        self.area * 3.3058
+    }
 }

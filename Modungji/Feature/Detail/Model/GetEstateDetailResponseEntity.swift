@@ -34,6 +34,10 @@ struct GetEstateDetailResponseEntity {
     let createdAt: String
     let updatedAt: String
     var address: String
+    
+    var squareMeter: Double {
+        self.area * 3.3058
+    }
 }
 
 struct EstateOptionEntity {

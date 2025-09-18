@@ -280,7 +280,7 @@ struct MapView: View {
                 Text("월세 \(estate.deposit.convertPriceToString())/\(estate.monthlyRent.convertPriceToString())")
                     .font(PDFont.title1.bold())
                     .foregroundStyle(.gray90)
-                Text("\(String(format: "%0.1f", estate.area))㎡ • \(estate.floors)층")
+                Text("\(String(format: "%0.1f", estate.squareMeter))㎡ • \(estate.floors)층")
                     .font(PDFont.caption1)
                     .foregroundStyle(.gray60)
                 Text(estate.address)

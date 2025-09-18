@@ -297,7 +297,7 @@ extension MainView {
                     .font(PDFont.body1)
                     .foregroundStyle(.gray0)
                 
-                Text("\(estate.address) \(String(format: "%0.1f",estate.area))㎡")
+                Text("\(estate.address) \(String(format: "%0.1f",estate.squareMeter))㎡")
                     .font(PDFont.caption2)
                     .foregroundStyle(.gray45)
                     .padding(.top, 16)

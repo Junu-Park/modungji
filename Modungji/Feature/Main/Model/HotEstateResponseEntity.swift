@@ -19,4 +19,8 @@ struct HotEstateResponseEntity {
     let area: Double
     let likeCount: Int
     let isRecommended: Bool
+    
+    var squareMeter: Double {
+        self.area * 3.3058
+    }
 }

@@ -68,7 +68,7 @@ struct DetailView: View {
                                         .font(PDFont.title1)
                                 }
                                 
-                                Text("관리비 \(self.viewModel.state.detailData.maintenanceFee.convertPriceToString()) • \(String(format: "%.1f", self.viewModel.state.detailData.area))㎡")
+                                Text("관리비 \(self.viewModel.state.detailData.maintenanceFee.convertPriceToString()) • \(String(format: "%.1f", self.viewModel.state.detailData.squareMeter))㎡")
                             }
                             .foregroundStyle(.gray60)
                             .font(PDFont.body2)
