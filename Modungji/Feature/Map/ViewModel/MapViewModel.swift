@@ -30,6 +30,7 @@ final class MapViewModel: ObservableObject {
         case tapOption(option: MapOptionType?)
         case selectCategory(category: EstateCategory?)
         case moveCamera(entity: NaverMapEntity)
+        case completeMoveCamera
         case tapCurrentLocationButton
         case tapEstate(estateID: String)
         case tapBackButton
@@ -107,6 +108,8 @@ final class MapViewModel: ObservableObject {
             self.tapBackButton()
         case .search:
             self.search()
+        case .completeMoveCamera:
+            self.state.shouldMoveCamera = false
         }
     }
     

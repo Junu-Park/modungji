@@ -181,8 +181,10 @@ struct PDFPreviewView: View {
         let documentPicker = UIDocumentPickerViewController(forExporting: [createTemporaryFile(data: data, fileName: fileName)])
         documentPicker.modalPresentationStyle = .formSheet
         
-        // 약간의 딜레이를 주어 present 충돌 방지
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        Task { @MainActor in
+            // present 충돌 방지를 위한 딜레이
+            try? await Task.sleep(for: .seconds(0.1))
+            
             self.findTopViewController()?.present(documentPicker, animated: true)
         }
     }

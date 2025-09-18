@@ -38,7 +38,9 @@ struct NaverMapView: UIViewRepresentable {
         if uiView.mapView.positionMode != viewModelMode {
             uiView.mapView.positionMode = viewModelMode
             if self.viewModel.state.showCurrentLocationMarker {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                Task {
+                    try? await Task.sleep(for: .seconds(0.01))
+                    
                     self.moveCamera(
                         view: uiView.mapView,
                         latitude: uiView.mapView.locationOverlay.location.lat,
@@ -55,9 +57,7 @@ struct NaverMapView: UIViewRepresentable {
                 longitude: self.viewModel.state.centerLocation.longitude
             )
 
-            DispatchQueue.main.async {
-                self.viewModel.state.shouldMoveCamera = false
-            }
+            self.viewModel.action(.completeMoveCamera)
         }
 
         context.coordinator.setMarkerList()

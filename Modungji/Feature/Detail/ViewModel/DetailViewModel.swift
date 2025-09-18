@@ -98,10 +98,8 @@ final class DetailViewModel: ObservableObject {
                 self.state.isLoading = true
                 self.state.detailData = try await self.service.getEstateDetail(estateID: self.estateID)
             } catch let error as EstateErrorResponseEntity {
-                await MainActor.run {
-                    self.state.errorMessage = error.message
-                    self.state.showErrorAlert = true
-                }
+                self.state.errorMessage = error.message
+                self.state.showErrorAlert = true
             }
         }
     }
@@ -156,62 +154,44 @@ final class DetailViewModel: ObservableObject {
     }
     
     private func paymentValidation(iamportResponse: IamportResponse?) {
-        
-        DispatchQueue.main.async {
-            self.state.isProgressPayment = false
-        }
-        
-        guard let iamportResponse else {
-            DispatchQueue.main.async {
+        Task { @MainActor in
+            defer {
                 self.state.isLoading = false
-                
+            }
+            
+            self.state.isProgressPayment = false
+            
+            guard let iamportResponse else {
                 self.state.errorMessage = "Iamport is stopped"
                 self.state.showErrorAlert = true
+                
+                return
             }
             
-            return
-        }
-        
-        guard let isSuccess = iamportResponse.success, isSuccess else {
-            DispatchQueue.main.async {
-                self.state.isLoading = false
-                
+            guard let isSuccess = iamportResponse.success, isSuccess else {
                 self.state.errorMessage = "Iamport is failed"
                 self.state.showErrorAlert = true
+                
+                return
             }
             
-            return
-        }
-        
-        guard let impUID = iamportResponse.imp_uid else {
-            DispatchQueue.main.async {
-                self.state.isLoading = false
-                
+            guard let impUID = iamportResponse.imp_uid else {
                 self.state.errorMessage = "Iamport impUID is nil"
                 self.state.showErrorAlert = true
-            }
-            
-            return
-        }
-        
-        Task {
-            defer {
-                DispatchQueue.main.async {
-                    self.state.isLoading = false
-                }
+                
+                return
             }
             
             do {
                 let response = try await self.service.validatePayment(impUID: impUID)
                 
-                await MainActor.run {
-                    self.state.detailData.isReserved = response
-                }
+                self.state.detailData.isReserved = response
             } catch let error as EstateErrorResponseEntity {
-                await MainActor.run {
-                    self.state.errorMessage = error.message
-                    self.state.showErrorAlert = true
-                }
+                self.state.errorMessage = error.message
+                self.state.showErrorAlert = true
+            } catch {
+                self.state.errorMessage = error.localizedDescription
+                self.state.showErrorAlert = true
             }
         }
     }
