@@ -19,7 +19,7 @@ final class MapViewModel: ObservableObject {
         var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
         var maxDistance: Int?
         var showCurrentLocationMarker: Bool = false
-        var estateList: [GetEstateWithGeoResponseEntity] = []
+        var filteredEstateList: [GetEstateWithGeoResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
         var shouldMoveCamera: Bool = false
@@ -41,6 +41,7 @@ final class MapViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     private let service: MapService
     private let pathModel: PathModel
+    private var estateList: [GetEstateWithGeoResponseEntity] = []
     
     init(service: MapService, pathModel: PathModel, selectedCategory: EstateCategory? = nil) {
         self.service = service
@@ -64,19 +65,23 @@ final class MapViewModel: ObservableObject {
             Task {
                 do {
                     let entity = GetEstateWithGeoRequestEntity(
-                        category: category,
+                        category: nil,
                         longitude: centerLocation.longitude,
                         latitude: centerLocation.latitude,
                         maxDistance: maxDistance
                     )
                     
-                    async let listResponse = try await self.service.getEstateWithGeo(entity: entity)
-                    async let addressResponse = try await self.service.getAddress(coords: centerLocation)
+                    async let listResponse = self.service.getEstateWithGeo(entity: entity)
+                    async let addressResponse = self.service.getAddress(coords: centerLocation)
                     
                     let (list, address) = try await (listResponse, addressResponse)
                     
+                    self.estateList = list
+                    
                     await MainActor.run {
-                        self.state.estateList = list
+                        self.state.filteredEstateList = self.estateList.filter { entity in
+                            entity.category == self.state.selectedCategory?.rawValue
+                        }
                         self.state.currentAddress = address
                     }
                 } catch let error as EstateErrorResponseEntity {
@@ -119,8 +124,8 @@ final class MapViewModel: ObservableObject {
     }
     
     private func moveCamera(entity: NaverMapEntity) {
-        if !self.state.estateList.isEmpty {
-            self.state.estateList.removeAll()
+        if !self.state.filteredEstateList.isEmpty {
+            self.state.filteredEstateList.removeAll()
         }
         
         self.state.centerLocation = entity.centerLocation
@@ -185,7 +190,7 @@ final class MapViewModel: ObservableObject {
     }
     
     private func tapBackButton() {
-        self.state.estateList.removeAll()
+        self.state.filteredEstateList.removeAll()
         self.state.shouldMoveCamera = true
         self.pathModel.pop()
     }

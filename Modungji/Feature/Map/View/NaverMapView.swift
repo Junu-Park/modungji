@@ -139,7 +139,7 @@ final class Coordinator: NSObject, NMFMapViewCameraDelegate {
     
     func setMarkerList() {
         var list: [MapClusterKey: NSNull] = [:]
-        for entity in self.viewModel?.state.estateList ?? [] {
+        for entity in self.viewModel?.state.filteredEstateList ?? [] {
             list[MapClusterKey(entity: entity)] = NSNull()
         }
         

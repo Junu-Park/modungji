@@ -106,14 +106,14 @@ struct MapView: View {
                             }
                             .padding(.trailing, 20)
                             
-                            if !self.viewModel.state.estateList.isEmpty {
+                            if !self.viewModel.state.filteredEstateList.isEmpty {
                                 self.buildEstateInfoList()
                             }
                         }
                         .padding(.bottom, self.safeAreaBottomPadding)
                     }
                 }
-                .animation(.default, value: self.viewModel.state.estateList)
+                .animation(.default, value: self.viewModel.state.filteredEstateList)
         }
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden()
@@ -248,7 +248,7 @@ struct MapView: View {
     private func buildEstateInfoList() -> some View {
         ScrollView(.horizontal) {
             LazyHStack(spacing: 12) {
-                ForEach(self.viewModel.state.estateList, id: \.estateId) { estate in
+                ForEach(self.viewModel.state.filteredEstateList, id: \.estateId) { estate in
                     Button {
                         self.viewModel.action(.tapEstate(estateID: estate.estateId))
                     } label:{
