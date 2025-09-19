@@ -81,14 +81,16 @@ struct MapView: View {
             NaverMapView(viewModel: self.viewModel)
                 .overlay {
                     VStack {
-                        HStack(spacing: 4) {
-                            ForEach(MapOptionType.allCases, id: \.self) { option in
-                                self.buildOption(option)
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 4) {
+                                ForEach(MapOptionType.allCases, id: \.self) { option in
+                                    self.buildOption(option)
+                                }
                             }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
                         }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .scrollIndicators(.hidden)
                         
                         if self.viewModel.state.selectedOptionType != nil {
                             self.buildOptionView()
@@ -114,6 +116,7 @@ struct MapView: View {
                     }
                 }
                 .animation(.default, value: self.viewModel.state.filteredEstateList)
+                .animation(.default, value: self.viewModel.state.selectedOptionType)
         }
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden()
