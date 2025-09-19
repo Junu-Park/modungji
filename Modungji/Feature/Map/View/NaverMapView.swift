@@ -60,7 +60,9 @@ struct NaverMapView: UIViewRepresentable {
             self.viewModel.action(.completeMoveCamera)
         }
 
-        context.coordinator.setMarkerList()
+        if self.viewModel.state.shouldReloadData {
+            context.coordinator.setMarkerList()
+        }
     }
     
     private func getNaverMapView() -> NMFNaverMapView {
@@ -118,6 +120,7 @@ final class Coordinator: NSObject, NMFMapViewCameraDelegate {
     func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
         
         self.dismissKeyboard()
+        self.viewModel?.state.selectedOptionType = nil
         
         if !self.cluster.empty {
             self.cluster.clear()
@@ -138,12 +141,18 @@ final class Coordinator: NSObject, NMFMapViewCameraDelegate {
     }
     
     func setMarkerList() {
+        if !cluster.empty {
+            self.cluster.clear()
+        }
+        
         var list: [MapClusterKey: NSNull] = [:]
         for entity in self.viewModel?.state.filteredEstateList ?? [] {
             list[MapClusterKey(entity: entity)] = NSNull()
         }
         
         self.cluster.addAll(list)
+        
+        self.viewModel?.action(.completeReloadData)
     }
 }
 

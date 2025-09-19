@@ -162,16 +162,16 @@ struct MapView: View {
     @ViewBuilder
     private func buildOption(_ option: MapOptionType) -> some View {
         let isSelected = self.viewModel.state.selectedOptionType == option
-        let title: String? = {
+        let title: String = {
             switch option {
             case .category:
-                return self.viewModel.state.selectedCategory?.rawValue
+                return self.viewModel.state.selectedCategory?.rawValue ?? "\(option.rawValue) 선택"
             case .area:
-                return nil
+                return self.convertAreaLevel(lv: self.viewModel.state.selectedMaxAreaLevel)
             case .monthlyRent:
-                return nil
+                return "월세: " + self.convertMonthlyRentLevel(lv: self.viewModel.state.selectedMaxMonthlyRentLevel)
             case .deposit:
-                return nil
+                return "보증금: " + self.convertDepositLevel(lv: self.viewModel.state.selectedMaxDepositLevel)
             }
         }()
         
@@ -180,7 +180,7 @@ struct MapView: View {
                 self.viewModel.action(.tapOption(option: isSelected ? nil : option))
             }
         } label: {
-            Text(title ?? "\(option.rawValue) 선택")
+            Text(title)
                 .font(PDFont.body2)
                 .bold(isSelected)
                 .foregroundStyle(isSelected ? .brightWood : .gray75)
@@ -204,11 +204,11 @@ struct MapView: View {
         case .category:
             self.buildCategoryOption()
         case .area:
-            EmptyView()
+            self.buildAreaOption()
         case .monthlyRent:
-            EmptyView()
+            self.buildMonthlyRentOption()
         case .deposit:
-            EmptyView()
+            self.buildDepositOption()
         case .none:
             EmptyView()
         }
@@ -243,6 +243,150 @@ struct MapView: View {
                     .foregroundStyle(isSelected ? .brightWood : .gray75)
                     .font(PDFont.body3)
                     .bold(isSelected)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildAreaOption() -> some View {
+        VStack(spacing: 0) {
+            Text("\(self.convertAreaLevel(lv: self.viewModel.state.selectedMaxAreaLevel))")
+                .font(PDFont.caption1.bold())
+                .foregroundStyle(.gray100)
+            
+            Slider(value: self.$viewModel.state.selectedMaxAreaLevel, in: 0...10, step: 1)
+            .tint(.brightWood)
+            
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("1평")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("25평")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("50평")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildMonthlyRentOption() -> some View {
+        VStack(spacing: 0) {
+            Text("\(self.convertMonthlyRentLevel(lv: self.viewModel.state.selectedMaxMonthlyRentLevel))")
+                .font(PDFont.caption1.bold())
+                .foregroundStyle(.gray100)
+            
+            Slider(value: self.$viewModel.state.selectedMaxMonthlyRentLevel, in: 0...12, step: 1)
+            .tint(.brightWood)
+            
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("0원")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("60만원")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("제한없음")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildDepositOption() -> some View {
+        VStack(spacing: 0) {
+            Text("\(self.convertDepositLevel(lv: self.viewModel.state.selectedMaxDepositLevel))")
+                .font(PDFont.caption1.bold())
+                .foregroundStyle(.gray100)
+            
+            Slider(value: self.$viewModel.state.selectedMaxDepositLevel, in: 0...22, step: 1)
+            .tint(.brightWood)
+            
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("0원")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("2천만원")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
+                
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 1, height: 5)
+                        .foregroundStyle(.gray60)
+                    Text("제한없음")
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.gray60)
+                }
+                .frame(minWidth: 35)
             }
         }
     }
@@ -293,5 +437,39 @@ struct MapView: View {
         }
         .padding(16)
         .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: .gray0, borderColor: .clear, shadowRadius: 5)
+    }
+    
+    private func convertAreaLevel(lv: Double) -> String {
+        let str: String
+        switch Int(lv) {
+        case 1...10: str = "\(Int(lv) * 5)평 이상"
+        default: str = "1평 이상"
+        }
+        return str
+    }
+    
+    private func convertMonthlyRentLevel(lv: Double) -> String {
+        let str: String
+        switch Int(lv) {
+        case 1...11: str = "\(Int(lv) * 10)만 이하"
+        case 12...: str = "제한 없음"
+        default: str = "0원"
+        }
+        return str
+    }
+    
+    private func convertDepositLevel(lv: Double) -> String {
+        let str: String
+        switch Int(lv) {
+        case 1...10: str = "\(Int(lv) * 100)만 이하"
+        case 11...18: str =  "\((Int(lv / 10) + Int(lv) % Int(10)))천 이하"
+        case 19: str = "1억 이하"
+        case 20: str = "1억 5천 이하"
+        case 21: str = "2억 이하"
+        case 22: str = "제한 없음"
+        default: str = "0원"
+        }
+        
+        return str
     }
 }
