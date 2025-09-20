@@ -34,7 +34,7 @@ struct RootView: View {
                             }
                             .tag(1)
                         
-                        Text("설정")
+                        self.pathModel.build(.setting)
                             .tabItem {
                                 self.tabItem(.setting)
                             }

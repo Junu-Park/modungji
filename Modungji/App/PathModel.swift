@@ -177,6 +177,22 @@ final class PathModel: NSObject, ObservableObject {
             }()
             
             ChatRoomListView(viewModel: viewModel)
+        case .setting:
+            let viewModel: SettingViewModel = {
+                if let vm = self.viewModelList["SettingViewModel"] as? SettingViewModel {
+                    return vm
+                } else {
+                    let vm = SettingViewModel(
+                        authState: self.diContainer.state.authState,
+                        service: self.diContainer.service.settingService
+                    )
+                    self.viewModelList["SettingViewModel"] = vm
+                    
+                    return vm
+                }
+            }()
+            
+            SettingView(viewModel: viewModel)
         }
     }
     

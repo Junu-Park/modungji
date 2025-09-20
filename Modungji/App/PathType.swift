@@ -15,4 +15,5 @@ enum PathType: Hashable {
     case detail(estateID: String)
     case chat(opponentID: String = "", roomID: String = "")
     case chatRoomList
+    case setting
 }
