@@ -45,6 +45,9 @@ struct RootView: View {
                         .onOpenURL { url in
                             self.handleRedirectUrl(url)
                         }
+                        .onAppear {
+                            self.pathModel.selectedTab = 0
+                        }
                 }
             }
             .navigationDestination(for: PathType.self) { path in
