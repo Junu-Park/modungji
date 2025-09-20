@@ -12,6 +12,7 @@ struct KeychainManager {
     
     enum TokenType: String {
         case userID
+        case authPlatform
         case accessToken
         case refreshToken
         case deviceToken

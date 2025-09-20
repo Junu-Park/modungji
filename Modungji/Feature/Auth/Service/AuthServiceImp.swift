@@ -52,7 +52,7 @@ struct AuthServiceImp: AuthService {
             
             let response = try await self.repository.authWithApple(request: request)
             
-            try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
+            try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id, authPlatform: .apple)
             
             return response
             
@@ -64,7 +64,7 @@ struct AuthServiceImp: AuthService {
     func authWithKakao() async throws -> LoginResponseEntity {
         let response = try await self.repository.authWithKakao()
 
-        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
+        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id, authPlatform: .kakao)
         
         return response
     }
@@ -75,7 +75,7 @@ struct AuthServiceImp: AuthService {
         let requestDTO = LoginWithEmailRequestDTO(email: request.email, password: request.password, deviceToken: deviceToken)
         let response = try await self.repository.loginWithEmail(request: requestDTO)
         
-        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id)
+        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: response.user_id, authPlatform: .email)
         
         return response
     }
@@ -108,7 +108,7 @@ struct AuthServiceImp: AuthService {
     func authWithAuto() async throws -> RefreshResponseEntity {
         let response = try await self.repository.authWithAuto()
         let userID = try KeychainManager().get(tokenType: .userID)
-        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: userID)
+        try self.repository.saveLoginData(accessToken: response.accessToken, refreshToken: response.refreshToken, userID: userID, authPlatform: .email)
         
         let deviceToken = try KeychainManager().get(tokenType: .deviceToken)
         let body = UpdateDeviceTokenRequestDTO(deviceToken: deviceToken)

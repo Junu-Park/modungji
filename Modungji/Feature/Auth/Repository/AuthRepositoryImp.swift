@@ -78,11 +78,12 @@ struct AuthRepositoryImp: AuthRepository {
         }
     }
     
-    func saveLoginData(accessToken: String, refreshToken: String, userID: String) throws {
+    func saveLoginData(accessToken: String, refreshToken: String, userID: String, authPlatform: AuthPlatformType) throws {
         do {
             try self.keychainManager.save(tokenType: .accessToken, token: accessToken)
             try self.keychainManager.save(tokenType: .refreshToken, token: refreshToken)
             try self.keychainManager.save(tokenType: .userID, token: userID)
+            try self.keychainManager.save(tokenType: .authPlatform, token: authPlatform.rawValue)
         } catch {
             throw EstateErrorResponseEntity(message: "로그인 정보 저장 실패")
         }
