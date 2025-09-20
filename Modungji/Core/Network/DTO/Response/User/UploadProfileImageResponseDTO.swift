@@ -9,4 +9,8 @@ import Foundation
 
 struct UploadProfileImageResponseDTO: Decodable {
     let profileImage: String
+    
+    func convertToEntity() -> UploadProfileImageResponseEntity {
+        return .init(imageURL: self.profileImage)
+    }
 }

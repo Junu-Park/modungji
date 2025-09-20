@@ -64,7 +64,7 @@ struct ChatRepositoryImp: ChatRepository {
     
     func uploadFiles(roomID: String, entity: [UploadFilesRequestEntity]) async throws ->  UploadFilesResponseEntity {
         
-        let dto = entity.map { UploadFilesRequestDTO(data: $0.data, key: $0.key, name: $0.name, type: $0.type.typeString) }
+        let dto = entity.map { $0.convertToDTO() }
         
         let response = try await self.networkManager.requestEstateMultipartFiles(requestURL: EstateRouter.Chat.uploadFiles(roomID: roomID), dto: dto, successDecodingType: UploadFilesResponseDTO.self)
         

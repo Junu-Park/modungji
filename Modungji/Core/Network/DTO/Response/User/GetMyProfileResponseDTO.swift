@@ -15,4 +15,15 @@ struct GetMyProfileResponseDTO: Decodable {
     let introduction: String?
     let profileImage: String?
     let phoneNum: String?
+    
+    func convertToEntity() -> GetMyProfileResponseEntity {
+        return .init(
+            userID: self.user_id,
+            email: self.email ?? "",
+            nickname: self.nick,
+            introduction: self.introduction ?? "",
+            profileImage: self.profileImage ?? "",
+            phoneNumber: self.phoneNum ?? ""
+        )
+    }
 }

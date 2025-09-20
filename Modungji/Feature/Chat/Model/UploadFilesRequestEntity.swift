@@ -12,4 +12,8 @@ struct UploadFilesRequestEntity {
     let key: String
     let name: String
     let type: MultipartType
+    
+    func convertToDTO() -> UploadFilesRequestDTO {
+        return .init(data: self.data, key: self.key, name: self.name, type: self.type.typeString)
+    }
 }
