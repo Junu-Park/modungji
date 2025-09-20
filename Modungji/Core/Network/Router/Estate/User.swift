@@ -17,6 +17,7 @@ extension EstateRouter {
         case loginWithEmail(body: LoginWithEmailRequestDTO)
         case loginWithKakao(body: LoginWithKakaoRequestDTO)
         case loginWithApple(body: LoginWithAppleRequestDTO)
+        case logout
         case updateDeviceToken(body: UpdateDeviceTokenRequestDTO)
         case getOtherProfile(userId: String)
         case getMyProfile
@@ -39,6 +40,8 @@ extension EstateRouter {
                 return "login/kakao"
             case .loginWithApple:
                 return "login/apple"
+            case .logout:
+                return "logout"
             case .updateDeviceToken:
                 return "deviceToken"
             case .getOtherProfile(let userId):
@@ -54,7 +57,7 @@ extension EstateRouter {
         
         var method: HTTPMethod {
             switch self {
-            case .validateEmail, .join, .loginWithEmail, .loginWithKakao, .loginWithApple, .uploadProfileImage:
+            case .validateEmail, .join, .loginWithEmail, .loginWithKakao, .loginWithApple, .logout, .uploadProfileImage:
                 return .post
             case .updateDeviceToken, .updateMyProfile:
                 return .put
@@ -86,7 +89,7 @@ extension EstateRouter {
                 return dto
             case .updateMyProfile(let dto):
                 return dto
-            case .getOtherProfile, .getMyProfile, .uploadProfileImage:
+            case .getOtherProfile, .getMyProfile, .uploadProfileImage, .logout:
                 return nil
             }
         }
