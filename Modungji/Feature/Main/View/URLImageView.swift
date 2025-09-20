@@ -31,8 +31,8 @@ struct URLImageView<Placeholder: View>: View {
                 }
             }
         }
-        .task {
-            if !self.urlString.isEmpty, self.uiImage == nil {
+        .task(id: urlString) {
+            if !self.urlString.isEmpty {
                 self.uiImage = await ImageCacheManager.shared.getImage(urlString: urlString)
             }
         }
@@ -61,6 +61,12 @@ final class ImageCacheManager {
         }
         
         return cacheImage
+    }
+    
+    func removeImage(urlString: String) {
+        let cacheKey = NSString(string: urlString)
+        
+        cache.removeObject(forKey: cacheKey)
     }
     
     private func getImageFromURL(urlString: String) async throws -> UIImage? {
