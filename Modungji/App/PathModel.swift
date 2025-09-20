@@ -179,6 +179,24 @@ final class PathModel: NSObject, ObservableObject {
             ChatRoomListView(viewModel: viewModel)
         }
     }
+    
+    func authWithAuto() {
+        let viewModel: AuthViewModel = {
+            if let vm = self.viewModelList["AuthViewModel"] as? AuthViewModel {
+                return vm
+            } else {
+                let vm = AuthViewModel(
+                    service: self.diContainer.service.authService,
+                    authState: self.diContainer.state.authState
+                )
+                self.viewModelList["AuthViewModel"] = vm
+                
+                return vm
+            }
+        }()
+        
+        viewModel.action(.authWithAuto)
+    }
 }
 
 extension PathModel: UNUserNotificationCenterDelegate {

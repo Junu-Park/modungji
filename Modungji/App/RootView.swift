@@ -51,6 +51,9 @@ struct RootView: View {
                 self.pathModel.build(path)
             }
         }
+        .onAppear {
+            self.pathModel.authWithAuto()
+        }
     }
     
     private func handleRedirectUrl(_ url: URL) {

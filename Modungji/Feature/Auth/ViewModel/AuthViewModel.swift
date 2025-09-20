@@ -11,7 +11,7 @@ import AuthenticationServices
 final class AuthViewModel: ObservableObject {
     
     struct State {
-        var isAutoLogin: Bool = true
+        var isAutoLogin: Bool = false
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
     }
@@ -76,6 +76,12 @@ final class AuthViewModel: ObservableObject {
     private func authWithAuto() {
         Task {
             do {
+                let refresh = try? KeychainManager().get(tokenType: .refreshToken)
+                
+                if refresh == nil {
+                    return
+                }
+                
                 await MainActor.run {
                     self.state.isAutoLogin = true
                 }
