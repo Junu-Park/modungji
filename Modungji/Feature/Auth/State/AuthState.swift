@@ -32,6 +32,10 @@ final class AuthState: ObservableObject {
         self.isLogin = true
     }
     
+    func logout() {
+        self.handleExpiredRefreshToken()
+    }
+    
     @objc private func handleExpiredRefreshToken() {
         Task {
             await MainActor.run {
