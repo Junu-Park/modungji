@@ -23,7 +23,7 @@ struct SettingRepositoryImp: SettingRepository {
         case .success(let success):
             return success.convertToEntity()
         case .failure(let failure):
-            throw failure
+            throw EstateErrorResponseEntity(message: failure.message)
         }
     }
     
@@ -40,7 +40,7 @@ struct SettingRepositoryImp: SettingRepository {
         case .success(let success):
             return success.convertToEntity()
         case .failure(let failure):
-            throw failure
+            throw EstateErrorResponseEntity(message: failure.message)
         }
     }
     
@@ -51,7 +51,7 @@ struct SettingRepositoryImp: SettingRepository {
         case .success(let success):
             return success.convertToEntity()
         case .failure(let failure):
-            throw failure
+            throw EstateErrorResponseEntity(message: failure.message)
         }
     }
     
