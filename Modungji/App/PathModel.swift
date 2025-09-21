@@ -20,6 +20,10 @@ final class PathModel: NSObject, ObservableObject {
                 self.viewModelList.removeValue(forKey: "MapViewModel")
             }
             
+            if let last = self.pathStack.last, case .estateList(_, _, _) = last {
+                self.viewModelList.removeValue(forKey: "EstateListViewModel")
+            }
+            
             self.pathStack.removeLast()
         }
     }
@@ -193,6 +197,20 @@ final class PathModel: NSObject, ObservableObject {
             }()
             
             SettingView(viewModel: viewModel)
+            
+        case .estateList(let title, let isFromMap, let estateList):
+            let viewModel: EstateListViewModel = {
+                if let vm = self.viewModelList["EstateListViewModel"] as? EstateListViewModel {
+                    return vm
+                } else {
+                    let vm = EstateListViewModel(estateList: estateList, pathModel: self)
+                    self.viewModelList["EstateListViewModel"] = vm
+                    
+                    return vm
+                }
+            }()
+            
+            EstateListView(title: title, viewModel: viewModel, isFromMap: isFromMap)
         }
     }
     

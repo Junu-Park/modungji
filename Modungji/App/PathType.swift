@@ -16,4 +16,5 @@ enum PathType: Hashable {
     case chat(opponentID: String = "", roomID: String = "")
     case chatRoomList
     case setting
+    case estateList(title: String, isFromMap: Bool = false, estateList: [EstateResponseEntity])
 }
