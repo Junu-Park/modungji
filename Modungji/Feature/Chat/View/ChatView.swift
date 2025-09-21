@@ -133,6 +133,7 @@ struct ChatView: View {
                     self.viewModel.action(.tapBackButton)
                 } label: {
                     Image(.chevron)
+                        .renderingMode(.template)
                         .foregroundStyle(.gray100)
                 }
             }

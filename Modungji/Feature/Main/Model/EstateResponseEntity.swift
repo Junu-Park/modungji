@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EstateResponseEntity: Equatable {
+struct EstateResponseEntity: Hashable {
     let estateID: String
     let title: String
     let thumbnail: String
@@ -27,5 +27,9 @@ struct EstateResponseEntity: Equatable {
     
     var squareMeter: Double {
         self.area * 3.3058
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(estateID)
     }
 }
