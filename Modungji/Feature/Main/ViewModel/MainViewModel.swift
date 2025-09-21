@@ -30,6 +30,7 @@ final class MainViewModel: NSObject, ObservableObject {
         case closeWebView
         case tapCategory(category: EstateCategory)
         case enrollWebView(webView: WKWebView)
+        case tapHotEstateViewAll
     }
     
     @Published var state: State = State()
@@ -70,6 +71,8 @@ final class MainViewModel: NSObject, ObservableObject {
             self.pathModel?.push(.map(category: category))
         case .enrollWebView(let webView):
             self.webView = webView
+        case .tapHotEstateViewAll:
+            self.pathModel?.push(.estateList(title: "HOT 매물", estateList: self.state.hotEstateList))
         }
     }
     

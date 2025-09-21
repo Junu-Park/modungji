@@ -242,7 +242,7 @@ extension MainView {
                 Spacer()
                 
                 Button {
-                    
+                    self.viewModel.action(.tapHotEstateViewAll)
                 } label: {
                     Text("View All")
                         .font(PDFont.caption1)
