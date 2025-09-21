@@ -268,7 +268,7 @@ extension MainView {
         }
     }
     
-    private func hotEstateCard(estate: HotEstateResponseEntity) -> some View {
+    private func hotEstateCard(estate: EstateResponseEntity) -> some View {
         HStack(spacing: 24) {
             VStack(alignment: .leading) {
                 if estate.isRecommended {

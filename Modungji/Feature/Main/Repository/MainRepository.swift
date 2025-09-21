@@ -9,7 +9,7 @@ import Foundation
 
 protocol MainRepository {
     func getEstateBanner() async throws -> [EstateBannerResponseEntity]
-    func getHotEstate() async throws -> [HotEstateResponseEntity]
+    func getHotEstate() async throws -> [EstateResponseEntity]
     func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity]
     func getBanner() async throws -> [BannerResponseEntity]
     func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity

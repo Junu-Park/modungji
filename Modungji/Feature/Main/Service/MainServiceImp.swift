@@ -46,10 +46,10 @@ struct MainServiceImp: MainService {
         }
     }
     
-    func getHotEstate() async throws -> [HotEstateResponseEntity] {
+    func getHotEstate() async throws -> [EstateResponseEntity] {
         let response = try await self.repository.getHotEstate()
         
-        return try await withThrowingTaskGroup(of: (Int, HotEstateResponseEntity).self) { group in
+        return try await withThrowingTaskGroup(of: (Int, EstateResponseEntity).self) { group in
             for (index, estate) in response.enumerated() {
                 group.addTask {
                     let address = try await self.repository.getAddress(
@@ -63,7 +63,7 @@ struct MainServiceImp: MainService {
                 }
             }
             
-            var result = Array<HotEstateResponseEntity?>(repeating: nil, count: response.count)
+            var result = Array<EstateResponseEntity?>(repeating: nil, count: response.count)
             
             for try await (index, entity) in group {
                 result[index] = entity

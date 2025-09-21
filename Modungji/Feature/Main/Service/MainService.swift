@@ -9,7 +9,7 @@ import Foundation
 
 protocol MainService {
     func getEstateBanner() async throws -> [EstateBannerEntity]
-    func getHotEstate() async throws -> [HotEstateResponseEntity]
+    func getHotEstate() async throws -> [EstateResponseEntity]
     func getTodayEstateTopic() async throws -> [TodayEstateTopicResponseEntity]
     func getBanner() async throws -> [BannerResponseEntity]
 }
