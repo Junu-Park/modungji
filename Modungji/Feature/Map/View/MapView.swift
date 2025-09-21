@@ -146,7 +146,7 @@ struct MapView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    
+                    self.viewModel.action(.tapList)
                 } label: {
                     Image(.list)
                         .renderingMode(.template)

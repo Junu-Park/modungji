@@ -40,6 +40,7 @@ final class MapViewModel: ObservableObject {
         case tapEstate(estateID: String)
         case tapBackButton
         case search
+        case tapList
     }
     
     @Published var state: State = State()
@@ -139,6 +140,8 @@ final class MapViewModel: ObservableObject {
             Task { @MainActor in
                 self.state.shouldReloadData = false
             }
+        case .tapList:
+            self.tapList()
         }
     }
     
@@ -212,6 +215,15 @@ final class MapViewModel: ObservableObject {
         self.state.filteredEstateList.removeAll()
         self.state.shouldMoveCamera = true
         self.pathModel.pop()
+    }
+    
+    private func tapList() {
+        if self.state.filteredEstateList.isEmpty {
+            self.state.errorMessage = "매물이 없습니다."
+            self.state.showErrorAlert = true
+        } else {
+            self.pathModel.push(.estateList(title: self.state.currentAddress, isFromMap: true, estateList: self.state.filteredEstateList))
+        }
     }
     
     private func filteringEstateList() async -> [EstateResponseEntity] {
