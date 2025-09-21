@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MapService {
-    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity]
+    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [EstateResponseEntity]
     func getAddress(coords: GeolocationEntity) async throws -> String
     func getCoordinator(query: String) async throws -> GeocodingResponseEntity
     func getUserLocation() async throws -> Bool

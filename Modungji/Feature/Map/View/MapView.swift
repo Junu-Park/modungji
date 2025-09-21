@@ -395,9 +395,9 @@ struct MapView: View {
     private func buildEstateInfoList() -> some View {
         ScrollView(.horizontal) {
             LazyHStack(spacing: 12) {
-                ForEach(self.viewModel.state.filteredEstateList, id: \.estateId) { estate in
+                ForEach(self.viewModel.state.filteredEstateList, id: \.estateID) { estate in
                     Button {
-                        self.viewModel.action(.tapEstate(estateID: estate.estateId))
+                        self.viewModel.action(.tapEstate(estateID: estate.estateID))
                     } label:{
                         self.buildEstateInfo(estate)
                     }
@@ -410,7 +410,7 @@ struct MapView: View {
     }
     
     @ViewBuilder
-    private func buildEstateInfo(_ estate: GetEstateWithGeoResponseEntity) -> some View {
+    private func buildEstateInfo(_ estate: EstateResponseEntity) -> some View {
         HStack(spacing: 20) {
             URLImageView(urlString: estate.thumbnail) {
                 Image(systemName: "photo")

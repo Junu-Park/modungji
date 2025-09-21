@@ -185,7 +185,7 @@ final class LeafMarkerUpdater: NSObject, NMCLeafMarkerUpdater {
         marker.iconImage = self.defaultLeafMarkerImage
         
         marker.touchHandler = { [weak self] overlay in
-            self?.viewModel?.action(.tapEstate(estateID: key.entity.estateId))
+            self?.viewModel?.action(.tapEstate(estateID: key.entity.estateID))
             return true
         }
         
@@ -203,7 +203,7 @@ final class LeafMarkerUpdater: NSObject, NMCLeafMarkerUpdater {
                                     deposit: key.entity.deposit,
                                     monthlyRent: key.entity.monthlyRent
                                 ).converToUIImage(),
-                                reuseIdentifier: key.entity.estateId
+                                reuseIdentifier: key.entity.estateID
                             )
                         }
                     }

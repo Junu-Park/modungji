@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EstateResponseEntity {
+struct EstateResponseEntity: Equatable {
     let estateID: String
     let title: String
     let thumbnail: String

@@ -22,7 +22,7 @@ final class MapViewModel: ObservableObject {
         var centerLocation: GeolocationEntity = GeolocationEntity(latitude: 37.5666805, longitude: 126.9784147)
         var maxDistance: Int?
         var showCurrentLocationMarker: Bool = false
-        var filteredEstateList: [GetEstateWithGeoResponseEntity] = []
+        var filteredEstateList: [EstateResponseEntity] = []
         var showErrorAlert: Bool = false
         var errorMessage: String = ""
         var shouldMoveCamera: Bool = false
@@ -46,7 +46,7 @@ final class MapViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     private let service: MapService
     private let pathModel: PathModel
-    private var estateList: [GetEstateWithGeoResponseEntity] = []
+    private var estateList: [EstateResponseEntity] = []
     
     init(service: MapService, pathModel: PathModel, selectedCategory: EstateCategory? = nil) {
         self.service = service
@@ -214,7 +214,7 @@ final class MapViewModel: ObservableObject {
         self.pathModel.pop()
     }
     
-    private func filteringEstateList() async -> [GetEstateWithGeoResponseEntity] {
+    private func filteringEstateList() async -> [EstateResponseEntity] {
         return self.estateList.filter { entity in
             let category = self.state.selectedCategory?.rawValue == nil ? true : entity.category == self.state.selectedCategory?.rawValue
             

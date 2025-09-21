@@ -8,10 +8,10 @@
 import NMapsMap
 
 final class MapClusterKey: NSObject, NMCClusteringKey {
-    let entity: GetEstateWithGeoResponseEntity
+    let entity: EstateResponseEntity
     let position: NMGLatLng
     
-    init(entity: GetEstateWithGeoResponseEntity) {
+    init(entity: EstateResponseEntity) {
         self.entity = entity
         self.position = .init(lat: entity.geolocation.latitude, lng: entity.geolocation.longitude)
     }
@@ -25,11 +25,11 @@ final class MapClusterKey: NSObject, NMCClusteringKey {
             return true
         }
         
-        return obj.entity.estateId == self.entity.estateId
+        return obj.entity.estateID == self.entity.estateID
     }
     
     override var hash: Int {
-        return self.entity.estateId.hashValue
+        return self.entity.estateID.hashValue
     }
     
     func copy(with zone: NSZone? = nil) -> Any {

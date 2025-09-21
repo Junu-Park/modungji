@@ -51,4 +51,27 @@ struct EstateWithGeoDTO: Decodable {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
+    
+    func convertToEntity() -> EstateResponseEntity {
+        return .init(
+            estateID: self.estateId,
+            title: self.title,
+            thumbnail: self.thumbnails.first  ?? "",
+            deposit: self.deposit,
+            monthlyRent: self.monthlyRent,
+            area: self.area,
+            geolocation: .init(
+                latitude: self.geolocation.latitude,
+                longitude: self.geolocation.longitude
+            ),
+            category: self.category,
+            floors: self.floors,
+            distance: self.distance,
+            introduction: self.introduction,
+            likeCount: self.likeCount,
+            isRecommended: self.isRecommended,
+            builtYear: self.builtYear,
+            isSafeEstate: self.isSafeEstate
+        )
+    }
 }

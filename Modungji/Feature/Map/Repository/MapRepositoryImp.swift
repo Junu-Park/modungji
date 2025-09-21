@@ -16,7 +16,7 @@ struct MapRepositoryImp: MapRepository {
         self.locationManager = locationManager
     }
     
-    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity] {
+    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [EstateResponseEntity] {
         let response = try await self.networkManager.requestEstate(
             requestURL: EstateRouter.Estate.getEstateWithGeo(
                 category: entity.category,
@@ -28,7 +28,7 @@ struct MapRepositoryImp: MapRepository {
         )
         switch response {
         case .success(let success):
-            return success.data.map{ self.convertToEntity(dto: $0) }
+            return success.data.map{ $0.convertToEntity() }
         case .failure(let failure):
             throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
         }
@@ -66,24 +66,6 @@ struct MapRepositoryImp: MapRepository {
     
     func requestAlwaysAuthorization() {
         return self.locationManager.requestAlwaysAuthorization()
-    }
-    
-    private func convertToEntity(dto: EstateWithGeoDTO) -> GetEstateWithGeoResponseEntity {
-        return GetEstateWithGeoResponseEntity(
-            estateId: dto.estateId,
-            category: dto.category,
-            title: dto.title,
-            thumbnail: dto.thumbnails.first ?? "",
-            deposit: dto.deposit,
-            monthlyRent: dto.monthlyRent,
-            area: dto.area,
-            floors: dto.floors,
-            geolocation: GeolocationEntity(
-                latitude: dto.geolocation.latitude,
-                longitude: dto.geolocation.longitude
-            ),
-            distance: dto.distance
-        )
     }
     
     private func convertToEntity(_ dto: ReverseGeocodingDTO) -> ReverseGeocodingResponseEntity {

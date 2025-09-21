@@ -10,7 +10,7 @@ import Foundation
 
 
 protocol MapRepository {
-    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity]
+    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [EstateResponseEntity]
     func getAddress(coords: String) async throws -> ReverseGeocodingResponseEntity
     func getCoordinator(query: String) async throws -> GeocodingResponseEntity
     func getAuthorizationState() -> CLAuthorizationStatus

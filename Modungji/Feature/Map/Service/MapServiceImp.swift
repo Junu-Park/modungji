@@ -15,10 +15,10 @@ struct MapServiceImp: MapService {
         self.repository = repository
     }
     
-    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [GetEstateWithGeoResponseEntity] {
+    func getEstateWithGeo(entity: GetEstateWithGeoRequestEntity) async throws -> [EstateResponseEntity] {
         let estateResponse = try await self.repository.getEstateWithGeo(entity: entity)
         
-        return try await withThrowingTaskGroup(of: (Int, GetEstateWithGeoResponseEntity).self) { group in
+        return try await withThrowingTaskGroup(of: (Int, EstateResponseEntity).self) { group in
             for (index, estate) in estateResponse.enumerated() {
                 group.addTask {
                     var entity = estate
@@ -28,7 +28,7 @@ struct MapServiceImp: MapService {
                 }
             }
             
-            var result = Array<GetEstateWithGeoResponseEntity?>(repeating: nil, count: estateResponse.count)
+            var result = Array<EstateResponseEntity?>(repeating: nil, count: estateResponse.count)
             
             for try await (index, entity) in group {
                 result[index] = entity
