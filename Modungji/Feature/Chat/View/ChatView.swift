@@ -153,13 +153,7 @@ struct ChatView: View {
             }
         }
         .onKeyboardNotification { height in
-            var safeAreaBottom: CGFloat = 0
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
-                safeAreaBottom = window.safeAreaInsets.bottom
-            }
-            
-            self.keyboardHeight = height - safeAreaBottom
+            self.keyboardHeight = height - self.bottomSafeAreaPadding
         } hideCallback: { }
     }
     

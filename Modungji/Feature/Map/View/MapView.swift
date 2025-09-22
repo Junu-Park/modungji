@@ -14,16 +14,6 @@ struct MapView: View {
         self.viewModel = viewModel
     }
     
-    private var safeAreaBottomPadding: CGFloat {
-        var safeAreaBottom: CGFloat = 0
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
-            safeAreaBottom = window.safeAreaInsets.bottom
-        }
-        
-        return safeAreaBottom
-    }
-    
     @ViewBuilder
     private var currentLocationButton: some View {
         Button {
@@ -112,7 +102,7 @@ struct MapView: View {
                                 self.buildEstateInfoList()
                             }
                         }
-                        .padding(.bottom, self.safeAreaBottomPadding)
+                        .padding(.bottom, self.bottomSafeAreaPadding)
                     }
                 }
                 .animation(.default, value: self.viewModel.state.filteredEstateList)
