@@ -17,7 +17,7 @@ struct UpdateMyProfileRequestEntity {
         return .init(
             nick: self.nickname,
             introduction: self.introduction,
-            phoneNumber: self.phoneNumber,
+            phoneNum: self.phoneNumber,
             profileImage: self.profileImage
         )
     }

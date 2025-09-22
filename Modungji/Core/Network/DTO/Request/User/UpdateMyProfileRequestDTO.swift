@@ -10,6 +10,6 @@ import Foundation
 struct UpdateMyProfileRequestDTO: Encodable {
     var nick: String?
     var introduction: String?
-    var phoneNumber: String?
+    var phoneNum: String?
     var profileImage: String?
 }
