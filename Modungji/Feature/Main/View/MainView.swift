@@ -16,28 +16,27 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            Group {
-                Color.gray15
-                
-                ScrollView {
-                    LazyVStack(spacing: 0) {
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    
+                    self.estateBannerView(data: viewModel.state.EstateBannerList)
+                    
+                    Group {
+                        self.estateFilterView()
                         
-                        self.estateBannerView(data: viewModel.state.EstateBannerList)
-                        
-                        Group {
-                            self.estateFilterView()
-                            
-                            if !self.viewModel.state.recentSearchList.isEmpty {
-                                self.recentSearchEstateView()
-                            }
-                            
-                            self.hotEstateView()
+                        if !self.viewModel.state.recentSearchList.isEmpty {
+                            self.recentSearchEstateView()
                         }
-                        .padding(.bottom, 16)
                         
-                        self.todayEstateTopicView()
+                        self.hotEstateView()
                     }
+                    .padding(.bottom, 16)
+                    
+                    self.todayEstateTopicView()
                 }
+            }
+            .refreshable {
+                self.viewModel.action(.initView)
             }
             .ignoresSafeArea(edges: .top)
             
@@ -51,6 +50,7 @@ struct MainView: View {
                 Spacer()
             }
         }
+        .background(.gray15)
         .sheet(isPresented: self.$viewModel.state.showWebView) {
             self.viewModel.action(.closeWebView)
         } content: {
@@ -293,15 +293,17 @@ extension MainView {
                 Text(estate.title)
                     .font(YHFont.caption1)
                     .foregroundStyle(.gray0)
+                
                 Text("월세 \(estate.deposit.convertPriceToString())/\(estate.monthlyRent.convertPriceToString())")
                     .font(PDFont.body1)
                     .foregroundStyle(.gray0)
                 
                 Text("\(estate.address) \(String(format: "%0.1f",estate.squareMeter))㎡")
                     .font(PDFont.caption2)
-                    .foregroundStyle(.gray45)
+                    .foregroundStyle(.gray15)
                     .padding(.top, 16)
             }
+            .shadow(radius: 1)
         }
         .padding(10)
         .background {
