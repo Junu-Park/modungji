@@ -127,6 +127,18 @@ struct EstateListView: View {
                 Color.brightCream
             }
             .frame(width: 140, height: 108)
+            .overlay(alignment: .topLeading) {
+                if data.isSafeEstate {
+                    Image(.safty)
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundStyle(.gray15)
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .shapeBorderBackground(shape: .circle, backgroundColor: .deepCoast, borderColor: .gray15)
+                        .padding([.top, .leading], 8)
+                }
+            }
             .clipShape(RoundedRectangle(cornerRadius: 8))
             
             VStack(alignment: .leading, spacing: 6) {
