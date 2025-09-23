@@ -50,7 +50,7 @@ struct MainView: View {
                 Spacer()
             }
         }
-        .background(.gray15)
+        .background(.gray0)
         .sheet(isPresented: self.$viewModel.state.showWebView) {
             self.viewModel.action(.closeWebView)
         } content: {
