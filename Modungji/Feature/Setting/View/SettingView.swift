@@ -26,8 +26,6 @@ struct SettingView: View {
                 Divider()
                 
                 Spacer()
-                
-                self.buildSignOutButton()
             }
             .padding(20)
         }
@@ -95,12 +93,11 @@ struct SettingView: View {
             Button {
                 self.viewModel.action(.tapEdit)
             } label: {
-                Text("수정")
-                    .font(PDFont.body2.bold())
-                    .foregroundStyle(.gray75)
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 20)
-                    .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 12), backgroundColor: .gray0, borderColor: .brightCoast)
+                Image(systemName: "square.and.pencil")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundStyle(.gray90)
             }
         }
     }
