@@ -15,23 +15,54 @@ struct SettingView: View {
     }
     
     var body: some View {
-        VStack {
-            self.buildProfileView()
-                .padding(.bottom, 12)
+        VStack(spacing: 1) {
+            self.buildNavigationBar()
+                .shapeBorderBackground(shape: .rect(cornerRadii: .init(bottomLeading: 36)), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
             
-            Divider()
-            
-            Spacer()
-            
-            self.buildSignOutButton()
+            VStack {
+                self.buildProfileView()
+                    .padding(.bottom, 12)
+                
+                Divider()
+                
+                Spacer()
+                
+                self.buildSignOutButton()
+            }
+            .padding(20)
         }
-        .padding(20)
+        .ignoresSafeArea(edges: .top)
         .alert(self.viewModel.state.alertMessage, isPresented: self.$viewModel.state.showSettingViewAlert) {
             Button("확인") { }
         }
         .fullScreenCover(isPresented: self.$viewModel.state.showProfileEdit) {
             ProfileEditView(viewModel: self.viewModel)
         }
+    }
+    
+    @ViewBuilder
+    private func buildNavigationBar() -> some View {
+        HStack {
+            Text("설정")
+                .font(PDFont.title1.bold())
+            
+            Spacer()
+            
+            Button {
+                self.viewModel.action(.tapSignOut)
+            } label: {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 25, height: 25)
+                    .bold()
+                    .fixedSize()
+                    .foregroundStyle(.red.opacity(0.7))
+            }
+        }
+        .foregroundStyle(.gray90)
+        .padding(.top, self.topSafeAreaPadding)
+        .padding(20)
     }
     
     @ViewBuilder
