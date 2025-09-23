@@ -19,14 +19,25 @@ struct ChatRoomListView: View {
     }
     
     var body: some View {
-        List(self.viewModel.state.chatRoomList, id: \.roomID) { chatRoom in
-            Button {
-                self.viewModel.action(.tapChatRoom(opponentID: chatRoom.opponentUserData.userID, roomID: chatRoom.roomID))
-            } label: {
-                ChatRoomRow(chatRoom: chatRoom)
+        VStack(spacing: 1) {
+            self.buildCustomNavigationBar()
+                .shapeBorderBackground(shape: .rect(cornerRadii: .init(bottomLeading: 36)), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
+            
+            List(self.viewModel.state.chatRoomList, id: \.roomID) { chatRoom in
+                Button {
+                    self.viewModel.action(.tapChatRoom(opponentID: chatRoom.opponentUserData.userID, roomID: chatRoom.roomID))
+                } label: {
+                    ChatRoomRow(chatRoom: chatRoom)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .listRowSeparator(.hidden)
+                .listRowSpacing(24)
+                .listRowBackground(Color.clear)
             }
-            .buttonStyle(PlainButtonStyle())
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
+        .ignoresSafeArea(edges: .top)
         .onAppear {
             self.viewModel.action(.fetchChatRoomList)
         }
@@ -41,6 +52,28 @@ struct ChatRoomListView: View {
         .alert(self.viewModel.state.errorMessage, isPresented: self.$viewModel.state.showErrorAlert) {
             Button("닫기") { }
         }
+    }
+    
+    @ViewBuilder
+    private func buildCustomNavigationBar() -> some View {
+        HStack {
+            Text("채팅")
+                .font(PDFont.title1.bold())
+            
+            Spacer()
+            
+            Button {
+                
+            } label: {
+                Image(.settingFill)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 25, height: 25)
+            }
+        }
+        .foregroundStyle(.gray90)
+        .padding(.top, self.topSafeAreaPadding)
+        .padding(20)
     }
 }
 
