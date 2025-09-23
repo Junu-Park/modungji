@@ -21,25 +21,23 @@ struct RootView: View {
         NavigationStack(path: self.$pathModel.path) {
             Group {
                 if self.authState.isLogin {
-                    TabView(selection: self.$pathModel.selectedTab) {
-                        self.pathModel.build(.main)
-                            .tabItem {
-                                self.tabItem(.home)
-                            }
-                            .tag(0)
+                    VStack(spacing: 0) {
+                        TabView(selection: self.$pathModel.selectedTab) {
+                            self.pathModel.build(.main)
+                                .tag(0)
+                                
+                            self.pathModel.build(.chatRoomList)
+                                .tag(1)
+                            
+                            self.pathModel.build(.setting)
+                                .tag(2)
+                        }
                         
-                        self.pathModel.build(.chatRoomList)
-                            .tabItem {
-                                self.tabItem(.chat)
-                            }
-                            .tag(1)
-                        
-                        self.pathModel.build(.setting)
-                            .tabItem {
-                                self.tabItem(.setting)
-                            }
-                            .tag(2)
+                        self.buildCustomTabBar()
+                            .shapeBorderBackground(shape: .rect(cornerRadii: .init(topLeading: 28, topTrailing: 28)), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
                     }
+                    .ignoresSafeArea(edges: .bottom)
+                    .background(.gray0)
                 } else {
                     self.pathModel.build(.auth)
                         .onOpenURL { url in
@@ -71,37 +69,44 @@ struct RootView: View {
     }
     
     private func setTabBarAppearance() {
-        let appearance = UITabBarAppearance()
-        
-        let font = UIFont(name: "Pretendard-Regular", size: 12)!
-        
-        // 선택 상태
-        appearance.stackedLayoutAppearance.selected.iconColor = .gray90
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray90]
-        
-        // 미선택 상태
-        appearance.stackedLayoutAppearance.normal.iconColor = .gray45
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.font: font, .foregroundColor: UIColor.gray45]
-        
-        // 배경
-        appearance.backgroundColor = .gray0
-        
-        // 경계선
-        appearance.shadowColor = .separator.withAlphaComponent(0.2)
-        
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().isHidden = true
     }
 }
 
 extension RootView {
     @ViewBuilder
+    private func buildCustomTabBar() -> some View {
+        HStack {
+            Spacer()
+            self.tabItem(.home)
+            Spacer()
+            self.tabItem(.chat)
+            Spacer()
+            self.tabItem(.setting)
+            Spacer()
+        }
+        .padding(.top, 8)
+        .padding(.bottom, self.bottomSafeAreaPadding)
+    }
+    
+    @ViewBuilder
     private func tabItem(_ type: TabItemType) -> some View {
-        Image(self.pathModel.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
-            .renderingMode(.template)
-            .padding(.top, 16)
-        
-        Text(type.title)
-            .font(PDFont.caption1)
+        Button {
+            self.pathModel.selectedTab = type.rawValue
+        } label: {
+            VStack(spacing: 4) {
+                Image(self.pathModel.selectedTab == type.rawValue ? type.selectImage : type.unselectImage)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 28, height: 28)
+                
+                Text(type.title)
+                    .font(PDFont.caption1)
+            }
+            .foregroundStyle(self.pathModel.selectedTab == type.rawValue ? .gray90 : .gray45)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 28)
+        }
     }
 }
