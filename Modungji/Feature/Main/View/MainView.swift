@@ -124,6 +124,8 @@ extension MainView {
                     .foregroundStyle(.gray15)
                     .font(YHFont.title1)
                     .padding(.bottom, 2)
+                    .multilineTextAlignment(.leading)
+                    .shadow(radius: 1)
                 
                 Text(data.introduction)
                     .foregroundStyle(.gray60)
