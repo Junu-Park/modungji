@@ -83,6 +83,13 @@ private struct ChatRoomRow: View {
     private var relativeTimeString: String {
         let date = self.chatRoom.lastChat?.createdAt ?? chatRoom.updatedAt
         
+        if Calendar.current.isDateInToday(date) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            
+            return formatter.string(from: date)
+        }
+        
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateTimeStyle = .named
