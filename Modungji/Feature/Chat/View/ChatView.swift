@@ -100,8 +100,6 @@ struct ChatView: View {
         .overlay(alignment: .bottom) {
             if self.showFileTypeSelector {
                 HStack {
-                    Spacer()
-                    
                     Button {
                         self.showPhotoPicker.toggle()
                     } label: {
@@ -109,16 +107,14 @@ struct ChatView: View {
                             Image(systemName: "photo")
                                 .font(.largeTitle)
                                 .foregroundStyle(.deepCoast)
-                                .padding(16)
-                                .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 5), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
                             
                             Text("사진")
                                 .foregroundStyle(.deepCoast)
-                                .font(PDFont.body3.bold())
+                                .font(PDFont.body1.bold())
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 5), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
                     }
-                    
-                    Spacer()
                     
                     Button {
                         self.showFilePicker.toggle()
@@ -127,17 +123,16 @@ struct ChatView: View {
                             Image(systemName: "folder")
                                 .font(.largeTitle)
                                 .foregroundStyle(.brightWood)
-                                .padding(16)
-                                .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 5), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
                             
                             Text("파일")
                                 .foregroundStyle(.brightWood)
-                                .font(PDFont.body3.bold())
+                                .font(PDFont.body1.bold())
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 5), backgroundColor: .gray15, borderColor: .clear, shadowRadius: 1)
                     }
-                    
-                    Spacer()
                 }
+                .padding(.horizontal, 16)
                 .frame(height: self.keyboardHeight)
                 .offset(y: self.showKeyboard || self.showFileTypeSelector ? self.keyboardHeight : 0)
             }
