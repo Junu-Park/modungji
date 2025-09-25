@@ -296,16 +296,20 @@ struct ChatView: View {
                         }
                     }
                 } label: {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: "plus")
                         .font(.title2)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.brightCream)
+                        .shadow(radius: 1)
                 }
                 
                 // 채팅 입력
                 TextField("메시지 입력", text: self.$viewModel.state.content, axis: .vertical)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .tint(.gray100)
                     .lineLimit(1...5)
                     .focused(self.$showKeyboard)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 12), backgroundColor: .clear, borderColor: .gray30)
                 
                 // 채팅 전송
                 Button {
@@ -319,7 +323,13 @@ struct ChatView: View {
                 .disabled(!canSend)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, 8)
+        }
+        .clipShape(UnevenRoundedRectangle(topLeadingRadius: 28, topTrailingRadius: 28))
+        .background {
+            UnevenRoundedRectangle(topLeadingRadius: 28, topTrailingRadius: 28)
+                .foregroundStyle(.gray0)
+                .shadow(radius: 0.3, x: 0, y: -0.5)
         }
     }
 }
