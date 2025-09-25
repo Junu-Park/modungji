@@ -75,7 +75,9 @@ struct ChatView: View {
             }
             .onTapGesture {
                 self.hideKeyboard()
-                self.showFileTypeSelector = false
+                withAnimation {
+                    self.showFileTypeSelector = false
+                }
             }
             
             self.buildChatInputView()
@@ -135,6 +137,7 @@ struct ChatView: View {
                 .padding(.horizontal, 16)
                 .frame(height: self.keyboardHeight)
                 .offset(y: self.showKeyboard || self.showFileTypeSelector ? self.keyboardHeight : 0)
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             }
         }
         .navigationBarBackButtonHidden()
@@ -281,9 +284,8 @@ struct ChatView: View {
             HStack(spacing: 16){
                 // 전송 파일 타입 선택
                 Button {
-                    withAnimation(nil) {
+                    withAnimation {
                         if showFileTypeSelector {
-                            showFileTypeSelector = false
                             showKeyboard = true
                         } else {
                             showFileTypeSelector = true
