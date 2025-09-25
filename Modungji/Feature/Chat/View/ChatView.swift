@@ -494,11 +494,8 @@ private struct ChatRow: View {
                 Text(chat.content)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(isOpponentUser ? .gray30 : .deepCoast)
-                    )
-                    .foregroundColor(isOpponentUser ? .gray100 : .gray0)
+                    .foregroundColor(.gray100)
+                    .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: isOpponentUser ? .gray30 : .brightCream, borderColor: .clear, shadowRadius: 1)
             }
             
             // 사진
@@ -525,10 +522,7 @@ private struct ChatRow: View {
                 }
                 .fixedSize()
                 .padding(8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.gray30)
-                )
+                .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: isOpponentUser ? .gray30 : .brightCream, borderColor: .clear, shadowRadius: 1)
                 .fullScreenCover(isPresented: self.$showImageViewer) {
                     ZoomInImageView(
                         imageURLs: self.chat.files,
@@ -563,10 +557,7 @@ private struct ChatRow: View {
                         }
                     }
                     .padding(8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(.gray30)
-                    )
+                    .shapeBorderBackground(shape: RoundedRectangle(cornerRadius: 16), backgroundColor: isOpponentUser ? .gray30 : .brightCream, borderColor: .clear, shadowRadius: 1)
                     .fullScreenCover(isPresented: self.$showPDFViewer) {
                         PDFPreviewView(url: fileURL)
                     }
