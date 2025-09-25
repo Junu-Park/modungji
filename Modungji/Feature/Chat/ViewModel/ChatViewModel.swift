@@ -126,7 +126,7 @@ final class ChatViewModel: ObservableObject {
         // PhotoPicker 선택 변경 감지
         self.$state.map(\.photoSelection)
             .dropFirst()
-            .removeDuplicates { $0.count == $1.count }
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.appendPhoto()
