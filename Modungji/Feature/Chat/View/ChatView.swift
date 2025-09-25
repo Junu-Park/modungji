@@ -219,6 +219,8 @@ struct ChatView: View {
     
     @ViewBuilder
     private func buildChatInputView() -> some View {
+        let canSend = !self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !self.viewModel.state.selectedPhoto.isEmpty || !self.viewModel.state.fileSelection.isEmpty
+        
         VStack(spacing: 0) {
             Divider()
             
@@ -311,9 +313,10 @@ struct ChatView: View {
                 } label: {
                     Image(systemName: "paperplane.fill")
                         .font(.title2)
-                        .foregroundColor(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : .blue)
+                        .foregroundColor(!canSend ? .gray30 : .brightCream)
+                        .shadow(radius: 1)
                 }
-                .disabled(self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(!canSend)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
