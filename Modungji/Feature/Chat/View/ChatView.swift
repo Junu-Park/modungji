@@ -143,6 +143,7 @@ struct ChatView: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .toolbarBackground(.gray0, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
