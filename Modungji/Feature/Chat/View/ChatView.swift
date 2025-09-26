@@ -220,65 +220,61 @@ struct ChatView: View {
         let canSend = !self.viewModel.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !self.viewModel.state.selectedPhoto.isEmpty || !self.viewModel.state.fileSelection.isEmpty
         
         VStack(spacing: 0) {
-            Divider()
-            
             // 선택된 사진 썸네일 표시
             if !self.viewModel.state.selectedPhoto.isEmpty || !self.viewModel.state.fileSelection.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(Array(self.viewModel.state.selectedPhoto.enumerated()), id: \.element) { index, image in
-                            ZStack(alignment: .topTrailing) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                
+                            VStack(spacing: 4) {
                                 Button {
                                     self.viewModel.action(.removePhoto(index: index))
                                 } label: {
-                                    Image(systemName: "xmark.circle.fill")
+                                    Image(systemName: "xmark")
                                         .font(.headline)
-                                        .foregroundColor(.white)
-                                        .background(Circle().fill(.black.opacity(0.6)))
+                                        .foregroundColor(.brightCream)
+                                        .shadow(radius: 1)
+                                        .frame(maxWidth: .infinity)
                                 }
-                                .offset(x: -1, y: 1)
+                                
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
+                            .padding(.top, 4)
                         }
                         
                         ForEach(Array(self.viewModel.state.fileSelection.enumerated()), id: \.element) { index, file in
-                            ZStack(alignment: .topTrailing) {
-                                Image(systemName: "document")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                
+                            VStack(spacing: 4) {
                                 Button {
                                     self.viewModel.action(.removeFile(index: index))
                                 } label: {
-                                    Image(systemName: "xmark.circle.fill")
+                                    Image(systemName: "xmark")
                                         .font(.headline)
-                                        .foregroundColor(.white)
-                                        .background(Circle().fill(.black.opacity(0.6)))
+                                        .foregroundColor(.brightCream)
+                                        .shadow(radius: 1)
+                                        .frame(maxWidth: .infinity)
                                 }
-                                .offset(x: -1, y: 1)
+                                
+                                Image(systemName: "folder.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundStyle(.brightWood)
+                                    .frame(width: 40, height: 40)
+                                    .padding(20)
+                                    .frame(width: 60, height: 60)
+                                    .background(.gray30)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
+                            .padding(.top, 4)
                         }
-                        
-                        Button {
-                            self.viewModel.action(.removePhoto(index: nil))
-                            self.viewModel.action(.removeFile(index: nil))
-                        } label: {
-                            Image(systemName: "trash.circle")
-                                .font(.title)
-                                .foregroundStyle(.gray60)
-                        }
-
                     }
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 8)
+                
+                Divider()
+                    .padding(.horizontal, 16)
             }
             
             HStack(spacing: 16){
@@ -328,6 +324,8 @@ struct ChatView: View {
                 .foregroundStyle(.gray0)
                 .shadow(radius: 0.3, x: 0, y: -0.5)
         }
+        .animation(.default, value: self.viewModel.state.selectedPhoto)
+        .animation(.default, value: self.viewModel.state.fileSelection)
     }
 }
 
