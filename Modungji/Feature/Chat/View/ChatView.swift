@@ -72,6 +72,40 @@ struct ChatView: View {
                         proxy.scrollTo(self.bottomID, anchor: .bottom)
                     }
                 }
+                .customOnChange(value: self.viewModel.state.selectedPhoto) { value in
+                    if !self.isScrollBottom { return }
+                    
+                    if value.isEmpty {
+                        Task {
+                            try? await Task.sleep(for: .seconds(0.05))
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                proxy.scrollTo(self.bottomID, anchor: .bottom)
+                            }
+                        }
+                        return
+                    }
+                    
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(self.bottomID, anchor: .bottom)
+                    }
+                }
+                .customOnChange(value: self.viewModel.state.fileSelection) { value in
+                    if !self.isScrollBottom { return }
+                    
+                    if value.isEmpty {
+                        Task {
+                            try? await Task.sleep(for: .seconds(0.05))
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                proxy.scrollTo(self.bottomID, anchor: .bottom)
+                            }
+                        }
+                        return
+                    }
+                    
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(self.bottomID, anchor: .bottom)
+                    }
+                }
             }
             .onTapGesture {
                 self.hideKeyboard()
