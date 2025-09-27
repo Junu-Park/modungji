@@ -90,7 +90,7 @@ struct NetworkManager {
                 )
         }
         
-        let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL)
+        let response = await AF.upload(multipartFormData: multipartFormData, with: requestURL, interceptor: self)
             .validate({ req, res, data in
                 if res.statusCode == 419 {
                     return .failure(ErrorResponseDTO(message: "AccessToken is expired"))
