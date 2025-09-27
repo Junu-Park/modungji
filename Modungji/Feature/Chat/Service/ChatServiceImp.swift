@@ -27,45 +27,57 @@ struct ChatServiceImp: ChatService {
     }
     
     @discardableResult func postChat(roomID: String, content: String, photos: [UIImage], files: [URL]) async throws -> ChatResponseEntity {
-        var entity: [UploadFilesRequestEntity] = []
-        
-        for photo in photos {
-            guard let data = photo.convertUIImageToJPEGData(targetSize: 1000000) else {
-                throw EstateErrorResponseEntity(message: "이미지 압축 실패")
-            }
-            let type = MultipartType.jpeg
-            let newEntity = UploadFilesRequestEntity(data: data, key: "files", name: "\(roomID) \(Date().toString()).\(type.rawValue)", type: type)
+        let entities: [UploadFilesRequestEntity] = try await withThrowingTaskGroup(of: UploadFilesRequestEntity.self) { group in
+            var results: [UploadFilesRequestEntity] = []
             
-            entity.append(newEntity)
-        }
-        
-        for file in files {
-            if file.startAccessingSecurityScopedResource() {
-                let data: Data
-                
-                do {
-                    data = try Data(contentsOf: file)
-                    if data.count > 1000000 {
-                        throw EstateErrorResponseEntity(message: "파일 용량 초과")
+            for photo in photos {
+                group.addTask {
+                    guard let data = photo.convertUIImageToJPEGData(targetSize: 1000000) else {
+                        throw EstateErrorResponseEntity(message: "이미지 압축 실패")
                     }
-                } catch {
-                    throw EstateErrorResponseEntity(message: "파일 변환 실패")
+                    let type = MultipartType.jpeg
+                    return UploadFilesRequestEntity(data: data, key: "files", name: "\(roomID) \(Date().toString()).\(type.rawValue)", type: type)
                 }
-                
-                let type = try file.convertURLToMultipartType()
-                
-                let newEntity = UploadFilesRequestEntity(data: data, key: "files", name: "\(roomID) \(Date().toString()).\(type.rawValue)", type: type)
-                
-                entity.append(newEntity)
-                
-            } else {
-                throw EstateErrorResponseEntity(message: "파일 접근 실패")
             }
+            
+            for file in files {
+                group.addTask {
+                    guard file.startAccessingSecurityScopedResource() else {
+                        throw EstateErrorResponseEntity(message: "파일 접근 실패")
+                    }
+                    
+                    defer {
+                        file.stopAccessingSecurityScopedResource()
+                    }
+                    
+                    let data: Data
+                    
+                    do {
+                        data = try Data(contentsOf: file)
+                        if data.count > 1000000 {
+                            throw EstateErrorResponseEntity(message: "파일 용량 초과")
+                        }
+                    } catch {
+                        throw EstateErrorResponseEntity(message: "파일 변환 실패")
+                    }
+                    
+                    let type = try file.convertURLToMultipartType()
+                    
+                    return UploadFilesRequestEntity(data: data, key: "files", name: "\(roomID) \(Date().toString()).\(type.rawValue)", type: type)
+                }
+            }
+            
+            for try await entity in group {
+                results.append(entity)
+            }
+            
+            return results
         }
+
         let uploadFilesResponse: UploadFilesResponseEntity
-        
-        if !entity.isEmpty {
-            uploadFilesResponse = try await self.repository.uploadFiles(roomID: roomID, entity: entity)
+
+        if !entities.isEmpty {
+            uploadFilesResponse = try await self.repository.uploadFiles(roomID: roomID, entity: entities)
         } else {
             uploadFilesResponse = .init(files: [])
         }
