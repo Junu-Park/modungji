@@ -331,6 +331,7 @@ struct ChatView: View {
                 
                 // 채팅 입력
                 TextField("메시지 입력", text: self.$viewModel.state.content, axis: .vertical)
+                    .font(PDFont.body2)
                     .tint(.gray100)
                     .lineLimit(1...5)
                     .focused(self.$showKeyboard)
@@ -394,7 +395,7 @@ private struct DateSeparator: View {
     
     var body: some View {
         Text(self.formattedDateString)
-            .font(PDFont.caption2)
+            .font(PDFont.body2)
             .foregroundColor(.secondary)
             .padding(.horizontal, 12)
             .padding(.vertical, 4)
@@ -485,7 +486,7 @@ private struct ChatRow: View {
                         VStack(alignment: .leading, spacing: 4) {
                             if showProfile {
                                 Text(chat.sender.nick)
-                                    .font(.caption)
+                                    .font(PDFont.body2.bold())
                                     .foregroundColor(.secondary)
                             }
 
@@ -493,7 +494,7 @@ private struct ChatRow: View {
 
                             if showTime {
                                 Text(self.formattedTimeString)
-                                    .font(.caption2)
+                                    .font(PDFont.caption1)
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -508,7 +509,7 @@ private struct ChatRow: View {
 
                     if showTime {
                         Text(self.formattedTimeString)
-                            .font(.caption2)
+                            .font(PDFont.caption1)
                             .foregroundColor(.secondary)
                     }
                 }
@@ -524,6 +525,7 @@ private struct ChatRow: View {
             // 채팅
             if !chat.content.isEmpty {
                 Text(chat.content)
+                    .font(PDFont.body2)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .foregroundColor(.gray100)
@@ -586,6 +588,7 @@ private struct ChatRow: View {
                                 Text(".\(self.extractFileExtension(url: fileURL))")
                                     .layoutPriority(1)
                             }
+                            .font(PDFont.body2)
                         }
                     }
                     .padding(8)
