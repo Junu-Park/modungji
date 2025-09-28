@@ -55,8 +55,10 @@ struct ChatServiceImp: ChatService {
                     do {
                         data = try Data(contentsOf: file)
                         if data.count > 1000000 {
-                            throw EstateErrorResponseEntity(message: "파일 용량 초과")
+                            throw EstateErrorResponseEntity(message: "1MB 파일 용량 초과")
                         }
+                    } catch let error as EstateErrorResponseEntity {
+                        throw error
                     } catch {
                         throw EstateErrorResponseEntity(message: "파일 변환 실패")
                     }
