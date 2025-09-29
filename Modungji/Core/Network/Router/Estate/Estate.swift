@@ -18,7 +18,7 @@ extension EstateRouter {
         case getEstateWithGeo(category: EstateCategory?, longitude: Double?, latitude: Double?, maxDistance: Int?)
         case getEstateBanner
         case getHotEstate
-        case getSimilarEstate
+        case getSimilarEstates
         case getTodayEstateTopic
         
         var baseURL: URL? {
@@ -39,7 +39,7 @@ extension EstateRouter {
                 return "today-estates"
             case .getHotEstate:
                 return "hot-estates"
-            case .getSimilarEstate:
+            case .getSimilarEstates:
                 return "similar-estates"
             case .getTodayEstateTopic:
                 return "today-topic"

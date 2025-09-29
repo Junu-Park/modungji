@@ -1,5 +1,5 @@
 //
-//  GetSimilarEstateResponseDTO.swift
+//  GetSimilarEstatesResponseDTO.swift
 //  Modungji
 //
 //  Created by 박준우 on 6/3/25.
@@ -7,9 +7,34 @@
 
 import Foundation
 
-// MARK: - GetSimilarEstateResponseDTO
-struct GetSimilarEstateResponseDTO: Decodable {
+// MARK: - GetSimilarEstatesResponseDTO
+struct GetSimilarEstatesResponseDTO: Decodable {
     let data: [SimilarEstateDTO]
+    
+    func convertToEntity() -> GetSimilarEstatesResponseEntity {
+        return .init(
+            data: self.data.map(
+                {
+                    .init(
+                        estateID: $0.estateId,
+                        title: $0.title,
+                        thumbnail: $0.thumbnails.first ?? "",
+                        deposit: $0.deposit,
+                        monthlyRent: $0.monthlyRent,
+                        area: $0.area,
+                        geolocation: .init(latitude: $0.geolocation.latitude, longitude: $0.geolocation.longitude),
+                        category: $0.category,
+                        floors: $0.floors,
+                        distance: $0.distance,
+                        introduction: $0.introduction,
+                        likeCount: $0.likeCount,
+                        isRecommended: $0.isRecommended,
+                        builtYear: $0.builtYear,
+                        isSafeEstate: $0.isSafeEstate
+                    )
+                })
+        )
+    }
 }
 
 // MARK: - SimilarEstateDTO
