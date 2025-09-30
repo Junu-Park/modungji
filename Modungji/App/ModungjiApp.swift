@@ -15,6 +15,8 @@ import NMapsMap
 struct ModungjiApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
+    @State private var onLaunchScreen: Bool = true
+    
     private let diContainer = DIContainer.getDefaultDIContainer()
     
     init() {
@@ -27,8 +29,36 @@ struct ModungjiApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .injectDependency(self.diContainer)
+            if self.onLaunchScreen {
+                self.buildLaunchScreen()
+            } else {
+                RootView()
+                    .injectDependency(self.diContainer)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func buildLaunchScreen() -> some View {
+        ZStack {
+            Color.brightCream
+            
+            VStack(spacing: 16) {
+                Text("모둥지")
+                    .foregroundStyle(.brightWood)
+                    .font(YHFont.launchScreenTitle)
+                
+                Image(.icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+            }
+        }
+        .ignoresSafeArea()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .task {
+            try? await Task.sleep(for: .seconds(1.2))
+            self.onLaunchScreen = false
         }
     }
 }
