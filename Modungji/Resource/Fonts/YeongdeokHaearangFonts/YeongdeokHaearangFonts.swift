@@ -9,6 +9,10 @@ import SwiftUI
 
 /// Yeongdeok Haeparang 폰트
 enum YHFont {
+    static var launchScreenTitle: Font {
+        return .custom("Yeongdeok-Haeparang", fixedSize: 48)
+    }
+    
     static var title1: Font {
         return .custom("Yeongdeok-Haeparang", fixedSize: 20)
     }
