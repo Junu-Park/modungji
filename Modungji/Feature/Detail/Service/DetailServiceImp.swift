@@ -26,6 +26,36 @@ struct DetailServiceImp: DetailService {
         return detailResponse
     }
     
+    func getSimilarEstates() async throws -> [EstateResponseEntity] {
+        var similarEstates = try await self.repository.getSimilarEstates().data
+
+        let addresses = try await withThrowingTaskGroup(of: (Int, String).self) { group in
+            for idx in 0..<similarEstates.count {
+                group.addTask {
+                    let estate = similarEstates[idx]
+                    let addressResponse = try await self.repository.getAddress(
+                        coords: "\(estate.geolocation.longitude),\(estate.geolocation.latitude)"
+                    )
+
+                    return (idx, addressResponse.area3)
+                }
+            }
+            
+            var results: [(Int, String)] = []
+            
+            for try await result in group {
+                results.append(result)
+            }
+            return results
+        }
+
+        for (idx, address) in addresses {
+            similarEstates[idx].address = address
+        }
+
+        return similarEstates
+    }
+    
     func updateEstateLike(estateID: String, status: Bool) async throws -> UpdateEstateLikeResponseEntity {
         let request = UpdateEstateLikeRequestDTO(like_status: status)
         return try await self.repository.updateEstateLike(estateID: estateID, request: request)

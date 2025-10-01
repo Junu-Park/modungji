@@ -29,6 +29,17 @@ struct DetailRepositoryImp: DetailRepository {
         }
     }
     
+    func getSimilarEstates() async throws -> GetSimilarEstatesResponseEntity {
+        let response = try await self.networkManager.requestEstate(requestURL: EstateRouter.Estate.getSimilarEstates, successDecodingType: GetSimilarEstatesResponseDTO.self)
+        
+        switch response {
+        case .success(let success):
+            return success.convertToEntity()
+        case .failure(let failure):
+            throw EstateErrorResponseEntity(message: failure.message, statusCode: failure.statusCode)
+        }
+    }
+    
     func updateEstateLike(estateID: String, request: UpdateEstateLikeRequestDTO) async throws -> UpdateEstateLikeResponseEntity {
         let response = try await self.networkManager.requestEstate(
             requestURL: EstateRouter.Estate.updateEstateLike(
