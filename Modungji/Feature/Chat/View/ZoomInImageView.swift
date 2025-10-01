@@ -14,6 +14,7 @@ struct ZoomInImageView: View {
     @State private var selectedIndex: Int = 0
     @State private var dismissOffset: CGSize = .zero
     @State private var isDragging: Bool = false
+    @State private var showThumbnails: Bool = true
     
     init(imageURLs: [String], selectedIndex: Int, isPresented: Binding<Bool>) {
         self.imageURLs = imageURLs
@@ -33,7 +34,6 @@ struct ZoomInImageView: View {
                 contentView
             }
         }
-        .statusBarHidden()
     }
     
     // MARK: - Empty State
@@ -55,6 +55,10 @@ struct ZoomInImageView: View {
         ZStack {
             headerView
             imageContentView
+            
+            if imageURLs.count > 1 && showThumbnails {
+                thumbnailPreviewView
+            }
         }
     }
     
@@ -75,7 +79,7 @@ struct ZoomInImageView: View {
                 
                 if imageURLs.count > 1 {
                     Text("\(selectedIndex + 1) / \(imageURLs.count)")
-                        .font(.body)
+                        .font(PDFont.title1.bold())
                         .foregroundColor(.white)
                         .padding()
                 }
@@ -105,12 +109,20 @@ struct ZoomInImageView: View {
             if imageURLs.count == 1 {
                 ZoomableImageView(imageURL: imageURLs[0]) { isDragging in
                     self.isDragging = isDragging
+                } onZoomChange: { isZoomed in
+                    withAnimation {
+                        showThumbnails = !isZoomed
+                    }
                 }
             } else {
                 TabView(selection: $selectedIndex) {
                     ForEach(Array(imageURLs.enumerated()), id: \.offset) { index, imageURL in
                         ZoomableImageView(imageURL: imageURL) { isDragging in
                             self.isDragging = isDragging
+                        } onZoomChange: { isZoomed in
+                            withAnimation {
+                                showThumbnails = !isZoomed
+                            }
                         }
                         .tag(index)
                     }
@@ -122,12 +134,53 @@ struct ZoomInImageView: View {
         .offset(y: dismissOffset.height)
     }
     
+    // MARK: - Thumbnail Preview View
+    private var thumbnailPreviewView: some View {
+        VStack {
+            Spacer()
+            
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(Array(imageURLs.enumerated()), id: \.offset) { index, imageURL in
+                            ThumbnailView(
+                                imageURL: imageURL,
+                                isSelected: index == selectedIndex
+                            )
+                            .id(index)
+                            .onTapGesture {
+                                withAnimation {
+                                    selectedIndex = index
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                }
+                .background(
+                    LinearGradient(
+                        colors: [.clear, .black.opacity(0.7)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .onChange(of: selectedIndex) { newValue in
+                    withAnimation {
+                        proxy.scrollTo(newValue, anchor: .center)
+                    }
+                }
+            }
+        }
+        .zIndex(2)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+    
     // MARK: - Dismiss Gesture
     private var dismissGesture: some Gesture {
         DragGesture()
             .onChanged { dragValue in
-                // 세로 드래그가 가로 드래그보다 클 때만 닫기 제스처 활성화
-                if abs(dragValue.translation.height) > abs(dragValue.translation.width) && 
+                if abs(dragValue.translation.height) > abs(dragValue.translation.width) &&
                    abs(dragValue.translation.height) > 20 {
                     dismissOffset = dragValue.translation
                     isDragging = true
@@ -146,10 +199,38 @@ struct ZoomInImageView: View {
     }
 }
 
+// MARK: - Thumbnail View
+struct ThumbnailView: View {
+    let imageURL: String
+    let isSelected: Bool
+    
+    var body: some View {
+        URLImageView(urlString: imageURL) {
+            Rectangle()
+                .fill(.gray45)
+                .overlay {
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(0.7)
+                }
+        }
+        .aspectRatio(1, contentMode: .fill)
+        .frame(width: 60, height: 60)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isSelected ? Color.yellow : Color.clear, lineWidth: 3)
+        )
+        .scaleEffect(isSelected ? 1.1 : 0.9)
+        .animation(.spring(response: 0.3), value: isSelected)
+    }
+}
+
 // MARK: - Zoomable Image View
 struct ZoomableImageView: View {
     let imageURL: String
     let onDragChange: (Bool) -> Void
+    let onZoomChange: (Bool) -> Void
     
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
@@ -183,20 +264,21 @@ struct ZoomableImageView: View {
             .onChanged { value in
                 let newScale = lastScale * value
                 scale = max(1.0, min(newScale, 5.0))
+                onZoomChange(scale > 1.0)
             }
             .onEnded { _ in
                 lastScale = scale
                 if scale < 1.0 {
                     resetZoom()
                 }
+                onZoomChange(scale > 1.0)
             }
     }
     
-    // MARK: - Pan Gesture  
+    // MARK: - Pan Gesture
     private func panGesture(geometry: GeometryProxy) -> some Gesture {
         DragGesture()
             .onChanged { dragValue in
-                // 확대된 상태에서만 이미지 이동 처리
                 if scale > 1.0 {
                     let newOffset = CGSize(
                         width: lastOffset.width + dragValue.translation.width,
@@ -213,7 +295,6 @@ struct ZoomableImageView: View {
                     
                     onDragChange(true)
                 }
-                // 확대되지 않은 상태에서는 아무것도 하지 않음 (상위 제스처가 처리)
             }
             .onEnded { _ in
                 if scale > 1.0 {
@@ -235,6 +316,7 @@ struct ZoomableImageView: View {
                 lastScale = 2.0
             }
         }
+        onZoomChange(scale > 1.0)
     }
     
     // MARK: - Reset Zoom
@@ -245,5 +327,6 @@ struct ZoomableImageView: View {
             offset = .zero
             lastOffset = .zero
         }
+        onZoomChange(false)
     }
 }
