@@ -49,6 +49,7 @@ final class DetailViewModel: ObservableObject {
             updatedAt: "",
             address: ""
         )
+        var similarEstateList: [EstateResponseEntity] = []
         var isProgressPayment: Bool = false
         var payment: IamportPayment?
         var showErrorAlert: Bool = false
@@ -73,7 +74,7 @@ final class DetailViewModel: ObservableObject {
         self.service = service
         self.pathModel = pathModel
         
-        self.getDetailData()
+        self.initData()
     }
     
     func action(_ action: Action) {
@@ -89,14 +90,21 @@ final class DetailViewModel: ObservableObject {
         }
     }
     
-    private func getDetailData() {
+    private func initData() {
         Task { @MainActor in
             defer {
                 self.state.isLoading = false
             }
             do {
                 self.state.isLoading = true
-                self.state.detailData = try await self.service.getEstateDetail(estateID: self.estateID)
+                async let detail = self.service.getEstateDetail(estateID: self.estateID)
+                async let similar = self.service.getSimilarEstates()
+                
+                let (detailResponse, similarResponse) = try await (detail, similar)
+                
+                self.state.detailData = detailResponse
+                self.state.similarEstateList = similarResponse
+                
             } catch let error as EstateErrorResponseEntity {
                 self.state.errorMessage = error.message
                 self.state.showErrorAlert = true

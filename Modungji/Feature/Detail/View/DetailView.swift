@@ -159,8 +159,19 @@ struct DetailView: View {
                                 .font(PDFont.body2.bold())
                                 .padding(.vertical, 8)
                             
+                            ScrollView(.horizontal) {
+                                LazyHStack {
+                                    ForEach(self.viewModel.state.similarEstateList, id: \.estateID) { estate in
+                                        self.similarEstateCard(estate)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                            }
+                            .padding(.horizontal, -20)
+                            .scrollIndicators(.hidden)
+                            
                             Label {
-                                Text("새싹 AI 알고리즘 기반으로 추천된 매물입니다.")
+                                Text("AI 알고리즘 기반으로 추천된 매물입니다.")
                                     .font(PDFont.caption2)
                             } icon: {
                                 Image(.safty)
@@ -302,6 +313,45 @@ struct DetailView: View {
                 PaymentView(viewModel: self.viewModel)
             }
         }
+    }
+    
+    private func similarEstateCard(_ estate: EstateResponseEntity) -> some View {
+        HStack(spacing: 12) {
+            URLImageView(urlString: estate.thumbnail) {
+                Color.brightCoast
+            }
+            .scaledToFill()
+            .frame(width: 68, height: 68)
+            .clipShape(.rect(cornerRadius: 10))
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 4) {
+                    if estate.isRecommended {
+                        Text("추천")
+                            .font(PDFont.caption3)
+                            .foregroundStyle(.brightWood)
+                            .padding(.vertical, 2)
+                            .padding(.horizontal, 4)
+                            .background(.brightCream, in: .rect(cornerRadius: 4))
+                    }
+                    
+                    Text(estate.category)
+                        .font(PDFont.caption2)
+                        .foregroundStyle(.deepWood)
+                }
+                
+                Text("월세 \(estate.deposit.convertPriceToString())/\(estate.monthlyRent.convertPriceToString())")
+                    .font(PDFont.body3)
+                    .foregroundStyle(.gray90)
+                
+                Text("\(estate.address) \(String(format: "%0.1f", estate.area))㎡")
+                    .font(PDFont.caption1)
+                    .foregroundStyle(.gray60)
+            }
+        }
+        .padding(10)
+        .shapeBorderBackground(shape: .rect(cornerRadius: 16), backgroundColor: .gray0, borderColor: .gray30, shadowRadius: 1)
+        .padding(.vertical,4)
+        
     }
 }
 
