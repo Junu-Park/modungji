@@ -19,6 +19,16 @@ struct AuthView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            
+            Text("모두의 둥지, 모둥지")
+                .foregroundStyle(.gray75)
+                .font(YHFont.title1)
+            
+            Image(.icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+            
             if self.viewModel.state.isAutoLogin {
                 ProgressView()
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
@@ -43,6 +53,9 @@ struct AuthView: View {
         } message: {
             Text(self.viewModel.state.errorMessage)
         }
+        .ignoresSafeArea()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.gray30)
     }
 }
 
