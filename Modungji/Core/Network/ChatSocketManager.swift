@@ -14,6 +14,7 @@ protocol ChatSocketDelegate: AnyObject {
     func didConnectSocket()
     func didDisconnectSocket()
     func didReceiveChat(chatData: ChatSocketDTO)
+    func didExpiredToken()
 }
 
 final class ChatSocketManager: ObservableObject {
@@ -22,6 +23,8 @@ final class ChatSocketManager: ObservableObject {
     private var manager: SocketManager!
     private weak var socket: SocketIOClient?
     weak var delegate: ChatSocketDelegate?
+    private let tokenRefreshManager: TokenRefreshManager = .shared
+    private var connectedRoomID: String?
     
     private init() {
         self.setManager()
@@ -52,27 +55,34 @@ final class ChatSocketManager: ObservableObject {
         )
     }
     
-    func setSocket(roomID: String) {
+    func connectSocket(with roomID: String) {
+        self.connectedRoomID = roomID
         self.socket = self.manager.socket(forNamespace: "/chats-\(roomID)")
         
         self.setSocketEvent()
+        
+        self.socket?.connect()
     }
     
     private func setSocketEvent() {
         self.socket?.on(clientEvent: .connect) { [weak self] data, ack in
             guard let self else { return }
             print("Chat Socket Connect")
+            
             self.delegate?.didConnectSocket()
         }
         
         self.socket?.on(clientEvent: .disconnect) { [weak self] data, ack in
             guard let self else { return }
             print("Chat Socket Disconnect")
+            
             self.delegate?.didDisconnectSocket()
         }
         
-        self.socket?.on("chat") { data, ack in
+        self.socket?.on("chat") { [weak self] data, ack in
+            guard let self else { return }
             print("Chat Socket Receive")
+            
             do {
                 let chat = try self.parseChatData(data)
                 print(chat)
@@ -81,10 +91,16 @@ final class ChatSocketManager: ObservableObject {
                 print(error)
             }
         }
-    }
-    
-    func connectSocket() {
-        self.socket?.connect()
+        
+        self.socket?.on(clientEvent: .error) { [weak self] data, ack in
+            guard let self else { return }
+            
+            guard let error = data.first as? [String: Any] else { return }
+            guard let msg = error["message"] as? String else { return }
+            print("Socket Error: \(msg)")
+            
+            self.delegate?.didExpiredToken()
+        }
     }
     
     func disconnectSocket() {
@@ -92,6 +108,7 @@ final class ChatSocketManager: ObservableObject {
         self.socket?.removeAllHandlers()
         self.socket = nil
         self.manager.disconnect()
+        self.connectedRoomID = nil
     }
     
     private func parseChatData(_ data: [Any]) throws -> ChatSocketDTO {
