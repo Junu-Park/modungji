@@ -185,8 +185,7 @@ final class ChatViewModel: ObservableObject {
                 
                 self.tempRealmChatDataList = await self.getChatFromRealm(roomID: roomID)
                 
-                self.chatSocketManager.setSocket(roomID: roomID)
-                self.chatSocketManager.connectSocket()
+                self.chatSocketManager.connectSocket(with: roomID)
                 
                 let getChatRoomChatHistoryResponse = try await self.service.getChatRoomChatHistory(
                     roomID: roomID,
@@ -523,6 +522,17 @@ extension ChatViewModel: ChatSocketDelegate {
             }
         } else {
             self.tempSocketChatDataList.append(entity)
+        }
+    }
+
+    func didExpiredToken() {
+        Task {
+            if await TokenRefreshManager.shared.requestRefreshToken() {
+                
+                self.fetchChatData()
+            } else {
+                NotificationCenter.default.post(name: .expiredRefreshToken, object: nil)
+            }
         }
     }
 }
