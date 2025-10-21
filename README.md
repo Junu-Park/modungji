@@ -119,20 +119,17 @@
 
 ###
 
-### **HTTP 통신 허용을 위한 ATS(App Transport Security) 설정 - ~~특정 도메인에 대해서만 허용 방식~~ -> 전체 도메인 허용 방식**
-- ATS에 대한 허용 처리는 Information Property List에서 가능
+### **HTTP 통신 허용을 위한 ATS 설정 - 전체 도메인 허용 방식**
+**~~특정 도메인 예외 처리 방식~~에서 전체 도메인 허용 방식으로 변경한 이유**
 
-- 특정 도메인 예외 처리를 하려면 도메인이 필요
+- ATS 허용 처리는 Information Property List에서 설정 가능
+- 특정 도메인 예외 처리를 위해서는 도메인 정보가 필요하나, 현재 BaseURL을 Local Package에서 관리 중
+- Run Script를 통해 Package 소스 코드에서 값을 읽어 Info.plist에 예외 처리 속성을 추가하는 방식 고려
+  - 🚨 문제점 1: Info.plist에 도메인이 그대로 노출되어 보안상 취약
+  - 🚨 문제점 2: Git Ignore 처리 및 Run Script로 Info.plist 생성 방식으로 수정 시, 자동으로 Target과 Copy Bundle Resources에 추가되어 빌드 오류 발생
 
-- 현재 BaseURL을 Local Package에서 관리
+위 문제들로 인해 **전체 도메인 허용 방식**을 최종 선택
 
-- 패키지의 소스 코드 파일에 있는 값을 읽어서 Info.plist에 적용 시키기 위해서, Run Script를 통해 소스 코드를 읽어서 Info.plist에 예외 처리 속성을 추가
-
-- 🚨이 과정에서 추가된 속성에 도메인이 그대로 노출되기 때문에, Info.plist에 대한 Git Ignore처리와 Run Script 실행 시, Info.plist를 생성하는 방식으로 수정
-
-- 🚨새로 생성된 Info.plist에 대해서 자동으로 Target과 Copy Bundle Resources으로 추가되며 빌드 시 오류 발생시키기 때문에 해당 설정을 제거 해주는 작업 필요
-
-위 사항들을 고려해서 전체 도메인 허용 방식 선택
 ###
 
 ### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
