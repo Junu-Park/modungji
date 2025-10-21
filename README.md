@@ -54,6 +54,15 @@
 ---
 
 ## 💭 고려한 점
+### **채팅구현 - Socket.IO + Realm**
+
+
+###
+
+### **PG 결제 검증 로직 - 서버 기반 검증**
+
+###
+
 ### **BaseURL 및 APIKey 관리 - SPM을 통한 Local Package 방식**
 - `.swift 파일 + .gitignore 방식`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
 
