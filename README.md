@@ -110,17 +110,13 @@
 ###
 
 ### **BaseURL 및 APIKey 관리 - SPM을 통한 Local Package 방식**
-- `.swift 파일 + .gitignore 방식`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
+- `.swift 파일`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
+- `.plist/.xcconfig 파일`과 달리 타입 안정성을 가지고 자동완성 지원 및 빌드 타임 에러를 통한 휴먼 에러 발생 가능성 감소
 
-- `.plist/.xcconfig 파일`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
+**카카오 SDK App Key 관리**
+- 기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합
+- Run Script를 통해서 Local Package 기반으로 App Key를 추출하여 Configuration 생성 및 관리
 
-\* 카카오 SDK App Key 관리
-
-기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합
-
-\+
-
-Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Configuration 생성해서 관리
 ###
 
 ### **HTTP 통신 허용을 위한 ATS(App Transport Security) 설정 - ~~특정 도메인에 대해서만 허용 방식~~ -> 전체 도메인 허용 방식**
