@@ -41,11 +41,14 @@
 
 ### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
 <img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
+
 [iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
 
-2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점과 
+- 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점
 
-(iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점을 고려
+- (iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점
+
+위 두가지 사항을 고려
 ###
 
 ### **기술 스택**
