@@ -1,33 +1,68 @@
-# 모둥지
+<img width="100" height="100" src="https://github.com/user-attachments/assets/45a3cf3f-5a71-41a5-be6b-862f633494d2">
 
-## 프로젝트 소개
-부동산 어플 프로젝트
+# 모둥지 (Modungji)
+> 지도 기반 부동산 매물 중계 서비스 iOS 앱
 
-## 프로젝트 기간
-2025년 5월 9일 금요일 ~
+---
 
-## 프로젝트 폴더링
-Feature(기능) 단위 폴더링
+## 📱 소개
+**모둥지**는 이메일·소셜 로그인으로 간편하게 시작하고,
+맞춤 필터와 지도 탐색을 통해 원하는 부동산을 찾고 예약까지 한 번에 가능한 스마트 부동산 앱입니다.
 
-Project
-- App
-- Common
-- Core
-- Feature
-- Resource
+- ⭐️ 간편 로그인(애플, 카카오, 이메일)
+- ⭐️ 매물 추천(인기 및 추천 매물 정보)
+- ⭐️ 부동산 토픽 컨텐츠(부동산 관련 뉴스 및 토픽)
+- ⭐️ 지도 탐색(지도 기반 매물 탐색 및 주소 검색)
+- ⭐️ 맞춤 필터(매물 종류 / 평수 / 월세 / 보증금 등 다양한 필터)
+- ⭐️ 실시간 소통(중개인과 전화 또는 1:1 채팅)
+- ⭐️ 매물 예약(PG 결제를 통한 매물 예약)
 
+---
 
-## 프로젝트 기기 최소 타겟 버전 설정
-**iOS 16.0 +**
+## 📸 스크린샷
+<div align="leading">
+  <img src="https://github.com/user-attachments/assets/bea52b9c-188d-4aa8-9347-febff6823b31" width="19%">
+  <img src="https://github.com/user-attachments/assets/fbcfcaf7-3d3c-4815-9075-fa49ddc591ce" width="19%">
+  <img src="https://github.com/user-attachments/assets/b4a2bfdb-9782-4132-a34e-5f0f3bb51e14" width="19%">
+  <img src="https://github.com/user-attachments/assets/c93963d1-5251-424f-bdc2-c7439b51bedc" width="19%">
+</div>
 
+---
+
+## 🛠 개발 정보
+- ⏰ 개발 기간: 3개월 (2025. 07 - 2025. 09)
+- 👨‍💻 개발 인원: 3명 (iOS 1명, 서버 1명, 디자인 1명)
+- 📋 담당 역할: iOS 개발
+- 📱 최소 지원 버전: iOS 16.0+
+
+---
+
+## 📡 기술
+
+### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
 <img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
-
 [iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
 
 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점과 
 
 (iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점을 고려
+###
 
+### **기술 스택**
+| 구분               | 기술 스택                                      |
+|--------------------|-----------------------------------------------|
+| 언어 및 UI| Swift (SwiftUI)                |
+| 아키텍쳐       | MVVM                     |
+| 반응형 프로그래밍          | Combine             |
+| 네트워크            | Alamofire / Socket.IO                                  |
+| 인증 및 보안                 | Keychain / JWT Token    |
+| 데이터베이스                 | Realm |
+| 지도 / 위치 서비스                 | CoreLocation / Naver Maps SDK |
+| 웹 및 결제                 | WebKit / PG Payment |
+| 푸시 알림                 | FCM (Firebase Cloud Messaging) |
+###
+
+---
 ## 디자인 시스템
 ### 이미지 파일 설정
 **@2x(2배율)과 @3x(3배율)**
@@ -78,11 +113,4 @@ Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Confi
 ## Token 관리 방식
 **Keychain 저장 방식**
 
-vs UserDefaults vs Realm(서드파티 라이브러리)
-
-## 네트워크 에러 처리 방식
-Result vs Error Throw
-
-## 로직을 class이 아닌 struct으로 구현한 이유
-
-## @EnvironmentObject가 아닌 @Environment를 사용한 이유
+vs UserDefaults
