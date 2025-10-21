@@ -37,21 +37,7 @@
 
 ---
 
-## 📡 기술
-
-### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
-<img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
-
-[iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
-
-- 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점
-
-- (iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점
-
-위 두가지 사항을 고려
-###
-
-### **기술 스택**
+## 📚 기술 스택
 | 구분               | 기술 스택                                      |
 |--------------------|-----------------------------------------------|
 | 언어 및 UI| Swift (SwiftUI)                |
@@ -63,31 +49,23 @@
 | 지도 / 위치 서비스                 | CoreLocation / Naver Maps SDK |
 | 웹 및 결제                 | WebKit / PG Payment |
 | 푸시 알림                 | FCM (Firebase Cloud Messaging) |
-###
 
 ---
-## 디자인 시스템
-### 이미지 파일 설정
-**@2x(2배율)과 @3x(3배율)**
 
-<img width="547" alt="image" src="https://github.com/user-attachments/assets/dd2a3261-55ed-4900-a2be-7a2c55e8c2a9" />
-
-[Apple 디자인 가이드](https://developer.apple.com/design/human-interface-guidelines/images)
-
-프로젝트 타겟 OS가 iOS이고 iOS는 2배율과 3배율을 사용한다는 점을 고려
-
-\* [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
-
-## 프로젝트 네트워크 BaseURL 및 APIKey 설정
-**SPM을 통한 Local Package(+ .gitignore)로 관리**
-
+## 💭 고려한 점
+### **BaseURL 및 APIKey 관리 - SPM을 통한 Local Package 방식**
 `.swift 파일 + .gitignore 방식`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
 
-`.plist/.xcconfig 파일 + .gitignore 방식`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
+`.plist/.xcconfig 파일`과 달리 타입 안정성을 가지고 자동완성 지원과 빌드 타임 에러 통한 휴먼 에러 발생 가능성 감소
 
-## HTTP 통신 허용을 위한 ATS(App Transport Security) 설정
-~~**특정 도메인에 대해서만 허용 방식**~~
+\* 카카오 SDK App Key 관리
 
+기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합
+
+\+ Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Configuration 생성해서 관리
+###
+
+### **HTTP 통신 허용을 위한 ATS(App Transport Security) 설정 - ~~특정 도메인에 대해서만 허용 방식~~ -> 전체 도메인 허용 방식**
 ATS에 대한 허용 처리는 Information Property List에서 가능
 
 특정 도메인 예외 처리를 하려면 도메인이 필요
@@ -102,16 +80,32 @@ Run Script를 통해 소스 코드를 읽어서 Info.plist에 예외 처리 속�
 
 🚨새로 생성된 Info.plist에 대해서 자동으로 Target과 Copy Bundle Resources으로 추가되며 빌드 시 오류 발생시키기 때문에 해당 설정을 제거 해주는 작업 필요
 
-⬇
+위 두가지 사항을 고려해서 전체 도메인 허용 방식 선택
+###
 
-**전체 도메인 허용 방식**
+### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
+<img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
 
-## 카카오 SDK App Key 관리
-**Local Package 기반 Configuration 파일로 관리**
+[iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
 
-기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합 관리
+- 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점
 
-Run Script를 통해서 Local Package 기반으로 App Key를 추출해서 Configuration 생성해서 관리
+- (iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점
+
+위 두가지 사항을 고려
+###
+
+### **이미지 파일 배율 설정 - @2x(2배율)과 @3x(3배율)**
+<img width="547" alt="image" src="https://github.com/user-attachments/assets/dd2a3261-55ed-4900-a2be-7a2c55e8c2a9" />
+
+[Apple 디자인 가이드](https://developer.apple.com/design/human-interface-guidelines/images)
+
+iOS는 2배율과 3배율을 사용한다는 점을 고려
+
+\* 참고 문서: [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
+###
+
+---
 
 ## Token 관리 방식
 **Keychain 저장 방식**
