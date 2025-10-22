@@ -132,16 +132,17 @@
 
 ###
 
-### **프로젝트 기기 최소 타겟 버전 설정 - iOS 16.0+**
+### **프로젝트 최소 지원 버전 설정 - iOS 16.0+**
 <img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
 
 [iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
 
-- 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용중인 점
+**iOS 16.0+를 최소 지원 버전으로 선택한 이유**
+- 2025년 1월 21일 기준 아이폰 전체 기기 중 87%가 iOS 17.0 이상을 사용 중
+- iOS 18.0 출시 전 데이터 기준, 95% 이상이 iOS 16.0 이상을 사용
 
-- (iOS 18.0이 나오기 전 데이터 기준) 95% 이상이 iOS 16.0 이상을 사용했던 점
+→ 대다수 사용자 커버 및 최신 SwiftUI 기능 활용 가능
 
-위 두가지 사항을 고려
 ###
 
 ### **이미지 파일 배율 설정 - @2x(2배율)과 @3x(3배율)**
@@ -149,9 +150,14 @@
 
 [Apple 디자인 가이드](https://developer.apple.com/design/human-interface-guidelines/images)
 
-iOS는 2배율과 3배율을 사용한다는 점을 고려
+**@2x와 @3x 배율 이미지를 모두 제공하는 이유**
+- iOS는 디바이스에 따라 2배율(iPhone 8, SE 등)과 3배율(iPhone 14 Pro, 15 등)을 사용
+- App Slicing 기술을 통해 사용자 기기에 맞는 배율의 이미지만 다운로드되어 앱 용량 최적화
 
-\* 참고 문서: [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
+→ 모든 디바이스에서 선명한 이미지 제공 및 효율적인 리소스 관리
+
+\* 참고: [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
+
 ###
 
 ---
