@@ -9,13 +9,13 @@
 **모둥지**는 이메일·소셜 로그인으로 간편하게 시작하고,
 맞춤 필터와 지도 탐색을 통해 원하는 부동산을 찾고 예약까지 한 번에 가능한 스마트 부동산 앱입니다.
 
-- ⭐️ 간편 로그인(애플, 카카오, 이메일)
-- ⭐️ 매물 추천(인기 및 추천 매물 정보)
-- ⭐️ 부동산 토픽 컨텐츠(부동산 관련 뉴스 및 토픽)
-- ⭐️ 지도 탐색(지도 기반 매물 탐색 및 주소 검색)
-- ⭐️ 맞춤 필터(매물 종류 / 평수 / 월세 / 보증금 등 다양한 필터)
-- ⭐️ 실시간 소통(중개인과 전화 또는 1:1 채팅)
-- ⭐️ 매물 예약(PG 결제를 통한 매물 예약)
+- ⭐️ 간편 로그인 (Apple, Kakao, Email)
+- ⭐️ 매물 추천 (인기 및 추천 매물 정보)
+- ⭐️ 부동산 토픽 컨텐츠 (부동산 관련 뉴스 및 토픽)
+- ⭐️ 지도 탐색 (지도 기반 매물 탐색 및 주소 검색)
+- ⭐️ 맞춤 필터 (매물 종류 / 평수 / 월세 / 보증금 등)
+- ⭐️ 실시간 소통 (중개인과 전화 또는 1:1 채팅)
+- ⭐️ 매물 예약 (PG 결제를 통한 매물 예약)
 
 ---
 
@@ -31,35 +31,89 @@
 ---
 
 ## 🛠 개발 정보
-- ⏰ 개발 기간: 3개월 (2025. 07 - 2025. 09)
-- 👨‍💻 개발 인원: 3명 (iOS 1명, 서버 1명, 디자인 1명)
-- 📋 담당 역할: iOS 개발
-- 📱 최소 지원 버전: iOS 16.0+
+| 구분 | 내용 |
+|------|------|
+| ⏰ 개발 기간 | 3개월 (2025. 07 - 2025. 09) |
+| 👨‍💻 개발 인원 | 3명 (iOS 1명, 서버 1명, 디자인 1명) |
+| 📋 담당 역할 | iOS 개발 |
+| 📱 최소 지원 버전 | iOS 16.0+ |
 
 ---
 
 ## 📚 기술 스택
-| 구분               | 기술 스택                                      |
-|--------------------|-----------------------------------------------|
-| 언어 및 UI| Swift (SwiftUI)                |
-| 아키텍쳐       | MVVM                     |
-| 반응형 프로그래밍          | Combine             |
-| 네트워크            | Alamofire / Socket.IO                                  |
-| 인증 및 보안                 | Keychain / JWT Token    |
-| 데이터베이스                 | Realm |
-| 지도 / 위치 서비스                 | CoreLocation / Naver Maps SDK |
-| 웹 및 결제                 | WebKit / PG Payment |
-| 푸시 알림                 | FCM (Firebase Cloud Messaging) |
+| 구분 | 기술 스택 |
+|------|-----------|
+| 언어 및 UI | Swift, SwiftUI |
+| 아키텍처 | MVVM, Repository-Service 패턴, DI Container |
+| 반응형 프로그래밍 | Combine |
+| 네트워크 | Alamofire, Socket.IO |
+| 인증 및 보안 | Keychain, JWT Token, Apple Login, Kakao SDK |
+| 데이터베이스 | Realm |
+| 지도 / 위치 서비스 | CoreLocation, Naver Maps SDK |
+| 결제 | Iamport SDK (WebKit 기반 PG 결제) |
+| 푸시 알림 | FCM (Firebase Cloud Messaging) |
+| 민감 정보 관리 | SPM Local Package (ModungjiSecret) |
+
+---
+
+## 🏗 아키텍처
+
+```
+View (SwiftUI)
+ ↓ observes (@Published)
+ViewModel (ObservableObject)
+ ↓ calls
+Service (비즈니스 로직)
+ ↓ delegates
+Repository (데이터 추상화)
+ ↓ uses
+Manager / DTO (네트워크, 소켓, DB, Keychain)
+```
+
+- **DIContainer**: Manager, Repository, Service 인스턴스를 중앙에서 생성·관리하고, SwiftUI EnvironmentKey를 통해 주입
+- **PathModel**: NavigationStack 기반 화면 전환 관리 및 ViewModel 캐싱
+- **AuthState**: NotificationCenter를 활용한 전역 인증 상태 관리 및 토큰 만료 감지
+
+---
+
+## 📂 프로젝트 구조
+
+```
+Modungji/
+├── 📁 App/                          # 앱 진입점, 네비게이션, DI Container
+├── 📁 Core/
+│   ├── 📁 Network/
+│   │   ├── NetworkManager           # Alamofire 기반 HTTP 통신 + RequestInterceptor
+│   │   ├── ChatSocketManager        # Socket.IO 실시간 채팅
+│   │   ├── TokenRefreshManager      # Actor 기반 토큰 갱신 (동시 요청 중복 방지)
+│   │   ├── NetworkMonitorManager    # 네트워크 상태 감지
+│   │   ├── 📁 Router/              # APIRouter 프로토콜 + 기능별 라우터
+│   │   └── 📁 DTO/                 # Request / Response DTO (90개+)
+│   ├── 📁 Keychain/                 # 토큰 보안 저장소
+│   ├── 📁 Location/                 # CoreLocation 래퍼
+│   ├── 📁 Kakao/                    # Kakao SDK 로그인
+│   └── 📁 Realm/                    # 로컬 데이터 영속성 (채팅, 유저)
+├── 📁 Feature/
+│   ├── 📁 Auth/                     # 로그인 / 회원가입 (Apple, Kakao, Email)
+│   ├── 📁 Main/                     # 홈 (배너, 인기 매물, 토픽)
+│   ├── 📁 Map/                      # 지도 탐색 (Naver Maps, 클러스터링, 필터)
+│   ├── 📁 Detail/                   # 매물 상세 + 결제 (Iamport)
+│   ├── 📁 Chat/                     # 1:1 채팅 (Socket.IO + Realm)
+│   ├── 📁 List/                     # 매물 리스트
+│   └── 📁 Setting/                  # 프로필 관리 + 설정
+├── 📁 Shared/                       # 공통 Extension, Modifier, Utility
+└── 📁 Resource/                     # 에셋 (Color 18종, Image 40종+, Font)
+```
 
 ---
 
 ## 💭 고려한 점
-### **채팅 구현 - Socket.IO + Realm**
+
+### 💬 채팅 구현 - Socket.IO + Realm
 
 - **실시간 양방향 통신을 위한 Socket.IO 채택**
   - HTTP 폴링 방식 대비 낮은 레이턴시와 서버 부하 감소
-  - 채팅방별 네임스페이스를 통한 효율적인 연결 관리
-  - 이벤트 핸들링으로 안정적인 실시간 메시지 송수신 구현
+  - 채팅방별 네임스페이스(`/chats-{roomID}`)를 통한 효율적인 연결 관리
 
 - **Realm을 활용한 로컬 데이터 영속성 및 오프라인 지원**
   - 채팅 메시지를 로컬에 저장하여 네트워크 없이도 이전 대화 내용 조회 가능
@@ -83,9 +137,10 @@
     - 사용자가 하단에 있을 때만 자동 스크롤 활성화
     - 새 메시지 수신 시 자동으로 하단 스크롤
 
-###
+---
 
-### **PG 결제 검증 로직 - 서버 기반 검증**
+### 💳 PG 결제 검증 로직 - 서버 기반 검증
+
 - **클라이언트-서버 2단계 검증 프로세스**
   1. **주문 생성 단계**: 서버에서 주문ID 및 가격 생성 → PG사 결제 요청 시 사용
   2. **결제 검증 단계**: PG사로부터 받은 결제ID를 서버로 전달하여 최종 검증
@@ -107,9 +162,26 @@
   5. 서버가 PG사 API로 실제 결제 검증
   6. 검증 성공 시 매물 예약 상태 업데이트
 
-###
+---
 
-### **BaseURL 및 APIKey 관리 - SPM을 통한 Local Package 방식**
+### 🔄 토큰 갱신 - Actor 기반 동시성 제어
+
+- **문제 상황**: 여러 API 요청이 동시에 419를 받을 경우, 토큰 갱신 요청이 중복 발생
+- **해결 방법**: `TokenRefreshManager`를 Swift Actor로 구현하여 동시 갱신 요청을 단일 요청으로 병합
+- **RequestInterceptor 연동**: Alamofire의 `RequestInterceptor`에서 토큰 주입 및 만료 시 자동 갱신 후 재시도
+
+---
+
+### 🗺 지도 필터링 - Combine 기반 반응형 처리
+
+- **CombineLatest**로 매물 종류, 평수, 월세, 보증금 등 다중 필터 조건을 하나의 스트림으로 결합
+- **Debounce** 적용으로 사용자 입력 시 불필요한 API 호출 방지
+- 카메라 이동 시 화면 영역 내 매물만 서버에서 조회하여 성능 최적화
+
+---
+
+### 🔑 BaseURL 및 APIKey 관리 - SPM Local Package
+
 - `.swift 파일`보다 휴먼 에러 가능성이 낮으며 모듈화를 통해 구조적으로 관리 가능
 - `.plist/.xcconfig 파일`과 달리 타입 안정성을 가지고 자동완성 지원 및 빌드 타임 에러를 통한 휴먼 에러 발생 가능성 감소
 
@@ -117,9 +189,10 @@
 - 기존의 네트워크 BaseURL 및 APIKey를 관리하는 Local Package에 App Key를 통합
 - Run Script를 통해서 Local Package 기반으로 App Key를 추출하여 Configuration 생성 및 관리
 
-###
+---
 
-### **HTTP 통신 허용을 위한 ATS 설정 - 전체 도메인 허용 방식**
+### 🌐 HTTP 통신 허용을 위한 ATS 설정 - 전체 도메인 허용 방식
+
 **~~특정 도메인 예외 처리 방식~~에서 전체 도메인 허용 방식으로 변경한 이유**
 
 - ATS 허용 처리는 Information Property List에서 설정 가능
@@ -130,9 +203,9 @@
 
 위 문제들로 인해 **전체 도메인 허용 방식**을 최종 선택
 
-###
+---
 
-### **프로젝트 최소 지원 버전 설정 - iOS 16.0+**
+### 📱 프로젝트 최소 지원 버전 설정 - iOS 16.0+
 <img width="250" alt="image" src="https://github.com/user-attachments/assets/24a047ba-3b9d-431f-9ddc-3e07f97eda65"/>
 
 [iOS 버전별 점유율](https://developer.apple.com/kr/support/app-store/)
@@ -143,9 +216,9 @@
 
 → 대다수 사용자 커버 및 최신 SwiftUI 기능 활용 가능
 
-###
+---
 
-### **이미지 파일 배율 설정 - @2x(2배율)과 @3x(3배율)**
+### 🖼 이미지 파일 배율 설정 - @2x(2배율)과 @3x(3배율)
 <img width="547" alt="image" src="https://github.com/user-attachments/assets/dd2a3261-55ed-4900-a2be-7a2c55e8c2a9" />
 
 [Apple 디자인 가이드](https://developer.apple.com/design/human-interface-guidelines/images)
@@ -157,7 +230,5 @@
 → 모든 디바이스에서 선명한 이미지 제공 및 효율적인 리소스 관리
 
 \* 참고: [App Thinning / App Slicing 기술](https://developer.apple.com/kr/videos/play/wwdc2015/404)
-
-###
 
 ---
